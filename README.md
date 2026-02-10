@@ -1,5 +1,7 @@
 # Branchism
 
+🚨 This project is currently under active development 🚨
+
 ## Legal Disclaimer
 
 This repository contains conceptual designs, illustrative pseudocode, simulations, and interface mock-ups created solely for theoretical, educational, and research purposes.
