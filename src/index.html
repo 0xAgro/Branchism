@@ -515,14 +515,15 @@
       // Now doubled:
       const t = prefersReduced ? {
         show1: 0,
-        showTree: 300,
-        show2: 600,
-        done: 900
+        showTree: 200,
+        show2: 400,
+        done: 700
       } : {
-        show1: 240,
-        showTree: 1800,
-        show2: 3400,
-        done: 5600
+        // 0.75x of original timing
+        show1: 90,      // 120 × 0.75
+        showTree: 675,  // 900 × 0.75
+        show2: 1275,    // 1700 × 0.75
+        done: 2100      // 2800 × 0.75
       };
 
       const timers = [];
