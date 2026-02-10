@@ -7,16 +7,29 @@
 
   <style>
     :root{
+      /* =========================
+         INTRO (keep the same)
+         ========================= */
       --bg:#1E2320;
       --text:#EDEBE6;
 
-      --panel: rgba(237,235,230,0.06);
-      --panel-2: rgba(237,235,230,0.10);
-      --border: rgba(237,235,230,0.14);
-      --muted: rgba(237,235,230,0.72);
-      --muted-2: rgba(237,235,230,0.55);
+      /* =========================
+         APP THEME (match reference image)
+         ========================= */
+      --app-bg: #1b1411;         /* deep brown */
+      --app-bg-2:#241a16;        /* panel brown */
+      --app-ink:#efe6d6;         /* warm parchment text */
+      --app-muted: rgba(239,230,214,0.75);
+      --app-muted-2: rgba(239,230,214,0.55);
 
-      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --gold: #cbb48a;
+      --gold-2:#a98a55;
+      --gold-3:#e7d2aa;
+
+      --line: rgba(239,230,214,0.14);
+      --line-2: rgba(203,180,138,0.22);
+
+      --shadow: 0 14px 36px rgba(0,0,0,0.55);
       --radius: 18px;
       --radius-sm: 14px;
       --max: 1040px;
@@ -24,25 +37,30 @@
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
+
+    /* App background (NOT intro) */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 800px at 30% 10%, rgba(237,235,230,0.06), transparent 60%),
-        radial-gradient(900px 700px at 90% 40%, rgba(237,235,230,0.05), transparent 60%),
-        var(--bg);
-      color: var(--text);
+      color: var(--app-ink);
       line-height: 1.35;
+      background:
+        radial-gradient(900px 700px at 30% 10%, rgba(231,210,170,0.08), transparent 60%),
+        radial-gradient(900px 700px at 90% 40%, rgba(203,180,138,0.06), transparent 60%),
+        radial-gradient(1100px 900px at 50% 120%, rgba(0,0,0,0.40), transparent 55%),
+        linear-gradient(180deg, #1a1310, var(--app-bg));
     }
 
     a{ color:inherit; text-decoration:none; }
     .wrap{
       max-width: var(--max);
       margin: 0 auto;
-      padding: 28px 18px 56px;
+      padding: 22px 18px 56px;
     }
 
-    /* ================= INTRO (dark) ================= */
+    /* =========================
+       INTRO (unchanged)
+       ========================= */
     .intro{
       position: fixed;
       inset: 0;
@@ -55,10 +73,8 @@
       transition: opacity 1800ms ease, visibility 0ms linear 1800ms;
       visibility: visible;
     }
-    .intro.hide{
-      opacity: 0;
-      visibility: hidden;
-    }
+    .intro.hide{ opacity:0; visibility:hidden; }
+
     .introStage{
       width: min(920px, 92vw);
       display: grid;
@@ -96,29 +112,34 @@
       color: rgba(237,235,230,0.85);
       text-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
-    .show{ opacity: 1 !important; }
-    .showTree{ opacity: 1 !important; transform: translateY(0) !important; }
+    .show{ opacity:1 !important; }
+    .showTree{ opacity:1 !important; transform: translateY(0) !important; }
 
     @media (prefers-reduced-motion: reduce){
       .intro, .introTree, .introLine1, .introLine2{ transition:none !important; }
     }
 
-    /* ================= Top bar ================= */
+    /* =========================
+       Top Bar (ornate / game-like)
+       ========================= */
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
+      gap:14px;
       padding: 14px 16px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, var(--panel-2), var(--panel));
       border-radius: var(--radius);
+      border: 1px solid rgba(239,230,214,0.14);
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.14)),
+        radial-gradient(900px 240px at 40% 0%, rgba(203,180,138,0.10), transparent 60%),
+        rgba(10,7,6,0.35);
       box-shadow: var(--shadow);
       position: sticky;
       top: 14px;
+      z-index: 10;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      z-index: 10;
     }
 
     .brand{
@@ -132,14 +153,29 @@
       height: 46px;
       border-radius: 12px;
       object-fit: cover;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.15);
+      border: 1px solid rgba(203,180,138,0.28);
+      background: rgba(0,0,0,0.25);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
     }
-    .brand h1{
-      font-size: 22px;
+    .brandTitle{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+      line-height: 1;
+    }
+    .brandTitle h1{
       margin:0;
+      font-family: "Georgia", "Times New Roman", serif;
+      font-weight: 700;
       letter-spacing: 0.2px;
-      font-weight: 650;
+      font-size: 30px;
+      color: var(--gold-3);
+      text-shadow: 0 10px 26px rgba(0,0,0,0.55);
+    }
+    .brandTitle .tag{
+      font-size: 12px;
+      color: var(--app-muted-2);
+      letter-spacing: 0.2px;
     }
 
     .right{
@@ -150,206 +186,351 @@
       justify-content:flex-end;
     }
 
-    /* Tabs (operational) */
+    /* Tabs (gold highlight + underline glow like reference) */
     .tabs{
       display:flex;
       align-items:center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(203,180,138,0.22);
+      background: rgba(0,0,0,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }
     .tab{
-      padding: 10px 12px;
+      position: relative;
+      padding: 8px 10px;
       border-radius: 999px;
       border: 1px solid transparent;
-      color: var(--muted);
       background: transparent;
-      transition: 140ms ease;
-      font-weight: 600;
-      letter-spacing: 0.1px;
+      color: rgba(239,230,214,0.78);
+      font-family: "Georgia","Times New Roman",serif;
+      font-weight: 650;
+      letter-spacing: 0.2px;
       cursor: pointer;
       user-select: none;
+      transition: 140ms ease;
     }
     .tab:hover{
-      border-color: var(--border);
-      background: rgba(237,235,230,0.06);
-      color: var(--text);
+      color: var(--gold-3);
+      background: rgba(203,180,138,0.08);
+      border-color: rgba(203,180,138,0.18);
     }
     .tab.active{
-      color: var(--bg);
-      background: var(--text);
-      border-color: transparent;
+      color: var(--gold-3);
+      background: rgba(203,180,138,0.10);
+      border-color: rgba(203,180,138,0.24);
+    }
+    .tab.active::after{
+      content:"";
+      position:absolute;
+      left: 14px;
+      right: 14px;
+      bottom: -8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(231,210,170,0.95), transparent);
+      box-shadow: 0 0 16px rgba(231,210,170,0.55);
+      border-radius: 999px;
     }
 
-    /* Profile banner (wallet + debt allowance) */
+    /* Profile banner (top-right) */
     .profile{
       display:flex;
       align-items:center;
       gap: 10px;
       padding: 10px 12px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.14);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+      border: 1px solid rgba(203,180,138,0.22);
+      background: rgba(0,0,0,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
       white-space: nowrap;
     }
     .profile .pill{
       padding: 8px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(237,235,230,0.14);
-      background: rgba(237,235,230,0.06);
+      border: 1px solid rgba(203,180,138,0.18);
+      background: rgba(203,180,138,0.08);
       font-size: 12px;
-      color: var(--muted);
+      color: rgba(239,230,214,0.78);
+      font-family: ui-sans-serif, system-ui;
     }
     .profile .value{
       font-size: 13px;
-      font-weight: 750;
-      color: var(--text);
+      font-weight: 800;
+      color: var(--gold-3);
       margin-left: 6px;
+      letter-spacing: 0.2px;
     }
 
-    /* Page sections */
+    /* =========================
+       Page sections
+       ========================= */
     .page{
       margin-top: 18px;
       display:none;
     }
-    .page.active{
-      display:block;
+    .page.active{ display:block; }
+
+    /* Title strip like “Businesses” */
+    .sectionHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(239,230,214,0.12);
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.18)),
+        rgba(0,0,0,0.20);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .sectionHeader::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(800px 120px at 30% 0%, rgba(203,180,138,0.18), transparent 55%);
+      pointer-events:none;
+    }
+    .sectionHeader h2{
+      margin:0;
+      font-family: "Georgia","Times New Roman",serif;
+      font-size: 40px;
+      letter-spacing: 0.2px;
+      color: var(--gold-3);
+      text-shadow: 0 16px 34px rgba(0,0,0,0.55);
+    }
+    .headerAction{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+    .filterBtn{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(203,180,138,0.22);
+      background: rgba(0,0,0,0.20);
+      color: rgba(239,230,214,0.85);
+      font-family: ui-sans-serif, system-ui;
+      font-weight: 650;
+      cursor: pointer;
+      transition: 140ms ease;
+    }
+    .filterBtn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(231,210,170,0.28);
+      background: rgba(203,180,138,0.08);
     }
 
-    /* Controls */
+    /* Controls (search) */
     .controls{
-      margin-top: 18px;
+      margin-top: 14px;
       display:flex;
       gap: 12px;
       align-items:center;
       flex-wrap: wrap;
     }
     .search{
-      flex: 1 1 420px;
+      flex: 1 1 520px;
       display:flex;
       align-items:center;
       gap:10px;
       padding: 12px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.16);
+      border: 1px solid rgba(203,180,138,0.22);
+      background: rgba(0,0,0,0.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }
-    .search svg{ flex: 0 0 auto; opacity: 0.85; }
+    .search svg{ flex: 0 0 auto; opacity: 0.9; color: rgba(239,230,214,0.75); }
     .search input{
       width:100%;
       border:0;
       outline:0;
       background: transparent;
-      color: var(--text);
+      color: var(--app-ink);
       font-size: 15px;
     }
     .tinyPill{
       flex: 0 0 auto;
       padding: 10px 12px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.12);
+      border: 1px solid rgba(203,180,138,0.20);
+      background: rgba(0,0,0,0.18);
       border-radius: 999px;
-      color: var(--muted);
+      color: rgba(239,230,214,0.72);
       font-size: 13px;
     }
 
-    /* Headings */
-    h2{
-      margin: 18px 2px 12px;
-      font-size: 22px;
-      letter-spacing: 0.2px;
-      font-weight: 680;
-    }
-    .sub{
-      margin: 0 2px 16px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    /* Cards */
+    /* =========================
+       Cards (match reference layout)
+       ========================= */
     .grid{
       display:grid;
       grid-template-columns: 1fr;
       gap: 14px;
-      margin-top: 10px;
+      margin-top: 14px;
     }
     .card{
       display:grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 260px 1fr 160px;
       gap: 16px;
       padding: 14px;
       border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(237,235,230,0.08), rgba(237,235,230,0.05));
-      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      border: 1px solid rgba(203,180,138,0.22);
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.20)),
+        rgba(0,0,0,0.18);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.50);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(700px 220px at 15% 0%, rgba(203,180,138,0.15), transparent 55%);
+      pointer-events:none;
+    }
+
+    .thumbWrap{
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(203,180,138,0.22);
+      overflow:hidden;
+      background: rgba(0,0,0,0.25);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }
     .thumb{
       width:100%;
-      height: 170px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(237,235,230,0.12);
+      height: 150px;
       object-fit: cover;
-      background: rgba(0,0,0,0.18);
+      display:block;
+      filter: saturate(0.95) contrast(1.05);
     }
-    .cardHead{
+
+    .cardMain{
       display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
+      flex-direction:column;
+      justify-content:center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
     }
     .title{
-      margin: 4px 0 2px;
-      font-size: 18px;
-      font-weight: 720;
+      margin:0;
+      font-family: "Georgia","Times New Roman",serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--gold-3);
       letter-spacing: 0.2px;
+      text-shadow: 0 14px 30px rgba(0,0,0,0.55);
+      line-height: 1.05;
     }
-    .meta{
-      color: var(--muted-2);
-      font-size: 13px;
-      margin: 0 0 10px;
+    .rev{
+      font-family: ui-sans-serif, system-ui;
+      font-weight: 800;
+      font-size: 18px;
+      color: rgba(239,230,214,0.92);
+    }
+    .rev .unit{
+      font-weight: 700;
+      color: rgba(239,230,214,0.65);
+      font-size: 14px;
+      margin-left: 6px;
     }
 
-    .stats{
+    .rowStats{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(203,180,138,0.18);
+      color: rgba(239,230,214,0.78);
+      font-size: 13px;
     }
-    .stat{
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(237,235,230,0.12);
-      background: rgba(0,0,0,0.10);
+    .rowStats .k{
+      color: rgba(239,230,214,0.62);
+      margin-right: 10px;
     }
-    .stat .label{
-      color: var(--muted-2);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-    .stat .value{
-      font-size: 18px;
-      font-weight: 740;
+    .rowStats .v{
+      color: rgba(239,230,214,0.92);
+      font-weight: 750;
       letter-spacing: 0.2px;
     }
 
-    .footnote{
-      margin-top: 18px;
+    /* Right action button like “View ▾” */
+    .cardAction{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position: relative;
+      z-index: 1;
+    }
+    .viewBtn{
+      width: 140px;
       padding: 12px 14px;
-      border-radius: var(--radius);
-      border: 1px dashed rgba(237,235,230,0.22);
-      color: var(--muted);
-      font-size: 13px;
-      background: rgba(0,0,0,0.10);
+      border-radius: 12px;
+      border: 1px solid rgba(203,180,138,0.35);
+      background:
+        linear-gradient(180deg, rgba(239,230,214,0.78), rgba(203,180,138,0.70));
+      color: #2a1d16;
+      font-family: "Georgia","Times New Roman",serif;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow:
+        0 14px 28px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+      transition: 140ms ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+    }
+    .viewBtn:hover{
+      transform: translateY(-1px);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.55);
+    }
+    .caret{
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid rgba(42,29,22,0.75);
+      margin-top: 2px;
     }
 
-    /* "Map-like" panel */
+    /* Map panel */
     .mapPanel{
+      margin-top: 14px;
       border-radius: var(--radius);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(203,180,138,0.22);
       overflow: hidden;
+      background: rgba(0,0,0,0.24);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+    }
+    .mapHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22));
+      border-bottom: 1px solid rgba(203,180,138,0.18);
+      color: rgba(239,230,214,0.78);
+      font-size: 13px;
+    }
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(203,180,138,0.22);
       background: rgba(0,0,0,0.20);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      color: var(--gold-3);
+      font-weight: 800;
+      font-size: 12px;
+      font-family: ui-sans-serif, system-ui;
+      letter-spacing: 0.2px;
     }
     .mapFrame{
       width: 100%;
@@ -358,50 +539,35 @@
       display: block;
       filter: saturate(0.95) contrast(1.05);
     }
-    .mapHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+
+    .footnote{
+      margin-top: 14px;
       padding: 12px 14px;
-      background: linear-gradient(180deg, rgba(237,235,230,0.08), rgba(237,235,230,0.04));
-      border-bottom: 1px solid rgba(237,235,230,0.12);
-    }
-    .mapHeader .left{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      color: var(--muted);
+      border-radius: var(--radius);
+      border: 1px dashed rgba(203,180,138,0.22);
+      color: rgba(239,230,214,0.72);
       font-size: 13px;
-    }
-    .badge{
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(237,235,230,0.14);
-      background: rgba(0,0,0,0.14);
-      color: var(--text);
-      font-weight: 650;
-      font-size: 12px;
+      background: rgba(0,0,0,0.16);
     }
 
-    /* Responsive */
-    @media (max-width: 820px){
-      .card{ grid-template-columns: 1fr; }
-      .thumb{ height: 200px; }
-      .brand{ min-width: unset; }
-      .right{ justify-content: flex-start; }
-      .tabs{ justify-content:flex-start; }
+    @media (max-width: 920px){
+      .card{ grid-template-columns: 220px 1fr; }
+      .cardAction{ grid-column: 1 / -1; justify-content:flex-end; }
+      .viewBtn{ width: 160px; }
     }
-    @media (max-width: 520px){
-      .stats{ grid-template-columns: 1fr; }
-      .topbar{ position: static; }
-      .profile{ width: 100%; justify-content: space-between; }
-      .tabs{ width: 100%; justify-content: space-between; }
+    @media (max-width: 620px){
+      .tabs{ width:100%; justify-content:space-between; }
+      .profile{ width:100%; justify-content:space-between; }
+      .brand{ min-width: unset; }
+      .card{ grid-template-columns: 1fr; }
+      .thumb{ height: 190px; }
+      .cardAction{ justify-content:flex-start; }
     }
   </style>
 </head>
 
 <body>
-  <!-- INTRO -->
+  <!-- INTRO (kept the same) -->
   <div class="intro" id="intro" aria-hidden="true">
     <div class="introStage">
       <img id="introTree" class="introTree" src="images/spring.png" alt="" />
@@ -414,44 +580,44 @@
     <header class="topbar">
       <div class="brand">
         <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
-        <h1>Root</h1>
+        <div class="brandTitle">
+          <h1>Root</h1>
+          <div class="tag">Businesses</div>
+        </div>
       </div>
 
       <div class="right">
-        <!-- Tabs -->
         <nav class="tabs" aria-label="Primary">
           <button class="tab active" type="button" data-page="area">Your Area</button>
           <button class="tab" type="button" data-page="clone">Clone</button>
           <button class="tab" type="button" data-page="manage">Manage</button>
         </nav>
 
-        <!-- Profile Banner -->
         <div class="profile" aria-label="Profile summary">
-          <div class="pill" aria-label="Wallet balance">
-            Wallet <span class="value">Ξ2.1621</span>
-          </div>
-          <div class="pill" aria-label="Debt allowance">
-            Debt Allowance <span class="value">Ξ1</span>
-          </div>
+          <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
+          <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
         </div>
       </div>
     </header>
 
     <!-- ===================== PAGE: YOUR AREA ===================== -->
     <main class="page active" id="page-area" aria-label="Your Area">
-      <h2>Your Area</h2>
-      <p class="sub">Tokyo region overview (map). Zoom and pan as needed.</p>
+      <div class="sectionHeader">
+        <h2>Your Area</h2>
+        <div class="headerAction">
+          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+        </div>
+      </div>
 
       <div class="mapPanel">
         <div class="mapHeader">
-          <div class="left">
+          <div style="display:flex; gap:10px; align-items:center;">
             <span class="badge">Tokyo</span>
             <span>Map view (OpenStreetMap embed)</span>
           </div>
-          <div class="badge" title="This is a static embed suitable for GitHub Pages">Static Embed</div>
+          <span class="badge" title="Static embed suitable for GitHub Pages">Static</span>
         </div>
 
-        <!-- OpenStreetMap embed focused on Tokyo -->
         <iframe
           class="mapFrame"
           title="Tokyo Map"
@@ -462,12 +628,19 @@
       </div>
 
       <div class="footnote">
-        Tip: If you later want true Google Maps styling, you can swap this embed for a Google Maps iframe, but OSM is easiest for a static GitHub Pages site.
+        This uses OpenStreetMap so it works cleanly on GitHub Pages with no API keys.
       </div>
     </main>
 
     <!-- ===================== PAGE: CLONE ===================== -->
     <main class="page" id="page-clone" aria-label="Clone">
+      <div class="sectionHeader">
+        <h2>Businesses</h2>
+        <div class="headerAction">
+          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+        </div>
+      </div>
+
       <div class="controls">
         <div class="search" role="search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -482,137 +655,133 @@
         </div>
       </div>
 
-      <h2>Clone Businesses</h2>
-      <p class="sub">Explore business templates with estimated unit economics shown in Ξ (ETH).</p>
-
       <section class="grid" id="cards">
         <!-- Coffee Shop -->
         <article class="card" data-name="coffee shop cafe">
-          <img class="thumb" src="images/spring.png" alt="Coffee Shop" />
-          <div>
-            <div class="cardHead">
-              <div>
-                <div class="title">Coffee Shop</div>
-                <div class="meta">High repeat customers · Moderate fixed costs</div>
-              </div>
-            </div>
+          <div class="thumbWrap">
+            <img class="thumb" src="images/spring.png" alt="Coffee Shop" />
+          </div>
 
-            <div class="stats">
-              <div class="stat">
-                <div class="label">Revenue (annual)</div>
-                <div class="value">Ξ73.33</div>
-              </div>
-              <div class="stat">
-                <div class="label">Minimal starting cost</div>
-                <div class="value">Ξ13.33</div>
-              </div>
-              <div class="stat">
-                <div class="label">Avg. operation cost / year</div>
-                <div class="value">Ξ20.00</div>
-              </div>
+          <div class="cardMain">
+            <h3 class="title">Coffee Shop</h3>
+            <div class="rev">Ξ73.33 <span class="unit">/ year</span></div>
+
+            <div class="rowStats">
+              <div><span class="k">Minimal starting</span><span class="v">Ξ13.33</span></div>
+              <div><span class="k">Avg. operation</span><span class="v">Ξ20.00 / year</span></div>
             </div>
+          </div>
+
+          <div class="cardAction">
+            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
           </div>
         </article>
 
-        <!-- Landscaping Service -->
-        <article class="card" data-name="landscaping lawn service">
-          <img class="thumb" src="images/fall.png" alt="Landscaping Service" />
-          <div>
-            <div class="cardHead">
-              <div>
-                <div class="title">Landscaping Service</div>
-                <div class="meta">Low overhead · Seasonal demand</div>
-              </div>
-            </div>
+        <!-- Pet Grooming -->
+        <article class="card" data-name="pet grooming salon">
+          <div class="thumbWrap">
+            <img class="thumb" src="images/fall.png" alt="Pet Grooming" />
+          </div>
 
-            <div class="stats">
-              <div class="stat">
-                <div class="label">Revenue (annual)</div>
-                <div class="value">Ξ46.67</div>
-              </div>
-              <div class="stat">
-                <div class="label">Minimal starting cost</div>
-                <div class="value">Ξ3.00</div>
-              </div>
-              <div class="stat">
-                <div class="label">Avg. operation cost / year</div>
-                <div class="value">Ξ8.33</div>
-              </div>
+          <div class="cardMain">
+            <h3 class="title">Pet Grooming</h3>
+            <div class="rev">Ξ61.67 <span class="unit">/ year</span></div>
+
+            <div class="rowStats">
+              <div><span class="k">Minimal starting</span><span class="v">Ξ5.67</span></div>
+              <div><span class="k">Avg. operation</span><span class="v">Ξ18.33 / year</span></div>
             </div>
+          </div>
+
+          <div class="cardAction">
+            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
           </div>
         </article>
 
-        <!-- Auto Repair Shop -->
-        <article class="card" data-name="auto repair mechanic">
-          <img class="thumb" src="images/winter.png" alt="Auto Repair Shop" />
-          <div>
-            <div class="cardHead">
-              <div>
-                <div class="title">Auto Repair Shop</div>
-                <div class="meta">Skilled labor · Higher equipment capex</div>
-              </div>
-            </div>
+        <!-- Plant Nursery -->
+        <article class="card" data-name="plant nursery garden">
+          <div class="thumbWrap">
+            <img class="thumb" src="images/summer.png" alt="Plant Nursery" />
+          </div>
 
-            <div class="stats">
-              <div class="stat">
-                <div class="label">Revenue (annual)</div>
-                <div class="value">Ξ116.67</div>
-              </div>
-              <div class="stat">
-                <div class="label">Minimal starting cost</div>
-                <div class="value">Ξ20.00</div>
-              </div>
-              <div class="stat">
-                <div class="label">Avg. operation cost / year</div>
-                <div class="value">Ξ26.67</div>
-              </div>
+          <div class="cardMain">
+            <h3 class="title">Plant Nursery</h3>
+            <div class="rev">Ξ68.33 <span class="unit">/ year</span></div>
+
+            <div class="rowStats">
+              <div><span class="k">Minimal starting</span><span class="v">Ξ8.33</span></div>
+              <div><span class="k">Avg. operation</span><span class="v">Ξ21.00 / year</span></div>
             </div>
+          </div>
+
+          <div class="cardAction">
+            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
+          </div>
+        </article>
+
+        <!-- Ice Cream Shop -->
+        <article class="card" data-name="ice cream shop dessert">
+          <div class="thumbWrap">
+            <img class="thumb" src="images/winter.png" alt="Ice Cream Shop" />
+          </div>
+
+          <div class="cardMain">
+            <h3 class="title">Ice Cream Shop</h3>
+            <div class="rev">Ξ73.33 <span class="unit">/ year</span></div>
+
+            <div class="rowStats">
+              <div><span class="k">Minimal starting</span><span class="v">Ξ8.33</span></div>
+              <div><span class="k">Avg. operation</span><span class="v">Ξ21.00 / year</span></div>
+            </div>
+          </div>
+
+          <div class="cardAction">
+            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
           </div>
         </article>
       </section>
 
       <div class="footnote">
-        Search filters the list instantly. (Dummy data for now.)
+        Search filters instantly. “View” is a placeholder button for now.
       </div>
     </main>
 
     <!-- ===================== PAGE: MANAGE ===================== -->
     <main class="page" id="page-manage" aria-label="Manage">
-      <h2>Manage</h2>
-      <p class="sub">Your business (dummy data for now).</p>
+      <div class="sectionHeader">
+        <h2>Manage</h2>
+        <div class="headerAction">
+          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+        </div>
+      </div>
 
       <section class="grid">
         <article class="card">
-          <img class="thumb" src="images/summer.png" alt="Your Business" />
-          <div>
-            <div class="cardHead">
-              <div>
-                <div class="title">Root Coffee — Shibuya</div>
-                <div class="meta">Status: Operating · Location: Tokyo · Category: Café</div>
-              </div>
-            </div>
+          <div class="thumbWrap">
+            <img class="thumb" src="images/summer.png" alt="Your Business" />
+          </div>
 
-            <div class="stats">
-              <div class="stat">
-                <div class="label">Monthly revenue</div>
-                <div class="value">Ξ5.20</div>
-              </div>
-              <div class="stat">
-                <div class="label">Runway (wallet + allowance)</div>
-                <div class="value">Ξ3.1621</div>
-              </div>
-              <div class="stat">
-                <div class="label">Next payroll / rent</div>
-                <div class="value">Ξ0.42</div>
-              </div>
-            </div>
+          <div class="cardMain">
+            <h3 class="title">Root Coffee — Shibuya</h3>
+            <div class="rev">Ξ5.20 <span class="unit">/ month</span></div>
 
-            <div class="footnote" style="margin-top:12px">
-              Upcoming: supplier order · espresso maintenance · staff scheduling.
+            <div class="rowStats">
+              <div><span class="k">Status</span><span class="v">Operating</span></div>
+              <div><span class="k">Next payroll/rent</span><span class="v">Ξ0.42</span></div>
+              <div><span class="k">Runway</span><span class="v">Ξ3.1621</span></div>
+              <div><span class="k">Open tasks</span><span class="v">3</span></div>
             </div>
+          </div>
+
+          <div class="cardAction">
+            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
           </div>
         </article>
       </section>
+
+      <div class="footnote">
+        Dummy data only. Next step: add real business list, expenses, and actions.
+      </div>
     </main>
   </div>
 
@@ -668,7 +837,7 @@
         const t = {
           show1: 90,       // welcome
           showTree: 675,   // tree
-          show2: 1875,     // summer/season line (tree stays longer)
+          show2: 1875,     // season line (tree stays longer)
           done: 2700       // fade out
         };
 
@@ -687,15 +856,11 @@
       };
 
       function setActive(pageKey){
-        // tabs
         tabs.forEach(t => t.classList.toggle('active', t.dataset.page === pageKey));
-        // pages
         Object.keys(pages).forEach(k => pages[k].classList.toggle('active', k === pageKey));
       }
 
-      tabs.forEach(t => {
-        t.addEventListener('click', () => setActive(t.dataset.page));
-      });
+      tabs.forEach(t => t.addEventListener('click', () => setActive(t.dataset.page)));
 
       /* ===== Search filter (Clone tab) ===== */
       const search = document.getElementById('search');
@@ -705,7 +870,7 @@
         const query = q.trim().toLowerCase();
         cards.forEach(card => {
           const name = (card.getAttribute('data-name') || '').toLowerCase();
-          card.style.display = !query || name.includes(query) ? '' : 'none';
+          card.style.display = (!query || name.includes(query)) ? '' : 'none';
         });
       }
 
