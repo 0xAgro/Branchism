@@ -44,6 +44,11 @@
 
     /* =========================
        LOADING / INTRO OVERLAY
+       Tree at top, then welcome, then "夏です。"
+       Order of APPEARANCE:
+       1) Welcome text
+       2) Tree fades in
+       3) 夏です。 fades in
        ========================= */
     .intro{
       position: fixed;
@@ -54,7 +59,7 @@
       place-items: center;
       z-index: 9999;
       opacity: 1;
-      transition: opacity 900ms ease, visibility 0ms linear 900ms;
+      transition: opacity 1800ms ease, visibility 0ms linear 1800ms; /* slower fade out */
       visibility: visible;
     }
     .intro.hide{
@@ -63,12 +68,13 @@
     }
 
     .introStage{
-      position: relative;
       width: min(920px, 92vw);
       padding: 28px 18px;
       display: grid;
+      grid-template-rows: auto auto auto;
       place-items: center;
       text-align: center;
+      row-gap: 14px;
     }
 
     /* Japanese-friendly font stack */
@@ -78,44 +84,51 @@
       letter-spacing: 0.02em;
     }
 
-    .introLine1{
-      font-size: clamp(28px, 4vw, 56px);
-      font-weight: 600;
-      margin: 0;
-      opacity: 0;
-      transition: opacity 900ms ease;
-      text-shadow: 0 8px 28px rgba(0,0,0,0.35);
-    }
     .introTree{
+      order: 1; /* tree visually on top */
       width: clamp(120px, 18vw, 190px);
       height: auto;
-      margin: 18px 0 8px;
       opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 900ms ease, transform 900ms ease;
+      transform: translateY(6px);
+      transition: opacity 1800ms ease, transform 1800ms ease; /* slower */
       filter: drop-shadow(0 12px 20px rgba(0,0,0,0.35));
       user-select: none;
       -webkit-user-drag: none;
     }
+    .introLine1{
+      order: 2; /* welcome line under tree */
+      font-size: clamp(28px, 4vw, 56px);
+      font-weight: 600;
+      margin: 0;
+      opacity: 0;
+      transition: opacity 1800ms ease; /* slower */
+      text-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
     .introLine2{
+      order: 3; /* summer line at bottom */
       font-size: clamp(16px, 2.1vw, 22px);
       font-weight: 500;
       margin: 0;
       opacity: 0;
-      transition: opacity 900ms ease;
+      transition: opacity 1800ms ease; /* slower */
       color: rgba(237,235,230,0.85);
       text-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+
+    .introSub{
+      margin-top: 10px;
+      font-family: ui-sans-serif, system-ui;
+      opacity: 0.6;
+      font-size: 13px;
+      color: var(--muted);
     }
 
     /* active states */
     .show{ opacity: 1 !important; }
     .showTree{ opacity: 1 !important; transform: translateY(0) !important; }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
-      .intro, .introLine1, .introTree, .introLine2{
-        transition: none !important;
-      }
+      .intro, .introLine1, .introTree, .introLine2{ transition: none !important; }
     }
 
     /* Top bar */
@@ -346,20 +359,17 @@
   <!-- INTRO OVERLAY -->
   <div class="intro" id="intro" aria-hidden="true">
     <div class="introStage">
-      <p class="introLine1 jp" id="introLine1">森へようこそでございます</p>
-      <!-- Using your existing image asset. Swap to a dedicated tree image if you prefer. -->
+      <!-- Tree is visually on top -->
       <img class="introTree" id="introTree" src="images/spring.png" alt="" />
+      <p class="introLine1 jp" id="introLine1">森へようこそでございます</p>
       <p class="introLine2 jp" id="introLine2">夏です。</p>
-      <div class="introSub" id="introSub" style="opacity:.6;margin-top:14px;font-family:ui-sans-serif,system-ui;">
-        (Tap / click to skip)
-      </div>
+      <div class="introSub">(Tap / click to skip)</div>
     </div>
   </div>
 
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <!-- Use one of your logos here -->
         <img class="logo" src="images/spring.png" alt="Root logo" />
         <h1>Root</h1>
       </div>
@@ -484,7 +494,7 @@
 
   <script>
     // =========================
-    // INTRO SEQUENCE
+    // INTRO SEQUENCE (SLOWED DOWN x2)
     // =========================
     (function(){
       const intro = document.getElementById('intro');
@@ -492,7 +502,7 @@
       const tree  = document.getElementById('introTree');
       const line2 = document.getElementById('introLine2');
 
-      // If you want it to play every refresh, remove this block.
+      // Play once per session
       const KEY = 'root_intro_seen';
       if (sessionStorage.getItem(KEY)) {
         intro.classList.add('hide');
@@ -502,46 +512,35 @@
 
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Timing tuned to feel like your reference image:
-      // 1) show title text
-      // 2) fade in tree
-      // 3) fade in 夏です。
-      // 4) fade out overlay
+      // ORIGINAL timing (from previous): show1 120, tree 900, line2 1700, done 2800
+      // Now doubled:
       const t = prefersReduced ? {
         show1: 0,
-        showTree: 200,
-        show2: 400,
-        done: 800
+        showTree: 300,
+        show2: 600,
+        done: 900
       } : {
-        show1: 120,
-        showTree: 900,
-        show2: 1700,
-        done: 2800
+        show1: 240,
+        showTree: 1800,
+        show2: 3400,
+        done: 5600
       };
 
       const timers = [];
-      function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+      const later = (ms, fn) => timers.push(setTimeout(fn, ms));
 
-      // Start: show first line
-      later(t.show1, () => line1.classList.add('show'));
+      later(t.show1, () => line1.classList.add('show'));     // 1) show welcome text first
+      later(t.showTree, () => tree.classList.add('showTree'));// 2) then fade in tree
+      later(t.show2, () => line2.classList.add('show'));      // 3) then fade in 夏です。
 
-      // Then: fade in tree (under the first line)
-      later(t.showTree, () => tree.classList.add('showTree'));
-
-      // Then: fade in second line
-      later(t.show2, () => line2.classList.add('show'));
-
-      // Finally: fade out overlay
       function finish(){
         intro.classList.add('hide');
-        // Prevent tabbing into intro once hidden
         intro.setAttribute('aria-hidden', 'true');
-        // clean timers
         timers.forEach(clearTimeout);
       }
       later(t.done, finish);
 
-      // Allow skipping (click/tap/ESC)
+      // Allow skipping
       intro.addEventListener('click', finish, { once: true });
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') finish();
