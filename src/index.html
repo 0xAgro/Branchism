@@ -108,7 +108,11 @@
     .show{ opacity:1 !important; }
     .showTree{ opacity:1 !important; transform: translateY(0) !important; }
 
-    /* ================= APP UI ================= */
+    @media (prefers-reduced-motion: reduce){
+      .intro, .introTree, .introLine1, .introLine2{ transition:none !important; }
+    }
+
+    /* ================= APP UI (trimmed demo header) ================= */
 
     .wrap{
       max-width: var(--max);
@@ -160,7 +164,6 @@
       background:var(--text);
       color:var(--bg);
     }
-
   </style>
 </head>
 
@@ -179,7 +182,7 @@
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <img class="logo" src="images/spring.png" alt="Root">
+        <img class="logo" id="headerLogo" src="images/spring.png" alt="Root">
         <h1>Root</h1>
       </div>
       <nav class="tabs">
@@ -192,6 +195,43 @@
 
   <script>
     (function(){
+      // ----- Seasonal switching based on local system time -----
+      // Northern hemisphere defaults:
+      // Spring: Mar–May, Summer: Jun–Aug, Autumn: Sep–Nov, Winter: Dec–Feb
+      function getSeasonForMonth(monthIndex){ // 0=Jan ... 11=Dec
+        if (monthIndex >= 2 && monthIndex <= 4) return "spring";
+        if (monthIndex >= 5 && monthIndex <= 7) return "summer";
+        if (monthIndex >= 8 && monthIndex <= 10) return "fall";
+        return "winter";
+      }
+
+      const seasonText = {
+        spring: "春です。",
+        summer: "夏です。",
+        fall:   "秋です。",
+        winter: "冬です。"
+      };
+
+      const seasonImage = {
+        spring: "images/spring.png",
+        summer: "images/summer.png",   // if you don't have summer.png, change to images/spring.png
+        fall:   "images/fall.png",
+        winter: "images/winter.png"
+      };
+
+      const now = new Date();
+      const season = getSeasonForMonth(now.getMonth());
+
+      // Apply season to intro + header logo
+      const introTree = document.getElementById('introTree');
+      const introLine2 = document.getElementById('introLine2');
+      const headerLogo = document.getElementById('headerLogo');
+
+      introLine2.textContent = seasonText[season] || "夏です。";
+      introTree.src = seasonImage[season] || "images/spring.png";
+      headerLogo.src = seasonImage[season] || "images/spring.png";
+
+      // ----- Intro sequence (0.75x timing from original) -----
       const intro = document.getElementById('intro');
       const line1 = document.getElementById('introLine1');
       const tree  = document.getElementById('introTree');
@@ -204,16 +244,16 @@
       sessionStorage.setItem('root_intro_seen','1');
 
       const t = {
-        show1: 90,
-        showTree: 675,
-        show2: 1275,
-        done: 2100
+        show1: 90,     // 120 × 0.75
+        showTree: 675, // 900 × 0.75
+        show2: 1275,   // 1700 × 0.75
+        done: 2100     // 2800 × 0.75
       };
 
-      setTimeout(() => line1.classList.add('show'), t.show1);
-      setTimeout(() => tree.classList.add('showTree'), t.showTree);
-      setTimeout(() => line2.classList.add('show'), t.show2);
-      setTimeout(() => intro.classList.add('hide'), t.done);
+      setTimeout(() => line1.classList.add('show'), t.show1);     // 1) welcome
+      setTimeout(() => tree.classList.add('showTree'), t.showTree); // 2) tree
+      setTimeout(() => line2.classList.add('show'), t.show2);       // 3) season line
+      setTimeout(() => intro.classList.add('hide'), t.done);        // fade out overlay
     })();
   </script>
 
