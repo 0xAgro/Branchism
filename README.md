@@ -10,6 +10,17 @@ Any implementation or use of ideas derived from this repository is undertaken in
 
 This project does not claim authority over, nor does it seek to replace or interfere with, any existing legal, governmental, or institutional system. All content is presented in compliance with applicable Japanese law.
 
+---
+
+## 📂 Project Structure
+
+```text
+├── src/                # Illustrative mock interface only; no real assets, identities, or deployable functionality.
+└── mock_contracts/     # Non-executable pseudocode for theoretical illustration only; not deployable and not intended for implementation.
+```
+
+---
+
 ## Support
 
 Please consider supporting further research [here](https://buymeacoffee.com/0xagro).
