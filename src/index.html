@@ -42,6 +42,82 @@
       padding: 28px 18px 56px;
     }
 
+    /* =========================
+       LOADING / INTRO OVERLAY
+       ========================= */
+    .intro{
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 900ms ease, visibility 0ms linear 900ms;
+      visibility: visible;
+    }
+    .intro.hide{
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .introStage{
+      position: relative;
+      width: min(920px, 92vw);
+      padding: 28px 18px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    /* Japanese-friendly font stack */
+    .jp{
+      font-family: "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Yu Mincho", "YuMincho",
+                   "Noto Serif JP", "MS Mincho", serif;
+      letter-spacing: 0.02em;
+    }
+
+    .introLine1{
+      font-size: clamp(28px, 4vw, 56px);
+      font-weight: 600;
+      margin: 0;
+      opacity: 0;
+      transition: opacity 900ms ease;
+      text-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+    .introTree{
+      width: clamp(120px, 18vw, 190px);
+      height: auto;
+      margin: 18px 0 8px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 900ms ease, transform 900ms ease;
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,0.35));
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .introLine2{
+      font-size: clamp(16px, 2.1vw, 22px);
+      font-weight: 500;
+      margin: 0;
+      opacity: 0;
+      transition: opacity 900ms ease;
+      color: rgba(237,235,230,0.85);
+      text-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+
+    /* active states */
+    .show{ opacity: 1 !important; }
+    .showTree{ opacity: 1 !important; transform: translateY(0) !important; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .intro, .introLine1, .introTree, .introLine2{
+        transition: none !important;
+      }
+    }
+
     /* Top bar */
     .topbar{
       display:flex;
@@ -267,6 +343,19 @@
   </style>
 </head>
 <body>
+  <!-- INTRO OVERLAY -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="introStage">
+      <p class="introLine1 jp" id="introLine1">森へようこそでございます</p>
+      <!-- Using your existing image asset. Swap to a dedicated tree image if you prefer. -->
+      <img class="introTree" id="introTree" src="images/spring.png" alt="" />
+      <p class="introLine2 jp" id="introLine2">夏です。</p>
+      <div class="introSub" id="introSub" style="opacity:.6;margin-top:14px;font-family:ui-sans-serif,system-ui;">
+        (Tap / click to skip)
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
@@ -394,11 +483,76 @@
   </div>
 
   <script>
-    // If you want to update the ETH price and auto-recompute figures later,
-    // set this and store USD baselines for each business.
+    // =========================
+    // INTRO SEQUENCE
+    // =========================
+    (function(){
+      const intro = document.getElementById('intro');
+      const line1 = document.getElementById('introLine1');
+      const tree  = document.getElementById('introTree');
+      const line2 = document.getElementById('introLine2');
+
+      // If you want it to play every refresh, remove this block.
+      const KEY = 'root_intro_seen';
+      if (sessionStorage.getItem(KEY)) {
+        intro.classList.add('hide');
+        return;
+      }
+      sessionStorage.setItem(KEY, '1');
+
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Timing tuned to feel like your reference image:
+      // 1) show title text
+      // 2) fade in tree
+      // 3) fade in 夏です。
+      // 4) fade out overlay
+      const t = prefersReduced ? {
+        show1: 0,
+        showTree: 200,
+        show2: 400,
+        done: 800
+      } : {
+        show1: 120,
+        showTree: 900,
+        show2: 1700,
+        done: 2800
+      };
+
+      const timers = [];
+      function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+
+      // Start: show first line
+      later(t.show1, () => line1.classList.add('show'));
+
+      // Then: fade in tree (under the first line)
+      later(t.showTree, () => tree.classList.add('showTree'));
+
+      // Then: fade in second line
+      later(t.show2, () => line2.classList.add('show'));
+
+      // Finally: fade out overlay
+      function finish(){
+        intro.classList.add('hide');
+        // Prevent tabbing into intro once hidden
+        intro.setAttribute('aria-hidden', 'true');
+        // clean timers
+        timers.forEach(clearTimeout);
+      }
+      later(t.done, finish);
+
+      // Allow skipping (click/tap/ESC)
+      intro.addEventListener('click', finish, { once: true });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') finish();
+      }, { once: true });
+    })();
+
+    // =========================
+    // ETH + search (unchanged)
+    // =========================
     const ETH_USD = 3000;
 
-    // Simple search filter
     const search = document.getElementById('search');
     const cards = Array.from(document.querySelectorAll('#cards .card'));
 
