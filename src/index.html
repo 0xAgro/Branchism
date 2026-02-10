@@ -7,7 +7,7 @@
 
   <style>
     :root{
-      /* Main site (unchanged) */
+      /* Main site + intro (dark botanical) */
       --bg: #1E2320;
       --text: #EDEBE6;
 
@@ -21,11 +21,6 @@
       --radius: 18px;
       --radius-sm: 14px;
       --max: 1040px;
-
-      /* Intro (light parchment) */
-      --intro-bg: #EDEBE6;
-      --intro-text: #1E2320;
-      --intro-muted: rgba(30,35,32,0.65);
     }
 
     *{ box-sizing:border-box; }
@@ -47,11 +42,8 @@
     .intro{
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(1200px 800px at 50% 40%, rgba(30,35,32,0.06), transparent 60%),
-        radial-gradient(900px 650px at 50% 120%, rgba(30,35,32,0.07), transparent 55%),
-        var(--intro-bg);
-      color: var(--intro-text);
+      background: var(--bg);
+      color: var(--text);
       display: grid;
       place-items: center;
       z-index: 9999;
@@ -82,7 +74,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 1800ms ease, transform 1800ms ease;
-      filter: drop-shadow(0 10px 16px rgba(30,35,32,0.18));
+      filter: drop-shadow(0 14px 26px rgba(0,0,0,0.45));
       user-select: none;
     }
 
@@ -92,7 +84,7 @@
       margin: 0;
       opacity: 0;
       transition: opacity 1800ms ease;
-      text-shadow: 0 10px 22px rgba(30,35,32,0.10);
+      text-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
 
     .introLine2{
@@ -101,8 +93,8 @@
       margin: 0;
       opacity: 0;
       transition: opacity 1800ms ease;
-      color: var(--intro-muted);
-      text-shadow: 0 10px 22px rgba(30,35,32,0.08);
+      color: rgba(237,235,230,0.85);
+      text-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
 
     .show{ opacity:1 !important; }
@@ -112,7 +104,7 @@
       .intro, .introTree, .introLine1, .introLine2{ transition:none !important; }
     }
 
-    /* ================= APP UI (trimmed demo header) ================= */
+    /* ================= APP UI ================= */
 
     .wrap{
       max-width: var(--max);
@@ -195,13 +187,11 @@
 
   <script>
     (function(){
-      // ----- Seasonal switching based on local system time -----
-      // Northern hemisphere defaults:
-      // Spring: Mar–May, Summer: Jun–Aug, Autumn: Sep–Nov, Winter: Dec–Feb
-      function getSeasonForMonth(monthIndex){ // 0=Jan ... 11=Dec
-        if (monthIndex >= 2 && monthIndex <= 4) return "spring";
-        if (monthIndex >= 5 && monthIndex <= 7) return "summer";
-        if (monthIndex >= 8 && monthIndex <= 10) return "fall";
+      /* ===== Seasonal logic (system time) ===== */
+      function getSeason(month){
+        if (month >= 2 && month <= 4) return "spring";
+        if (month >= 5 && month <= 7) return "summer";
+        if (month >= 8 && month <= 10) return "fall";
         return "winter";
       }
 
@@ -214,24 +204,23 @@
 
       const seasonImage = {
         spring: "images/spring.png",
-        summer: "images/summer.png",   // if you don't have summer.png, change to images/spring.png
+        summer: "images/summer.png",
         fall:   "images/fall.png",
         winter: "images/winter.png"
       };
 
-      const now = new Date();
-      const season = getSeasonForMonth(now.getMonth());
+      const season = getSeason(new Date().getMonth());
 
-      // Apply season to intro + header logo
-      const introTree = document.getElementById('introTree');
-      const introLine2 = document.getElementById('introLine2');
-      const headerLogo = document.getElementById('headerLogo');
+      document.getElementById('introLine2').textContent =
+        seasonText[season] || "夏です。";
 
-      introLine2.textContent = seasonText[season] || "夏です。";
-      introTree.src = seasonImage[season] || "images/spring.png";
-      headerLogo.src = seasonImage[season] || "images/spring.png";
+      document.getElementById('introTree').src =
+        seasonImage[season] || "images/spring.png";
 
-      // ----- Intro sequence (0.75x timing from original) -----
+      document.getElementById('headerLogo').src =
+        seasonImage[season] || "images/spring.png";
+
+      /* ===== Intro sequence (tree lingers longer) ===== */
       const intro = document.getElementById('intro');
       const line1 = document.getElementById('introLine1');
       const tree  = document.getElementById('introTree');
@@ -244,16 +233,16 @@
       sessionStorage.setItem('root_intro_seen','1');
 
       const t = {
-        show1: 90,     // 120 × 0.75
-        showTree: 675, // 900 × 0.75
-        show2: 1275,   // 1700 × 0.75
-        done: 2100     // 2800 × 0.75
+        show1: 90,
+        showTree: 675,
+        show2: 1875,   // tree lingers longer (+600ms)
+        done: 2700     // fade out later
       };
 
-      setTimeout(() => line1.classList.add('show'), t.show1);     // 1) welcome
-      setTimeout(() => tree.classList.add('showTree'), t.showTree); // 2) tree
-      setTimeout(() => line2.classList.add('show'), t.show2);       // 3) season line
-      setTimeout(() => intro.classList.add('hide'), t.done);        // fade out overlay
+      setTimeout(() => line1.classList.add('show'), t.show1);
+      setTimeout(() => tree.classList.add('showTree'), t.showTree);
+      setTimeout(() => line2.classList.add('show'), t.show2);
+      setTimeout(() => intro.classList.add('hide'), t.done);
     })();
   </script>
 
