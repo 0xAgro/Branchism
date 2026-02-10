@@ -3,13 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Root — Clone</title>
+  <title>Root</title>
 
   <style>
     :root{
-      /* Main site + intro (dark botanical) */
-      --bg: #1E2320;
-      --text: #EDEBE6;
+      --bg:#1E2320;
+      --text:#EDEBE6;
 
       --panel: rgba(237,235,230,0.06);
       --panel-2: rgba(237,235,230,0.10);
@@ -25,10 +24,9 @@
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
-
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:
         radial-gradient(1200px 800px at 30% 10%, rgba(237,235,230,0.06), transparent 60%),
         radial-gradient(900px 700px at 90% 40%, rgba(237,235,230,0.05), transparent 60%),
@@ -37,8 +35,14 @@
       line-height: 1.35;
     }
 
-    /* ================= INTRO ================= */
+    a{ color:inherit; text-decoration:none; }
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
 
+    /* ================= INTRO (dark) ================= */
     .intro{
       position: fixed;
       inset: 0;
@@ -55,7 +59,6 @@
       opacity: 0;
       visibility: hidden;
     }
-
     .introStage{
       width: min(920px, 92vw);
       display: grid;
@@ -63,12 +66,10 @@
       row-gap: 14px;
       text-align: center;
     }
-
     .jp{
       font-family: "Hiragino Mincho ProN","Yu Mincho","Noto Serif JP","MS Mincho",serif;
       letter-spacing: 0.02em;
     }
-
     .introTree{
       width: clamp(120px, 18vw, 190px);
       opacity: 0;
@@ -76,8 +77,8 @@
       transition: opacity 1800ms ease, transform 1800ms ease;
       filter: drop-shadow(0 14px 26px rgba(0,0,0,0.45));
       user-select: none;
+      -webkit-user-drag: none;
     }
-
     .introLine1{
       font-size: clamp(28px, 4vw, 56px);
       font-weight: 600;
@@ -86,7 +87,6 @@
       transition: opacity 1800ms ease;
       text-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
-
     .introLine2{
       font-size: clamp(16px, 2.1vw, 22px);
       font-weight: 500;
@@ -96,98 +96,531 @@
       color: rgba(237,235,230,0.85);
       text-shadow: 0 10px 28px rgba(0,0,0,0.45);
     }
-
-    .show{ opacity:1 !important; }
-    .showTree{ opacity:1 !important; transform: translateY(0) !important; }
+    .show{ opacity: 1 !important; }
+    .showTree{ opacity: 1 !important; transform: translateY(0) !important; }
 
     @media (prefers-reduced-motion: reduce){
       .intro, .introTree, .introLine1, .introLine2{ transition:none !important; }
     }
 
-    /* ================= APP UI ================= */
-
-    .wrap{
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 28px 18px 56px;
-    }
-
+    /* ================= Top bar ================= */
     .topbar{
       display:flex;
-      justify-content:space-between;
       align-items:center;
-      padding:14px 16px;
-      border:1px solid var(--border);
+      justify-content:space-between;
+      gap:16px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
       background: linear-gradient(180deg, var(--panel-2), var(--panel));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       position: sticky;
       top: 14px;
-      z-index: 10;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap:12px;
+      min-width: 220px;
     }
-
     .logo{
-      width:46px;
-      height:46px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      object-fit:cover;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.15);
+    }
+    .brand h1{
+      font-size: 22px;
+      margin:0;
+      letter-spacing: 0.2px;
+      font-weight: 650;
     }
 
+    .right{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    /* Tabs (operational) */
     .tabs{
       display:flex;
-      gap:8px;
+      align-items:center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
-
     .tab{
-      padding:10px 12px;
-      border-radius:999px;
-      color:var(--muted);
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      background: transparent;
+      transition: 140ms ease;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tab:hover{
+      border-color: var(--border);
+      background: rgba(237,235,230,0.06);
+      color: var(--text);
+    }
+    .tab.active{
+      color: var(--bg);
+      background: var(--text);
+      border-color: transparent;
     }
 
-    .tab.active{
-      background:var(--text);
-      color:var(--bg);
+    /* Profile banner (wallet + debt allowance) */
+    .profile{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.14);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+      white-space: nowrap;
+    }
+    .profile .pill{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(237,235,230,0.14);
+      background: rgba(237,235,230,0.06);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .profile .value{
+      font-size: 13px;
+      font-weight: 750;
+      color: var(--text);
+      margin-left: 6px;
+    }
+
+    /* Page sections */
+    .page{
+      margin-top: 18px;
+      display:none;
+    }
+    .page.active{
+      display:block;
+    }
+
+    /* Controls */
+    .controls{
+      margin-top: 18px;
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      flex-wrap: wrap;
+    }
+    .search{
+      flex: 1 1 420px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.16);
+    }
+    .search svg{ flex: 0 0 auto; opacity: 0.85; }
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+    }
+    .tinyPill{
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.12);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Headings */
+    h2{
+      margin: 18px 2px 12px;
+      font-size: 22px;
+      letter-spacing: 0.2px;
+      font-weight: 680;
+    }
+    .sub{
+      margin: 0 2px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Cards */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .card{
+      display:grid;
+      grid-template-columns: 240px 1fr;
+      gap: 16px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(237,235,230,0.08), rgba(237,235,230,0.05));
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+    }
+    .thumb{
+      width:100%;
+      height: 170px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(237,235,230,0.12);
+      object-fit: cover;
+      background: rgba(0,0,0,0.18);
+    }
+    .cardHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .title{
+      margin: 4px 0 2px;
+      font-size: 18px;
+      font-weight: 720;
+      letter-spacing: 0.2px;
+    }
+    .meta{
+      color: var(--muted-2);
+      font-size: 13px;
+      margin: 0 0 10px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .stat{
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(237,235,230,0.12);
+      background: rgba(0,0,0,0.10);
+    }
+    .stat .label{
+      color: var(--muted-2);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .stat .value{
+      font-size: 18px;
+      font-weight: 740;
+      letter-spacing: 0.2px;
+    }
+
+    .footnote{
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(237,235,230,0.22);
+      color: var(--muted);
+      font-size: 13px;
+      background: rgba(0,0,0,0.10);
+    }
+
+    /* "Map-like" panel */
+    .mapPanel{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: rgba(0,0,0,0.20);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+    }
+    .mapFrame{
+      width: 100%;
+      height: min(520px, 65vh);
+      border: 0;
+      display: block;
+      filter: saturate(0.95) contrast(1.05);
+    }
+    .mapHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(237,235,230,0.08), rgba(237,235,230,0.04));
+      border-bottom: 1px solid rgba(237,235,230,0.12);
+    }
+    .mapHeader .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(237,235,230,0.14);
+      background: rgba(0,0,0,0.14);
+      color: var(--text);
+      font-weight: 650;
+      font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 820px){
+      .card{ grid-template-columns: 1fr; }
+      .thumb{ height: 200px; }
+      .brand{ min-width: unset; }
+      .right{ justify-content: flex-start; }
+      .tabs{ justify-content:flex-start; }
+    }
+    @media (max-width: 520px){
+      .stats{ grid-template-columns: 1fr; }
+      .topbar{ position: static; }
+      .profile{ width: 100%; justify-content: space-between; }
+      .tabs{ width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
 
 <body>
-
   <!-- INTRO -->
-  <div class="intro" id="intro">
+  <div class="intro" id="intro" aria-hidden="true">
     <div class="introStage">
-      <img id="introTree" class="introTree" src="images/spring.png" alt="">
+      <img id="introTree" class="introTree" src="images/spring.png" alt="" />
       <p id="introLine1" class="introLine1 jp">森へようこそでございます</p>
       <p id="introLine2" class="introLine2 jp">夏です。</p>
     </div>
   </div>
 
-  <!-- APP -->
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <img class="logo" id="headerLogo" src="images/spring.png" alt="Root">
+        <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
         <h1>Root</h1>
       </div>
-      <nav class="tabs">
-        <a class="tab">Your Area</a>
-        <a class="tab active">Clone</a>
-        <a class="tab">Manage</a>
-      </nav>
+
+      <div class="right">
+        <!-- Tabs -->
+        <nav class="tabs" aria-label="Primary">
+          <button class="tab active" type="button" data-page="area">Your Area</button>
+          <button class="tab" type="button" data-page="clone">Clone</button>
+          <button class="tab" type="button" data-page="manage">Manage</button>
+        </nav>
+
+        <!-- Profile Banner -->
+        <div class="profile" aria-label="Profile summary">
+          <div class="pill" aria-label="Wallet balance">
+            Wallet <span class="value">Ξ2.1621</span>
+          </div>
+          <div class="pill" aria-label="Debt allowance">
+            Debt Allowance <span class="value">Ξ1</span>
+          </div>
+        </div>
+      </div>
     </header>
+
+    <!-- ===================== PAGE: YOUR AREA ===================== -->
+    <main class="page active" id="page-area" aria-label="Your Area">
+      <h2>Your Area</h2>
+      <p class="sub">Tokyo region overview (map). Zoom and pan as needed.</p>
+
+      <div class="mapPanel">
+        <div class="mapHeader">
+          <div class="left">
+            <span class="badge">Tokyo</span>
+            <span>Map view (OpenStreetMap embed)</span>
+          </div>
+          <div class="badge" title="This is a static embed suitable for GitHub Pages">Static Embed</div>
+        </div>
+
+        <!-- OpenStreetMap embed focused on Tokyo -->
+        <iframe
+          class="mapFrame"
+          title="Tokyo Map"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=139.55%2C35.55%2C139.95%2C35.85&layer=mapnik&marker=35.6895%2C139.6917">
+        </iframe>
+      </div>
+
+      <div class="footnote">
+        Tip: If you later want true Google Maps styling, you can swap this embed for a Google Maps iframe, but OSM is easiest for a static GitHub Pages site.
+      </div>
+    </main>
+
+    <!-- ===================== PAGE: CLONE ===================== -->
+    <main class="page" id="page-clone" aria-label="Clone">
+      <div class="controls">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" opacity="0.85"/>
+            <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+          </svg>
+          <input id="search" type="search" placeholder="Search businesses…" autocomplete="off" />
+        </div>
+
+        <div class="tinyPill" title="Example conversion for dummy data">
+          Assumed 1 ETH ≈ $3,000
+        </div>
+      </div>
+
+      <h2>Clone Businesses</h2>
+      <p class="sub">Explore business templates with estimated unit economics shown in Ξ (ETH).</p>
+
+      <section class="grid" id="cards">
+        <!-- Coffee Shop -->
+        <article class="card" data-name="coffee shop cafe">
+          <img class="thumb" src="images/spring.png" alt="Coffee Shop" />
+          <div>
+            <div class="cardHead">
+              <div>
+                <div class="title">Coffee Shop</div>
+                <div class="meta">High repeat customers · Moderate fixed costs</div>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="label">Revenue (annual)</div>
+                <div class="value">Ξ73.33</div>
+              </div>
+              <div class="stat">
+                <div class="label">Minimal starting cost</div>
+                <div class="value">Ξ13.33</div>
+              </div>
+              <div class="stat">
+                <div class="label">Avg. operation cost / year</div>
+                <div class="value">Ξ20.00</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Landscaping Service -->
+        <article class="card" data-name="landscaping lawn service">
+          <img class="thumb" src="images/fall.png" alt="Landscaping Service" />
+          <div>
+            <div class="cardHead">
+              <div>
+                <div class="title">Landscaping Service</div>
+                <div class="meta">Low overhead · Seasonal demand</div>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="label">Revenue (annual)</div>
+                <div class="value">Ξ46.67</div>
+              </div>
+              <div class="stat">
+                <div class="label">Minimal starting cost</div>
+                <div class="value">Ξ3.00</div>
+              </div>
+              <div class="stat">
+                <div class="label">Avg. operation cost / year</div>
+                <div class="value">Ξ8.33</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Auto Repair Shop -->
+        <article class="card" data-name="auto repair mechanic">
+          <img class="thumb" src="images/winter.png" alt="Auto Repair Shop" />
+          <div>
+            <div class="cardHead">
+              <div>
+                <div class="title">Auto Repair Shop</div>
+                <div class="meta">Skilled labor · Higher equipment capex</div>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="label">Revenue (annual)</div>
+                <div class="value">Ξ116.67</div>
+              </div>
+              <div class="stat">
+                <div class="label">Minimal starting cost</div>
+                <div class="value">Ξ20.00</div>
+              </div>
+              <div class="stat">
+                <div class="label">Avg. operation cost / year</div>
+                <div class="value">Ξ26.67</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="footnote">
+        Search filters the list instantly. (Dummy data for now.)
+      </div>
+    </main>
+
+    <!-- ===================== PAGE: MANAGE ===================== -->
+    <main class="page" id="page-manage" aria-label="Manage">
+      <h2>Manage</h2>
+      <p class="sub">Your business (dummy data for now).</p>
+
+      <section class="grid">
+        <article class="card">
+          <img class="thumb" src="images/summer.png" alt="Your Business" />
+          <div>
+            <div class="cardHead">
+              <div>
+                <div class="title">Root Coffee — Shibuya</div>
+                <div class="meta">Status: Operating · Location: Tokyo · Category: Café</div>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <div class="label">Monthly revenue</div>
+                <div class="value">Ξ5.20</div>
+              </div>
+              <div class="stat">
+                <div class="label">Runway (wallet + allowance)</div>
+                <div class="value">Ξ3.1621</div>
+              </div>
+              <div class="stat">
+                <div class="label">Next payroll / rent</div>
+                <div class="value">Ξ0.42</div>
+              </div>
+            </div>
+
+            <div class="footnote" style="margin-top:12px">
+              Upcoming: supplier order · espresso maintenance · staff scheduling.
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
   </div>
 
   <script>
     (function(){
-      /* ===== Seasonal logic (system time) ===== */
+      /* ===== Seasonal logic (system time) =====
+         Spring: Mar–May, Summer: Jun–Aug, Fall: Sep–Nov, Winter: Dec–Feb
+      */
       function getSeason(month){
         if (month >= 2 && month <= 4) return "spring";
         if (month >= 5 && month <= 7) return "summer";
@@ -202,6 +635,7 @@
         winter: "冬です。"
       };
 
+      // Assumes these exist in /images
       const seasonImage = {
         spring: "images/spring.png",
         summer: "images/summer.png",
@@ -211,16 +645,16 @@
 
       const season = getSeason(new Date().getMonth());
 
-      document.getElementById('introLine2').textContent =
-        seasonText[season] || "夏です。";
+      // Apply to intro + header logo
+      const introLine2 = document.getElementById('introLine2');
+      const introTree = document.getElementById('introTree');
+      const headerLogo = document.getElementById('headerLogo');
 
-      document.getElementById('introTree').src =
-        seasonImage[season] || "images/spring.png";
+      introLine2.textContent = seasonText[season] || "夏です。";
+      introTree.src = seasonImage[season] || "images/spring.png";
+      headerLogo.src = seasonImage[season] || "images/spring.png";
 
-      document.getElementById('headerLogo').src =
-        seasonImage[season] || "images/spring.png";
-
-      /* ===== Intro sequence (tree lingers longer) ===== */
+      /* ===== Intro sequence (0.75x, tree lingers longer) ===== */
       const intro = document.getElementById('intro');
       const line1 = document.getElementById('introLine1');
       const tree  = document.getElementById('introTree');
@@ -228,23 +662,55 @@
 
       if (sessionStorage.getItem('root_intro_seen')) {
         intro.classList.add('hide');
-        return;
-      }
-      sessionStorage.setItem('root_intro_seen','1');
+      } else {
+        sessionStorage.setItem('root_intro_seen','1');
 
-      const t = {
-        show1: 90,
-        showTree: 675,
-        show2: 1875,   // tree lingers longer (+600ms)
-        done: 2700     // fade out later
+        const t = {
+          show1: 90,       // welcome
+          showTree: 675,   // tree
+          show2: 1875,     // summer/season line (tree stays longer)
+          done: 2700       // fade out
+        };
+
+        setTimeout(() => line1.classList.add('show'), t.show1);
+        setTimeout(() => tree.classList.add('showTree'), t.showTree);
+        setTimeout(() => line2.classList.add('show'), t.show2);
+        setTimeout(() => intro.classList.add('hide'), t.done);
+      }
+
+      /* ===== Tabs operational (single-page) ===== */
+      const tabs = Array.from(document.querySelectorAll('.tab[data-page]'));
+      const pages = {
+        area: document.getElementById('page-area'),
+        clone: document.getElementById('page-clone'),
+        manage: document.getElementById('page-manage')
       };
 
-      setTimeout(() => line1.classList.add('show'), t.show1);
-      setTimeout(() => tree.classList.add('showTree'), t.showTree);
-      setTimeout(() => line2.classList.add('show'), t.show2);
-      setTimeout(() => intro.classList.add('hide'), t.done);
+      function setActive(pageKey){
+        // tabs
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.page === pageKey));
+        // pages
+        Object.keys(pages).forEach(k => pages[k].classList.toggle('active', k === pageKey));
+      }
+
+      tabs.forEach(t => {
+        t.addEventListener('click', () => setActive(t.dataset.page));
+      });
+
+      /* ===== Search filter (Clone tab) ===== */
+      const search = document.getElementById('search');
+      const cards = Array.from(document.querySelectorAll('#cards .card'));
+
+      function applyFilter(q){
+        const query = q.trim().toLowerCase();
+        cards.forEach(card => {
+          const name = (card.getAttribute('data-name') || '').toLowerCase();
+          card.style.display = !query || name.includes(query) ? '' : 'none';
+        });
+      }
+
+      if (search) search.addEventListener('input', (e) => applyFilter(e.target.value));
     })();
   </script>
-
 </body>
 </html>
