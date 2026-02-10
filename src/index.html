@@ -14,18 +14,14 @@
       --text:#EDEBE6;
 
       /* =========================
-         APP THEME (match reference image)
+         APP THEME (reference style)
          ========================= */
-      --app-bg: #1b1411;         /* deep brown */
-      --app-bg-2:#241a16;        /* panel brown */
-      --app-ink:#efe6d6;         /* warm parchment text */
+      --app-bg: #1b1411;
+      --app-ink:#efe6d6;
       --app-muted: rgba(239,230,214,0.75);
       --app-muted-2: rgba(239,230,214,0.55);
 
-      --gold: #cbb48a;
-      --gold-2:#a98a55;
       --gold-3:#e7d2aa;
-
       --line: rgba(239,230,214,0.14);
       --line-2: rgba(203,180,138,0.22);
 
@@ -38,7 +34,6 @@
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
 
-    /* App background (NOT intro) */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
@@ -120,7 +115,7 @@
     }
 
     /* =========================
-       Top Bar (ornate / game-like)
+       Top Bar
        ========================= */
     .topbar{
       display:flex;
@@ -157,12 +152,6 @@
       background: rgba(0,0,0,0.25);
       box-shadow: 0 10px 22px rgba(0,0,0,0.35);
     }
-    .brandTitle{
-      display:flex;
-      flex-direction:column;
-      gap: 2px;
-      line-height: 1;
-    }
     .brandTitle h1{
       margin:0;
       font-family: "Georgia", "Times New Roman", serif;
@@ -171,11 +160,7 @@
       font-size: 30px;
       color: var(--gold-3);
       text-shadow: 0 10px 26px rgba(0,0,0,0.55);
-    }
-    .brandTitle .tag{
-      font-size: 12px;
-      color: var(--app-muted-2);
-      letter-spacing: 0.2px;
+      line-height: 1;
     }
 
     .right{
@@ -186,7 +171,6 @@
       justify-content:flex-end;
     }
 
-    /* Tabs (gold highlight + underline glow like reference) */
     .tabs{
       display:flex;
       align-items:center;
@@ -233,7 +217,6 @@
       border-radius: 999px;
     }
 
-    /* Profile banner (top-right) */
     .profile{
       display:flex;
       align-items:center;
@@ -263,7 +246,7 @@
     }
 
     /* =========================
-       Page sections
+       Sub-tabs header inside pages (like reference "Clone / Build / Explore / Manage")
        ========================= */
     .page{
       margin-top: 18px;
@@ -271,42 +254,64 @@
     }
     .page.active{ display:block; }
 
-    /* Title strip like “Businesses” */
-    .sectionHeader{
+    .subTabs{
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(239,230,214,0.12);
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.08), rgba(0,0,0,0.20)),
+        rgba(0,0,0,0.16);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 12px;
-      padding: 16px 18px;
-      border-radius: var(--radius);
-      border: 1px solid rgba(239,230,214,0.12);
-      background:
-        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.18)),
-        rgba(0,0,0,0.20);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-      position: relative;
-      overflow: hidden;
     }
-    .sectionHeader::before{
+
+    .subTabRow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .subTab{
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: rgba(239,230,214,0.72);
+      font-family: "Georgia","Times New Roman",serif;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      position: relative;
+      transition: 140ms ease;
+      user-select:none;
+    }
+    .subTab:hover{
+      background: rgba(203,180,138,0.08);
+      border-color: rgba(203,180,138,0.18);
+      color: var(--gold-3);
+    }
+    .subTab.active{
+      color: var(--gold-3);
+      background: rgba(203,180,138,0.10);
+      border-color: rgba(203,180,138,0.24);
+    }
+    .subTab.active::after{
       content:"";
       position:absolute;
-      inset:-2px;
-      background: radial-gradient(800px 120px at 30% 0%, rgba(203,180,138,0.18), transparent 55%);
-      pointer-events:none;
+      left: 14px;
+      right: 14px;
+      bottom: -8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(231,210,170,0.95), transparent);
+      box-shadow: 0 0 16px rgba(231,210,170,0.55);
+      border-radius: 999px;
     }
-    .sectionHeader h2{
-      margin:0;
-      font-family: "Georgia","Times New Roman",serif;
-      font-size: 40px;
-      letter-spacing: 0.2px;
-      color: var(--gold-3);
-      text-shadow: 0 16px 34px rgba(0,0,0,0.55);
-    }
-    .headerAction{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-    }
+
     .filterBtn{
       padding: 10px 12px;
       border-radius: 12px;
@@ -317,6 +322,7 @@
       font-weight: 650;
       cursor: pointer;
       transition: 140ms ease;
+      white-space: nowrap;
     }
     .filterBtn:hover{
       transform: translateY(-1px);
@@ -360,10 +366,11 @@
       border-radius: 999px;
       color: rgba(239,230,214,0.72);
       font-size: 13px;
+      white-space: nowrap;
     }
 
     /* =========================
-       Cards (match reference layout)
+       Cards (reference layout)
        ========================= */
     .grid{
       display:grid;
@@ -459,7 +466,6 @@
       letter-spacing: 0.2px;
     }
 
-    /* Right action button like “View ▾” */
     .cardAction{
       display:flex;
       align-items:center;
@@ -487,12 +493,7 @@
       justify-content:center;
       gap: 10px;
     }
-    .viewBtn:hover{
-      transform: translateY(-1px);
-      box-shadow:
-        0 18px 34px rgba(0,0,0,0.55),
-        inset 0 1px 0 rgba(255,255,255,0.55);
-    }
+    .viewBtn:hover{ transform: translateY(-1px); }
     .caret{
       width: 0; height: 0;
       border-left: 5px solid transparent;
@@ -540,6 +541,127 @@
       filter: saturate(0.95) contrast(1.05);
     }
 
+    /* Manage: single business page */
+    .businessPage{
+      margin-top: 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(203,180,138,0.22);
+      background:
+        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22)),
+        rgba(0,0,0,0.18);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+      overflow:hidden;
+      position: relative;
+    }
+    .businessHero{
+      display:grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 14px;
+      padding: 14px;
+      border-bottom: 1px solid rgba(203,180,138,0.18);
+    }
+    .heroImg{
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(203,180,138,0.22);
+      overflow:hidden;
+      background: rgba(0,0,0,0.25);
+    }
+    .heroImg img{
+      width:100%;
+      height: 280px;
+      object-fit: cover;
+      display:block;
+      filter: saturate(0.95) contrast(1.05);
+    }
+    .heroInfo{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap: 10px;
+      padding: 4px 2px;
+    }
+    .heroInfo h2{
+      margin:0;
+      font-family: "Georgia","Times New Roman",serif;
+      font-size: 42px;
+      color: var(--gold-3);
+      text-shadow: 0 16px 34px rgba(0,0,0,0.55);
+      line-height: 1.05;
+    }
+    .heroMeta{
+      color: rgba(239,230,214,0.78);
+      font-size: 14px;
+    }
+    .heroBadges{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .heroStats{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+    .stat{
+      padding: 12px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(203,180,138,0.18);
+      background: rgba(0,0,0,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .stat .label{
+      color: rgba(239,230,214,0.62);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .stat .value{
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: 0.2px;
+      color: rgba(239,230,214,0.92);
+    }
+
+    .businessBody{
+      padding: 0 14px 14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .panel{
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(203,180,138,0.18);
+      background: rgba(0,0,0,0.16);
+    }
+    .panel h3{
+      margin:0 0 10px;
+      font-family: "Georgia","Times New Roman",serif;
+      color: var(--gold-3);
+      letter-spacing: 0.2px;
+      font-size: 20px;
+    }
+    .list{
+      margin:0;
+      padding-left: 18px;
+      color: rgba(239,230,214,0.78);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(203,180,138,0.14);
+      color: rgba(239,230,214,0.78);
+      font-size: 14px;
+    }
+    .kv:last-child{ border-bottom:0; }
+    .kv b{ color: rgba(239,230,214,0.92); font-weight: 800; }
+
     .footnote{
       margin-top: 14px;
       padding: 12px 14px;
@@ -553,7 +675,10 @@
     @media (max-width: 920px){
       .card{ grid-template-columns: 220px 1fr; }
       .cardAction{ grid-column: 1 / -1; justify-content:flex-end; }
-      .viewBtn{ width: 160px; }
+      .businessHero{ grid-template-columns: 1fr; }
+      .heroImg img{ height: 240px; }
+      .heroStats{ grid-template-columns: 1fr; }
+      .businessBody{ grid-template-columns: 1fr; }
     }
     @media (max-width: 620px){
       .tabs{ width:100%; justify-content:space-between; }
@@ -580,10 +705,7 @@
     <header class="topbar">
       <div class="brand">
         <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
-        <div class="brandTitle">
-          <h1>Root</h1>
-          <div class="tag">Businesses</div>
-        </div>
+        <div class="brandTitle"><h1>Root</h1></div>
       </div>
 
       <div class="right">
@@ -602,11 +724,14 @@
 
     <!-- ===================== PAGE: YOUR AREA ===================== -->
     <main class="page active" id="page-area" aria-label="Your Area">
-      <div class="sectionHeader">
-        <h2>Your Area</h2>
-        <div class="headerAction">
-          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+      <div class="subTabs">
+        <div class="subTabRow">
+          <button class="subTab active" type="button">Your Area</button>
+          <button class="subTab" type="button" aria-disabled="true">Build</button>
+          <button class="subTab" type="button" aria-disabled="true">Explore</button>
+          <button class="subTab" type="button" aria-disabled="true">Manage</button>
         </div>
+        <button class="filterBtn" type="button">Filter</button>
       </div>
 
       <div class="mapPanel">
@@ -615,7 +740,7 @@
             <span class="badge">Tokyo</span>
             <span>Map view (OpenStreetMap embed)</span>
           </div>
-          <span class="badge" title="Static embed suitable for GitHub Pages">Static</span>
+          <span class="badge">Static</span>
         </div>
 
         <iframe
@@ -626,19 +751,18 @@
           src="https://www.openstreetmap.org/export/embed.html?bbox=139.55%2C35.55%2C139.95%2C35.85&layer=mapnik&marker=35.6895%2C139.6917">
         </iframe>
       </div>
-
-      <div class="footnote">
-        This uses OpenStreetMap so it works cleanly on GitHub Pages with no API keys.
-      </div>
     </main>
 
     <!-- ===================== PAGE: CLONE ===================== -->
     <main class="page" id="page-clone" aria-label="Clone">
-      <div class="sectionHeader">
-        <h2>Businesses</h2>
-        <div class="headerAction">
-          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+      <div class="subTabs">
+        <div class="subTabRow">
+          <button class="subTab active" type="button">Clone</button>
+          <button class="subTab" type="button" aria-disabled="true">Build</button>
+          <button class="subTab" type="button" aria-disabled="true">Explore</button>
+          <button class="subTab" type="button" aria-disabled="true">Manage</button>
         </div>
+        <button class="filterBtn" type="button">Filter</button>
       </div>
 
       <div class="controls">
@@ -650,146 +774,135 @@
           <input id="search" type="search" placeholder="Search businesses…" autocomplete="off" />
         </div>
 
-        <div class="tinyPill" title="Example conversion for dummy data">
-          Assumed 1 ETH ≈ $3,000
-        </div>
+        <div class="tinyPill">Assumed 1 ETH ≈ $3,000</div>
       </div>
 
       <section class="grid" id="cards">
-        <!-- Coffee Shop -->
         <article class="card" data-name="coffee shop cafe">
-          <div class="thumbWrap">
-            <img class="thumb" src="images/spring.png" alt="Coffee Shop" />
-          </div>
-
+          <div class="thumbWrap"><img class="thumb" src="images/spring.png" alt="Coffee Shop" /></div>
           <div class="cardMain">
             <h3 class="title">Coffee Shop</h3>
             <div class="rev">Ξ73.33 <span class="unit">/ year</span></div>
-
             <div class="rowStats">
               <div><span class="k">Minimal starting</span><span class="v">Ξ13.33</span></div>
               <div><span class="k">Avg. operation</span><span class="v">Ξ20.00 / year</span></div>
             </div>
           </div>
-
-          <div class="cardAction">
-            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
-          </div>
+          <div class="cardAction"><button class="viewBtn" type="button">View <span class="caret"></span></button></div>
         </article>
 
-        <!-- Pet Grooming -->
         <article class="card" data-name="pet grooming salon">
-          <div class="thumbWrap">
-            <img class="thumb" src="images/fall.png" alt="Pet Grooming" />
-          </div>
-
+          <div class="thumbWrap"><img class="thumb" src="images/fall.png" alt="Pet Grooming" /></div>
           <div class="cardMain">
             <h3 class="title">Pet Grooming</h3>
             <div class="rev">Ξ61.67 <span class="unit">/ year</span></div>
-
             <div class="rowStats">
               <div><span class="k">Minimal starting</span><span class="v">Ξ5.67</span></div>
               <div><span class="k">Avg. operation</span><span class="v">Ξ18.33 / year</span></div>
             </div>
           </div>
-
-          <div class="cardAction">
-            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
-          </div>
+          <div class="cardAction"><button class="viewBtn" type="button">View <span class="caret"></span></button></div>
         </article>
 
-        <!-- Plant Nursery -->
         <article class="card" data-name="plant nursery garden">
-          <div class="thumbWrap">
-            <img class="thumb" src="images/summer.png" alt="Plant Nursery" />
-          </div>
-
+          <div class="thumbWrap"><img class="thumb" src="images/summer.png" alt="Plant Nursery" /></div>
           <div class="cardMain">
             <h3 class="title">Plant Nursery</h3>
             <div class="rev">Ξ68.33 <span class="unit">/ year</span></div>
-
             <div class="rowStats">
               <div><span class="k">Minimal starting</span><span class="v">Ξ8.33</span></div>
               <div><span class="k">Avg. operation</span><span class="v">Ξ21.00 / year</span></div>
             </div>
           </div>
-
-          <div class="cardAction">
-            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
-          </div>
+          <div class="cardAction"><button class="viewBtn" type="button">View <span class="caret"></span></button></div>
         </article>
 
-        <!-- Ice Cream Shop -->
         <article class="card" data-name="ice cream shop dessert">
-          <div class="thumbWrap">
-            <img class="thumb" src="images/winter.png" alt="Ice Cream Shop" />
-          </div>
-
+          <div class="thumbWrap"><img class="thumb" src="images/winter.png" alt="Ice Cream Shop" /></div>
           <div class="cardMain">
             <h3 class="title">Ice Cream Shop</h3>
             <div class="rev">Ξ73.33 <span class="unit">/ year</span></div>
-
             <div class="rowStats">
               <div><span class="k">Minimal starting</span><span class="v">Ξ8.33</span></div>
               <div><span class="k">Avg. operation</span><span class="v">Ξ21.00 / year</span></div>
             </div>
           </div>
-
-          <div class="cardAction">
-            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
-          </div>
+          <div class="cardAction"><button class="viewBtn" type="button">View <span class="caret"></span></button></div>
         </article>
       </section>
-
-      <div class="footnote">
-        Search filters instantly. “View” is a placeholder button for now.
-      </div>
     </main>
 
     <!-- ===================== PAGE: MANAGE ===================== -->
     <main class="page" id="page-manage" aria-label="Manage">
-      <div class="sectionHeader">
-        <h2>Manage</h2>
-        <div class="headerAction">
-          <button class="filterBtn" type="button" aria-label="Filter">Filter</button>
+      <div class="subTabs">
+        <div class="subTabRow">
+          <button class="subTab active" type="button">Manage</button>
+          <button class="subTab" type="button" aria-disabled="true">Build</button>
+          <button class="subTab" type="button" aria-disabled="true">Explore</button>
+          <button class="subTab" type="button" aria-disabled="true">Clone</button>
         </div>
+        <button class="filterBtn" type="button">Actions</button>
       </div>
 
-      <section class="grid">
-        <article class="card">
-          <div class="thumbWrap">
-            <img class="thumb" src="images/summer.png" alt="Your Business" />
+      <!-- Single-business "profile" page -->
+      <section class="businessPage">
+        <div class="businessHero">
+          <div class="heroImg">
+            <img src="images/summer.png" alt="Root Coffee — Shinjuku" />
           </div>
-
-          <div class="cardMain">
-            <h3 class="title">Root Coffee — Shibuya</h3>
-            <div class="rev">Ξ5.20 <span class="unit">/ month</span></div>
-
-            <div class="rowStats">
-              <div><span class="k">Status</span><span class="v">Operating</span></div>
-              <div><span class="k">Next payroll/rent</span><span class="v">Ξ0.42</span></div>
-              <div><span class="k">Runway</span><span class="v">Ξ3.1621</span></div>
-              <div><span class="k">Open tasks</span><span class="v">3</span></div>
+          <div class="heroInfo">
+            <h2>Root Coffee — Shinjuku</h2>
+            <div class="heroMeta">Status: Operating · Location: Shinjuku, Tokyo · Category: Café</div>
+            <div class="heroBadges">
+              <span class="badge">Shinjuku</span>
+              <span class="badge">Open</span>
+              <span class="badge">Staff: 6</span>
             </div>
           </div>
+        </div>
 
-          <div class="cardAction">
-            <button class="viewBtn" type="button">View <span class="caret" aria-hidden="true"></span></button>
+        <div class="heroStats">
+          <div class="stat">
+            <div class="label">Monthly revenue</div>
+            <div class="value">Ξ5.20</div>
           </div>
-        </article>
+          <div class="stat">
+            <div class="label">Monthly operating cost</div>
+            <div class="value">Ξ3.10</div>
+          </div>
+          <div class="stat">
+            <div class="label">Next payroll / rent</div>
+            <div class="value">Ξ0.42</div>
+          </div>
+        </div>
+
+        <div class="businessBody">
+          <div class="panel">
+            <h3>Operations</h3>
+            <div class="kv"><span>Open hours</span><b>08:00–20:00</b></div>
+            <div class="kv"><span>Daily customers (avg)</span><b>180</b></div>
+            <div class="kv"><span>Avg. ticket</span><b>Ξ0.010</b></div>
+            <div class="kv"><span>Inventory health</span><b>Good</b></div>
+          </div>
+
+          <div class="panel">
+            <h3>Next Tasks</h3>
+            <ul class="list">
+              <li>Supplier order (beans + milk) — tomorrow</li>
+              <li>Espresso machine maintenance — in 3 days</li>
+              <li>Staff schedule finalize — Sunday</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
-      <div class="footnote">
-        Dummy data only. Next step: add real business list, expenses, and actions.
-      </div>
+      <div class="footnote">Dummy data only. This “Manage” view is a single-business page.</div>
     </main>
   </div>
 
   <script>
     (function(){
-      /* ===== Seasonal logic (system time) =====
-         Spring: Mar–May, Summer: Jun–Aug, Fall: Sep–Nov, Winter: Dec–Feb
-      */
+      /* ===== Seasonal logic (system time) ===== */
       function getSeason(month){
         if (month >= 2 && month <= 4) return "spring";
         if (month >= 5 && month <= 7) return "summer";
@@ -804,7 +917,6 @@
         winter: "冬です。"
       };
 
-      // Assumes these exist in /images
       const seasonImage = {
         spring: "images/spring.png",
         summer: "images/summer.png",
@@ -814,14 +926,9 @@
 
       const season = getSeason(new Date().getMonth());
 
-      // Apply to intro + header logo
-      const introLine2 = document.getElementById('introLine2');
-      const introTree = document.getElementById('introTree');
-      const headerLogo = document.getElementById('headerLogo');
-
-      introLine2.textContent = seasonText[season] || "夏です。";
-      introTree.src = seasonImage[season] || "images/spring.png";
-      headerLogo.src = seasonImage[season] || "images/spring.png";
+      document.getElementById('introLine2').textContent = seasonText[season] || "夏です。";
+      document.getElementById('introTree').src = seasonImage[season] || "images/spring.png";
+      document.getElementById('headerLogo').src = seasonImage[season] || "images/spring.png";
 
       /* ===== Intro sequence (0.75x, tree lingers longer) ===== */
       const intro = document.getElementById('intro');
@@ -834,12 +941,7 @@
       } else {
         sessionStorage.setItem('root_intro_seen','1');
 
-        const t = {
-          show1: 90,       // welcome
-          showTree: 675,   // tree
-          show2: 1875,     // season line (tree stays longer)
-          done: 2700       // fade out
-        };
+        const t = { show1: 90, showTree: 675, show2: 1875, done: 2700 };
 
         setTimeout(() => line1.classList.add('show'), t.show1);
         setTimeout(() => tree.classList.add('showTree'), t.showTree);
@@ -847,7 +949,7 @@
         setTimeout(() => intro.classList.add('hide'), t.done);
       }
 
-      /* ===== Tabs operational (single-page) ===== */
+      /* ===== Tabs operational ===== */
       const tabs = Array.from(document.querySelectorAll('.tab[data-page]'));
       const pages = {
         area: document.getElementById('page-area'),
