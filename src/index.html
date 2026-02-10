@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Root</title>
+  <title>The Root</title>
 
   <style>
     :root{
@@ -22,8 +22,6 @@
       --app-muted-2: rgba(239,230,214,0.55);
 
       --gold-3:#e7d2aa;
-      --line: rgba(239,230,214,0.14);
-      --line-2: rgba(203,180,138,0.22);
 
       --shadow: 0 14px 36px rgba(0,0,0,0.55);
       --radius: 18px;
@@ -140,24 +138,30 @@
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
       min-width: 220px;
     }
+
+    /* Bigger icon, NO square around it */
     .logo{
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      object-fit: cover;
-      border: 1px solid rgba(203,180,138,0.28);
-      background: rgba(0,0,0,0.25);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+      width: 66px;
+      height: 66px;
+      object-fit: contain;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,0.45));
+      -webkit-user-drag: none;
+      user-select:none;
     }
+
     .brandTitle h1{
       margin:0;
       font-family: "Georgia", "Times New Roman", serif;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.2px;
-      font-size: 30px;
+      font-size: 44px;
       color: var(--gold-3);
       text-shadow: 0 10px 26px rgba(0,0,0,0.55);
       line-height: 1;
@@ -246,12 +250,9 @@
     }
 
     /* =========================
-       Sub-tabs header inside pages (like reference "Clone / Build / Explore / Manage")
+       Sub-tabs header inside pages
        ========================= */
-    .page{
-      margin-top: 18px;
-      display:none;
-    }
+    .page{ margin-top: 18px; display:none; }
     .page.active{ display:block; }
 
     .subTabs{
@@ -369,9 +370,7 @@
       white-space: nowrap;
     }
 
-    /* =========================
-       Cards (reference layout)
-       ========================= */
+    /* Cards (reference layout) */
     .grid{
       display:grid;
       grid-template-columns: 1fr;
@@ -456,15 +455,8 @@
       color: rgba(239,230,214,0.78);
       font-size: 13px;
     }
-    .rowStats .k{
-      color: rgba(239,230,214,0.62);
-      margin-right: 10px;
-    }
-    .rowStats .v{
-      color: rgba(239,230,214,0.92);
-      font-weight: 750;
-      letter-spacing: 0.2px;
-    }
+    .rowStats .k{ color: rgba(239,230,214,0.62); margin-right: 10px; }
+    .rowStats .v{ color: rgba(239,230,214,0.92); font-weight: 750; letter-spacing: 0.2px; }
 
     .cardAction{
       display:flex;
@@ -478,15 +470,12 @@
       padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid rgba(203,180,138,0.35);
-      background:
-        linear-gradient(180deg, rgba(239,230,214,0.78), rgba(203,180,138,0.70));
+      background: linear-gradient(180deg, rgba(239,230,214,0.78), rgba(203,180,138,0.70));
       color: #2a1d16;
       font-family: "Georgia","Times New Roman",serif;
       font-weight: 800;
       cursor: pointer;
-      box-shadow:
-        0 14px 28px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.5);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.5);
       transition: 140ms ease;
       display:flex;
       align-items:center;
@@ -516,8 +505,7 @@
       align-items:center;
       justify-content:space-between;
       padding: 12px 14px;
-      background:
-        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22));
+      background: linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22));
       border-bottom: 1px solid rgba(203,180,138,0.18);
       color: rgba(239,230,214,0.78);
       font-size: 13px;
@@ -546,12 +534,9 @@
       margin-top: 14px;
       border-radius: var(--radius);
       border: 1px solid rgba(203,180,138,0.22);
-      background:
-        linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22)),
-        rgba(0,0,0,0.18);
+      background: linear-gradient(180deg, rgba(231,210,170,0.10), rgba(0,0,0,0.22)), rgba(0,0,0,0.18);
       box-shadow: 0 18px 40px rgba(0,0,0,0.55);
       overflow:hidden;
-      position: relative;
     }
     .businessHero{
       display:grid;
@@ -662,16 +647,6 @@
     .kv:last-child{ border-bottom:0; }
     .kv b{ color: rgba(239,230,214,0.92); font-weight: 800; }
 
-    .footnote{
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: var(--radius);
-      border: 1px dashed rgba(203,180,138,0.22);
-      color: rgba(239,230,214,0.72);
-      font-size: 13px;
-      background: rgba(0,0,0,0.16);
-    }
-
     @media (max-width: 920px){
       .card{ grid-template-columns: 220px 1fr; }
       .cardAction{ grid-column: 1 / -1; justify-content:flex-end; }
@@ -687,6 +662,8 @@
       .card{ grid-template-columns: 1fr; }
       .thumb{ height: 190px; }
       .cardAction{ justify-content:flex-start; }
+      .logo{ width: 58px; height: 58px; }
+      .brandTitle h1{ font-size: 36px; }
     }
   </style>
 </head>
@@ -704,8 +681,8 @@
   <div class="wrap">
     <header class="topbar">
       <div class="brand">
-        <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
-        <div class="brandTitle"><h1>Root</h1></div>
+        <img class="logo" id="headerLogo" src="images/spring.png" alt="The Root logo" />
+        <div class="brandTitle"><h1>The Root</h1></div>
       </div>
 
       <div class="right">
@@ -844,14 +821,13 @@
         <button class="filterBtn" type="button">Actions</button>
       </div>
 
-      <!-- Single-business "profile" page -->
       <section class="businessPage">
         <div class="businessHero">
           <div class="heroImg">
-            <img src="images/summer.png" alt="Root Coffee — Shinjuku" />
+            <img src="images/summer.png" alt="The Root Coffee — Shinjuku" />
           </div>
           <div class="heroInfo">
-            <h2>Root Coffee — Shinjuku</h2>
+            <h2>The Root Coffee — Shinjuku</h2>
             <div class="heroMeta">Status: Operating · Location: Shinjuku, Tokyo · Category: Café</div>
             <div class="heroBadges">
               <span class="badge">Shinjuku</span>
@@ -895,8 +871,6 @@
           </div>
         </div>
       </section>
-
-      <div class="footnote">Dummy data only. This “Manage” view is a single-business page.</div>
     </main>
   </div>
 
@@ -961,13 +935,11 @@
         tabs.forEach(t => t.classList.toggle('active', t.dataset.page === pageKey));
         Object.keys(pages).forEach(k => pages[k].classList.toggle('active', k === pageKey));
       }
-
       tabs.forEach(t => t.addEventListener('click', () => setActive(t.dataset.page)));
 
       /* ===== Search filter (Clone tab) ===== */
       const search = document.getElementById('search');
       const cards = Array.from(document.querySelectorAll('#cards .card'));
-
       function applyFilter(q){
         const query = q.trim().toLowerCase();
         cards.forEach(card => {
@@ -975,7 +947,6 @@
           card.style.display = (!query || name.includes(query)) ? '' : 'none';
         });
       }
-
       if (search) search.addEventListener('input', (e) => applyFilter(e.target.value));
     })();
   </script>
