@@ -580,7 +580,7 @@
     .sortControl{
       flex: 0 0 auto;
       min-width: 220px;
-      padding: 10px 34px 10px 12px;
+      padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid rgba(167,122,77,0.35);
       background: rgba(20,13,10,0.55);
@@ -590,12 +590,6 @@
       font-weight: 650;
       outline: none;
       cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e1c28a' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
     }
 
     /* Cards (reference layout) */
@@ -1321,9 +1315,9 @@
 
         <div class="right">
           <nav class="tabs" aria-label="Primary">
-            <a class="tab" href="explore.html">Explore</a>
+            <a class="tab active" href="explore.html" aria-current="page">Explore</a>
             <a class="tab" href="clone.html">Clone</a>
-            <a class="tab active" href="manage.html" aria-current="page">Manage</a>
+            <a class="tab" href="manage.html">Manage</a>
           </nav>
 
         <div class="profileMenu">
@@ -1356,7 +1350,7 @@
     </div>
 
     <!-- ===================== PAGE: YOUR AREA ===================== -->
-    <main class="page" id="page-area" aria-label="Explore">
+    <main class="page active" id="page-area" aria-label="Explore">
       <div class="mapPanel">
         <div class="mapHeader">
           <div style="display:flex; gap:10px; align-items:center;">
@@ -1452,7 +1446,7 @@
     </main>
 
     <!-- ===================== PAGE: MANAGE ===================== -->
-    <main class="page active" id="page-manage" aria-label="Manage">
+    <main class="page" id="page-manage" aria-label="Manage">
       <section class="businessPage">
         <div class="businessHero">
           <div class="heroImg">
