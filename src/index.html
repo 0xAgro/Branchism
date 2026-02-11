@@ -62,6 +62,29 @@
       margin: 0 auto;
       padding: 0 18px 56px;
     }
+    .headerStack{
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+    }
+    .legalBanner{
+      margin-top: 0;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(167,122,77,0.35);
+      background: rgba(20,13,10,0.72);
+      color: rgba(232,210,184,0.86);
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .legalBanner a{
+      color: var(--gold-3);
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
 
     /* =========================
        INTRO (unchanged)
@@ -142,9 +165,9 @@
         radial-gradient(900px 240px at 40% 0%, rgba(167,122,77,0.22), transparent 60%),
         rgba(18,12,9,0.55);
       box-shadow: var(--shadow);
-      position: sticky;
-      top: 16px;
-      z-index: 10;
+      position: relative;
+      top: 0;
+      z-index: 1;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
@@ -987,7 +1010,6 @@
       .topbar{
         flex-direction: column;
         align-items: stretch;
-        position: sticky;
       }
       .left{
         width: 100%;
@@ -1037,45 +1059,52 @@
   </div>
 
   <div class="wrap">
-    <header class="topbar">
-      <div class="left">
-        <div class="brand">
-          <img class="logo" id="headerLogo" src="images/spring.png" alt="The Root logo" />
-          <div class="brandTitle"><h1>The Root</h1></div>
-        </div>
+    <div class="headerStack">
+      <div class="legalBanner">
+        This application is a mock example. By using this app, you agree to the legal disclaimer
+        <a href="https://github.com/0xAgro/Branchism/blob/main/README.md" target="_blank" rel="noopener noreferrer">here</a>.
       </div>
 
-      <div class="right">
-        <nav class="tabs" aria-label="Primary">
-          <button class="tab" type="button" data-page="area">Explore</button>
-          <button class="tab" type="button" data-page="clone">Clone</button>
-          <button class="tab active" type="button" data-page="manage">Manage</button>
-        </nav>
+      <header class="topbar">
+        <div class="left">
+          <div class="brand">
+            <img class="logo" id="headerLogo" src="images/spring.png" alt="The Root logo" />
+            <div class="brandTitle"><h1>The Root</h1></div>
+          </div>
+        </div>
 
-        <div class="profileMenu">
-          <button class="profileBtn" type="button" aria-label="Profile menu">
-            <div class="userBadge">
-              <div class="avatar" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                  <path d="M12 12.2a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2.3c-3.2 0-6 1.6-6 3.8v1.2h12v-1.2c0-2.2-2.8-3.8-6-3.8Z"/>
-                </svg>
-              </div>
-              <div class="userMeta">
-                <div class="userName">中本 哲史</div>
-                <div class="userAddr">0x4f2a...9c1b</div>
-              </div>
-            </div>
-          </button>
+        <div class="right">
+          <nav class="tabs" aria-label="Primary">
+            <button class="tab" type="button" data-page="area">Explore</button>
+            <button class="tab" type="button" data-page="clone">Clone</button>
+            <button class="tab active" type="button" data-page="manage">Manage</button>
+          </nav>
 
-          <div class="profilePanel" role="menu" aria-label="Wallet">
-            <div class="profile">
-              <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
-              <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
+          <div class="profileMenu">
+            <button class="profileBtn" type="button" aria-label="Profile menu">
+              <div class="userBadge">
+                <div class="avatar" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                    <path d="M12 12.2a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2.3c-3.2 0-6 1.6-6 3.8v1.2h12v-1.2c0-2.2-2.8-3.8-6-3.8Z"/>
+                  </svg>
+                </div>
+                <div class="userMeta">
+                  <div class="userName">中本 哲史</div>
+                  <div class="userAddr">0x4f2a...9c1b</div>
+                </div>
+              </div>
+            </button>
+
+            <div class="profilePanel" role="menu" aria-label="Wallet">
+              <div class="profile">
+                <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
+                <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </div>
 
     <!-- ===================== PAGE: YOUR AREA ===================== -->
     <main class="page" id="page-area" aria-label="Explore">
