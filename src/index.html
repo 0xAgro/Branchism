@@ -940,14 +940,17 @@
     }
     .forceForkBtn{
       position: absolute;
-      inset: 3px 6px;
-      border-radius: 8px;
+      inset: 0;
+      border-radius: 10px;
       border: 1px solid rgba(219,98,98,0.85);
-      background: linear-gradient(180deg, rgba(188,51,51,0.95), rgba(115,28,28,0.96));
+      background: linear-gradient(180deg, rgba(188,51,51,0.62), rgba(115,28,28,0.68));
       color: #ffe8e1;
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       opacity: 0;
       pointer-events: none;
@@ -960,7 +963,7 @@
     .forceForkBtn:hover,
     .forceForkBtn:focus-visible{
       border-color: rgba(255,210,210,0.98);
-      background: linear-gradient(180deg, rgba(214,69,69,0.98), rgba(138,34,34,0.99));
+      background: linear-gradient(180deg, rgba(214,69,69,0.78), rgba(138,34,34,0.84));
       color: #fff8f4;
     }
     .branchItem:hover .forceForkBtn,
@@ -971,8 +974,62 @@
     }
     .forceForkBtn.forced{
       border-color: rgba(255,188,188,0.92);
-      background: linear-gradient(180deg, rgba(206,74,74,0.95), rgba(122,31,31,0.96));
+      background: linear-gradient(180deg, rgba(206,74,74,0.72), rgba(122,31,31,0.78));
       color: #fff3ef;
+    }
+    .branchItem.forkPending .forceForkBtn{
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .forkTimerBtn{
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(231,210,170,0.38);
+      background: rgba(10,7,6,0.82);
+      color: rgba(245,228,198,0.95);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+      backdrop-filter: blur(2px);
+    }
+    .forkTimerBtn:hover,
+    .forkTimerBtn:focus-visible{
+      border-color: rgba(255,215,198,0.92);
+      background: rgba(34,12,10,0.92);
+      color: rgba(255,235,210,0.98);
+    }
+    .forkTimerBtn:hover .forkTimerText,
+    .forkTimerBtn:focus-visible .forkTimerText{
+      display: none;
+    }
+    .forkTimerBtn:hover::after,
+    .forkTimerBtn:focus-visible::after{
+      content: "Revert";
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .forkTimerIcon{
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      opacity: 0.9;
+      flex: 0 0 auto;
+    }
+    .forkTimerIcon svg{
+      width: 10px;
+      height: 10px;
+      fill: currentColor;
+      display: block;
     }
     .branchRequests{
       margin-top: 12px;
@@ -1407,6 +1464,7 @@
       .topbar{
         flex-direction: column;
         align-items: stretch;
+        padding: 0 14px 4px;
       }
       .left{
         width: 100%;
@@ -1479,6 +1537,7 @@
       <div class="legalBanner">
         This application is a mock example. By using this app, you agree to the legal disclaimer
         <a href="https://github.com/0xAgro/Branchism/blob/main/README.md" target="_blank" rel="noopener noreferrer">here</a>.
+        You can also <a href="https://github.com/0xAgro/Branchism?tab=readme-ov-file#support" target="_blank" rel="noopener noreferrer">support active research</a> (Ethereum accepted).
       </div>
 
       <header class="topbar">
@@ -2209,12 +2268,62 @@
       const forkCancel = document.getElementById("forkCancel");
       const forkConfirm = document.getElementById("forkConfirm");
       let activeForkContext = null;
+      const FORK_WINDOW_MS = 90 * 24 * 60 * 60 * 1000;
+      let forkTimerTicking = false;
 
       function parsePct(text){
         return Number((text || "").replace(/[^0-9.]/g, "")) || 0;
       }
 
-      function openForkModal(button){
+      function renderMonthsLeft(startMs){
+        const elapsed = Math.max(0, Date.now() - startMs);
+        const remaining = Math.max(0, FORK_WINDOW_MS - elapsed);
+        const months = remaining / (30 * 24 * 60 * 60 * 1000);
+        return months.toFixed(1) + " months";
+      }
+
+      function ensureForkBadge(item, startMs){
+        if (!item) return;
+        item.dataset.forkStartMs = String(startMs);
+        item.classList.add("forkPending");
+        let badge = item.querySelector(".forkTimerBtn");
+        if (!badge) {
+          badge = document.createElement("button");
+          badge.type = "button";
+          badge.className = "forkTimerBtn";
+          badge.innerHTML =
+            '<span class="forkTimerIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1a1 1 0 0 1 1 1v1.06A9 9 0 1 1 5.64 6.9a1 1 0 1 1 1.54 1.28A7 7 0 1 0 13 5.06V6a1 1 0 1 1-2 0V2a1 1 0 0 1 1-1zm0 5a1 1 0 0 1 1 1v4.2l2.7 1.56a1 1 0 1 1-1 1.72l-3.2-1.85A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1z"/></svg></span>' +
+            '' +
+            '<span class="forkTimerText"></span>';
+          item.appendChild(badge);
+        }
+        const textEl = badge.querySelector(".forkTimerText");
+        if (textEl) textEl.textContent = renderMonthsLeft(startMs);
+      }
+
+      function clearForkBadge(item){
+        if (!item) return;
+        item.classList.remove("forkPending");
+        delete item.dataset.forkStartMs;
+        const badge = item.querySelector(".forkTimerBtn");
+        if (badge) badge.remove();
+      }
+
+      function tickForkBadges(){
+        document.querySelectorAll(".branchList .branchItem[data-fork-start-ms]").forEach((item) => {
+          const startMs = Number(item.dataset.forkStartMs);
+          if (!startMs) return;
+          ensureForkBadge(item, startMs);
+        });
+      }
+
+      function startForkTicker(){
+        if (forkTimerTicking) return;
+        forkTimerTicking = true;
+        setInterval(tickForkBadges, 1000);
+      }
+
+      function openForkModal(button, forceRetract){
         if (!forkModal || !button) return;
 
         const item = button.closest(".branchItem");
@@ -2227,21 +2336,24 @@
         const estMonthlyLoss = monthlyRevenue * (royaltyPct / 100);
         const estYearlyLoss = estMonthlyLoss * 12;
 
-        const forced = button.classList.contains("forced");
+        const forced = forceRetract ? true : button.classList.contains("forced");
         activeForkContext = { button: button, forced: forced };
 
-        forkTitle.textContent = forced ? "Retract Force Fork" : "Force Fork Confirmation";
+        forkTitle.textContent = forced ? "Undo Force Fork" : "Force Fork Confirmation";
         forkSummary.textContent =
-          (forced ? "Retract forced fork for " : "Force fork for ") +
+          (forced ? "Undo forced fork for " : "Force fork for ") +
           addr +
-          " (" + royaltyText + "). Probable loss: " +
-          "\u039e" + estMonthlyLoss.toFixed(4) + " / month (" +
-          "\u039e" + estYearlyLoss.toFixed(4) + " / year).";
+          " (" + royaltyText + ")." +
+          (forced
+            ? " This will cancel the pending fork notice and continue allowing this branch."
+            : " Probable loss: \u039e" + estMonthlyLoss.toFixed(4) + " / month (\u039e" + estYearlyLoss.toFixed(4) + " / year).");
 
         forkWarnings.textContent =
-          "Branch will receive a 3 month notification. You can retract this action at any time. They can fork at any time regardless.";
+          forced
+            ? "Confirming this action keeps the branch active under the current royalty split."
+            : "Branch will receive a 3 month notification. You can retract this action at any time. They can fork at any time regardless.";
 
-        forkConfirm.textContent = forced ? "Retract" : "Confirm";
+        forkConfirm.textContent = forced ? "Undo Force Fork" : "Confirm";
 
         forkModal.classList.add("open");
         forkModal.setAttribute("aria-hidden", "false");
@@ -2256,10 +2368,19 @@
 
       if (forkModal) {
         document.addEventListener("click", (event) => {
-          const btn = event.target.closest(".forceForkBtn");
-          if (!btn) return;
+          const forceBtn = event.target.closest(".forceForkBtn");
+          if (forceBtn) {
+            event.preventDefault();
+            openForkModal(forceBtn, false);
+            return;
+          }
+
+          const revertBtn = event.target.closest(".forkTimerBtn");
+          if (!revertBtn) return;
           event.preventDefault();
-          openForkModal(btn);
+          const row = revertBtn.closest(".branchItem");
+          const btn = row ? row.querySelector(".forceForkBtn") : null;
+          if (btn) openForkModal(btn, true);
         });
 
         forkCancel.addEventListener("click", closeForkModal);
@@ -2270,12 +2391,18 @@
             return;
           }
 
+          const row = activeForkContext.button.closest(".branchItem");
+
           if (activeForkContext.forced) {
             activeForkContext.button.classList.remove("forced");
             activeForkContext.button.textContent = "Force Fork";
+            clearForkBadge(row);
           } else {
             activeForkContext.button.classList.add("forced");
-            activeForkContext.button.textContent = "Retract Fork";
+            activeForkContext.button.textContent = "Force Fork";
+            const startMs = Date.now();
+            ensureForkBadge(row, startMs);
+            startForkTicker();
           }
 
           closeForkModal();
@@ -2284,6 +2411,8 @@
         forkModal.addEventListener("click", (event) => {
           if (event.target === forkModal) closeForkModal();
         });
+
+        tickForkBadges();
       }
 
       /* ===== Map (Leaflet) ===== */

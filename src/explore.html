@@ -6,6 +6,7 @@
   <title>The Root</title>
   <link rel="icon" type="image/png" href="images/summer.png" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
   <script>
     (function(){
       try {
@@ -940,14 +941,17 @@
     }
     .forceForkBtn{
       position: absolute;
-      inset: 3px 6px;
-      border-radius: 8px;
+      inset: 0;
+      border-radius: 10px;
       border: 1px solid rgba(219,98,98,0.85);
-      background: linear-gradient(180deg, rgba(188,51,51,0.95), rgba(115,28,28,0.96));
+      background: linear-gradient(180deg, rgba(188,51,51,0.62), rgba(115,28,28,0.68));
       color: #ffe8e1;
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       opacity: 0;
       pointer-events: none;
@@ -960,7 +964,7 @@
     .forceForkBtn:hover,
     .forceForkBtn:focus-visible{
       border-color: rgba(255,210,210,0.98);
-      background: linear-gradient(180deg, rgba(214,69,69,0.98), rgba(138,34,34,0.99));
+      background: linear-gradient(180deg, rgba(214,69,69,0.78), rgba(138,34,34,0.84));
       color: #fff8f4;
     }
     .branchItem:hover .forceForkBtn,
@@ -971,8 +975,62 @@
     }
     .forceForkBtn.forced{
       border-color: rgba(255,188,188,0.92);
-      background: linear-gradient(180deg, rgba(206,74,74,0.95), rgba(122,31,31,0.96));
+      background: linear-gradient(180deg, rgba(206,74,74,0.72), rgba(122,31,31,0.78));
       color: #fff3ef;
+    }
+    .branchItem.forkPending .forceForkBtn{
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .forkTimerBtn{
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(231,210,170,0.38);
+      background: rgba(10,7,6,0.82);
+      color: rgba(245,228,198,0.95);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+      backdrop-filter: blur(2px);
+    }
+    .forkTimerBtn:hover,
+    .forkTimerBtn:focus-visible{
+      border-color: rgba(255,215,198,0.92);
+      background: rgba(34,12,10,0.92);
+      color: rgba(255,235,210,0.98);
+    }
+    .forkTimerBtn:hover .forkTimerText,
+    .forkTimerBtn:focus-visible .forkTimerText{
+      display: none;
+    }
+    .forkTimerBtn:hover::after,
+    .forkTimerBtn:focus-visible::after{
+      content: "Revert";
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .forkTimerIcon{
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      opacity: 0.9;
+      flex: 0 0 auto;
+    }
+    .forkTimerIcon svg{
+      width: 10px;
+      height: 10px;
+      fill: currentColor;
+      display: block;
     }
     .branchRequests{
       margin-top: 12px;
@@ -1407,6 +1465,7 @@
       .topbar{
         flex-direction: column;
         align-items: stretch;
+        padding: 0 14px 4px;
       }
       .left{
         width: 100%;
@@ -1479,6 +1538,7 @@
       <div class="legalBanner">
         This application is a mock example. By using this app, you agree to the legal disclaimer
         <a href="https://github.com/0xAgro/Branchism/blob/main/README.md" target="_blank" rel="noopener noreferrer">here</a>.
+        You can also <a href="https://github.com/0xAgro/Branchism?tab=readme-ov-file#support" target="_blank" rel="noopener noreferrer">support active research</a> (Ethereum accepted).
       </div>
 
       <header class="topbar">
@@ -1867,6 +1927,7 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     (function(){
@@ -2218,12 +2279,62 @@
       const forkCancel = document.getElementById("forkCancel");
       const forkConfirm = document.getElementById("forkConfirm");
       let activeForkContext = null;
+      const FORK_WINDOW_MS = 90 * 24 * 60 * 60 * 1000;
+      let forkTimerTicking = false;
 
       function parsePct(text){
         return Number((text || "").replace(/[^0-9.]/g, "")) || 0;
       }
 
-      function openForkModal(button){
+      function renderMonthsLeft(startMs){
+        const elapsed = Math.max(0, Date.now() - startMs);
+        const remaining = Math.max(0, FORK_WINDOW_MS - elapsed);
+        const months = remaining / (30 * 24 * 60 * 60 * 1000);
+        return months.toFixed(1) + " months";
+      }
+
+      function ensureForkBadge(item, startMs){
+        if (!item) return;
+        item.dataset.forkStartMs = String(startMs);
+        item.classList.add("forkPending");
+        let badge = item.querySelector(".forkTimerBtn");
+        if (!badge) {
+          badge = document.createElement("button");
+          badge.type = "button";
+          badge.className = "forkTimerBtn";
+          badge.innerHTML =
+            '<span class="forkTimerIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 1a1 1 0 0 1 1 1v1.06A9 9 0 1 1 5.64 6.9a1 1 0 1 1 1.54 1.28A7 7 0 1 0 13 5.06V6a1 1 0 1 1-2 0V2a1 1 0 0 1 1-1zm0 5a1 1 0 0 1 1 1v4.2l2.7 1.56a1 1 0 1 1-1 1.72l-3.2-1.85A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1z"/></svg></span>' +
+            '' +
+            '<span class="forkTimerText"></span>';
+          item.appendChild(badge);
+        }
+        const textEl = badge.querySelector(".forkTimerText");
+        if (textEl) textEl.textContent = renderMonthsLeft(startMs);
+      }
+
+      function clearForkBadge(item){
+        if (!item) return;
+        item.classList.remove("forkPending");
+        delete item.dataset.forkStartMs;
+        const badge = item.querySelector(".forkTimerBtn");
+        if (badge) badge.remove();
+      }
+
+      function tickForkBadges(){
+        document.querySelectorAll(".branchList .branchItem[data-fork-start-ms]").forEach((item) => {
+          const startMs = Number(item.dataset.forkStartMs);
+          if (!startMs) return;
+          ensureForkBadge(item, startMs);
+        });
+      }
+
+      function startForkTicker(){
+        if (forkTimerTicking) return;
+        forkTimerTicking = true;
+        setInterval(tickForkBadges, 1000);
+      }
+
+      function openForkModal(button, forceRetract){
         if (!forkModal || !button) return;
 
         const item = button.closest(".branchItem");
@@ -2236,21 +2347,24 @@
         const estMonthlyLoss = monthlyRevenue * (royaltyPct / 100);
         const estYearlyLoss = estMonthlyLoss * 12;
 
-        const forced = button.classList.contains("forced");
+        const forced = forceRetract ? true : button.classList.contains("forced");
         activeForkContext = { button: button, forced: forced };
 
-        forkTitle.textContent = forced ? "Retract Force Fork" : "Force Fork Confirmation";
+        forkTitle.textContent = forced ? "Undo Force Fork" : "Force Fork Confirmation";
         forkSummary.textContent =
-          (forced ? "Retract forced fork for " : "Force fork for ") +
+          (forced ? "Undo forced fork for " : "Force fork for ") +
           addr +
-          " (" + royaltyText + "). Probable loss: " +
-          "\u039e" + estMonthlyLoss.toFixed(4) + " / month (" +
-          "\u039e" + estYearlyLoss.toFixed(4) + " / year).";
+          " (" + royaltyText + ")." +
+          (forced
+            ? " This will cancel the pending fork notice and continue allowing this branch."
+            : " Probable loss: \u039e" + estMonthlyLoss.toFixed(4) + " / month (\u039e" + estYearlyLoss.toFixed(4) + " / year).");
 
         forkWarnings.textContent =
-          "Branch will receive a 3 month notification. You can retract this action at any time. They can fork at any time regardless.";
+          forced
+            ? "Confirming this action keeps the branch active under the current royalty split."
+            : "Branch will receive a 3 month notification. You can retract this action at any time. They can fork at any time regardless.";
 
-        forkConfirm.textContent = forced ? "Retract" : "Confirm";
+        forkConfirm.textContent = forced ? "Undo Force Fork" : "Confirm";
 
         forkModal.classList.add("open");
         forkModal.setAttribute("aria-hidden", "false");
@@ -2265,10 +2379,19 @@
 
       if (forkModal) {
         document.addEventListener("click", (event) => {
-          const btn = event.target.closest(".forceForkBtn");
-          if (!btn) return;
+          const forceBtn = event.target.closest(".forceForkBtn");
+          if (forceBtn) {
+            event.preventDefault();
+            openForkModal(forceBtn, false);
+            return;
+          }
+
+          const revertBtn = event.target.closest(".forkTimerBtn");
+          if (!revertBtn) return;
           event.preventDefault();
-          openForkModal(btn);
+          const row = revertBtn.closest(".branchItem");
+          const btn = row ? row.querySelector(".forceForkBtn") : null;
+          if (btn) openForkModal(btn, true);
         });
 
         forkCancel.addEventListener("click", closeForkModal);
@@ -2279,12 +2402,18 @@
             return;
           }
 
+          const row = activeForkContext.button.closest(".branchItem");
+
           if (activeForkContext.forced) {
             activeForkContext.button.classList.remove("forced");
             activeForkContext.button.textContent = "Force Fork";
+            clearForkBadge(row);
           } else {
             activeForkContext.button.classList.add("forced");
-            activeForkContext.button.textContent = "Retract Fork";
+            activeForkContext.button.textContent = "Force Fork";
+            const startMs = Date.now();
+            ensureForkBadge(row, startMs);
+            startForkTicker();
           }
 
           closeForkModal();
@@ -2293,20 +2422,378 @@
         forkModal.addEventListener("click", (event) => {
           if (event.target === forkModal) closeForkModal();
         });
+
+        tickForkBadges();
       }
 
-      /* ===== Map (Leaflet) ===== */
-      const map = L.map("map", {
-        zoomControl: true,
-        attributionControl: true
-      }).setView([35.640126, 139.921591], 18);
+      /* ===== Map (vector land/water first, Leaflet fallback) ===== */
+      function hideUrbanLayers(style){
+        if (!style || !Array.isArray(style.layers)) return;
+        const hideById = /(building|house|poi|place|label|transit|aeroway)/i;
+        style.layers.forEach((layer) => {
+          const id = String(layer.id || "");
+          const src = String(layer["source-layer"] || "");
+          const isSymbol = layer.type === "symbol";
+          const isUrban = hideById.test(id) || hideById.test(src);
+          if (isSymbol || isUrban) {
+            layer.layout = layer.layout || {};
+            layer.layout.visibility = "none";
+          }
+        });
+      }
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 20,
-        attribution: "&copy; OpenStreetMap contributors"
-      }).addTo(map);
+      const ISLAND_BOUNDS = {
+        south: 35.628,
+        west: 139.890,
+        north: 35.651,
+        east: 139.945
+      };
+      const ISLAND_CENTER = [139.9162, 35.640126];
 
-      L.marker([35.640126, 139.921591]).addTo(map);
+      // Numbered plots you can direct me to move by ID in follow-up edits.
+      const MANUAL_PLOTS = [
+        { id: 1, lng: 139.9148, lat: 35.6442, widthM: 120, heightM: 90 },
+        { id: 2, lng: 139.9196, lat: 35.6450, widthM: 110, heightM: 85 },
+        { id: 3, lng: 139.9251, lat: 35.6444, widthM: 130, heightM: 95 },
+        { id: 4, lng: 139.9304, lat: 35.6430, widthM: 105, heightM: 80 },
+        { id: 5, lng: 139.9342, lat: 35.6396, widthM: 125, heightM: 88 },
+        { id: 6, lng: 139.9298, lat: 35.6362, widthM: 112, heightM: 86 },
+        { id: 7, lng: 139.9231, lat: 35.6348, widthM: 118, heightM: 90 },
+        { id: 8, lng: 139.9167, lat: 35.6363, widthM: 108, heightM: 84 }
+      ];
+
+      function getRoadLayerIds(style){
+        if (!style || !Array.isArray(style.layers)) return [];
+        return style.layers
+          .filter((layer) => {
+            if (!layer || layer.type !== "line") return false;
+            const id = String(layer.id || "");
+            const src = String(layer["source-layer"] || "");
+            return /(road|street|highway|transport|rail|motorway|trunk|primary|secondary|tertiary)/i.test(id) ||
+              /(road|street|highway|transport|rail|motorway|trunk|primary|secondary|tertiary)/i.test(src);
+          })
+          .map((layer) => layer.id);
+      }
+
+      const METERS_PER_DEG_LAT = 110540;
+
+      function metersPerDegLng(lat){
+        return 111320 * Math.cos((lat * Math.PI) / 180);
+      }
+
+      function lngLatToMeters(lng, lat, latRef){
+        return {
+          x: lng * metersPerDegLng(latRef),
+          y: lat * METERS_PER_DEG_LAT
+        };
+      }
+
+      function metersToLngLat(x, y, latRef){
+        return [x / metersPerDegLng(latRef), y / METERS_PER_DEG_LAT];
+      }
+
+      function toPolyFeature(lngLatCorners, id){
+        const coords = lngLatCorners.map((pt) => [pt[0], pt[1]]);
+        coords.push([lngLatCorners[0][0], lngLatCorners[0][1]]);
+        return {
+          type: "Feature",
+          properties: { id: id },
+          geometry: { type: "Polygon", coordinates: [coords] }
+        };
+      }
+
+      function makePlotPair(a, b, idBase){
+        const latRef = (a[1] + b[1]) / 2;
+        const p0 = lngLatToMeters(a[0], a[1], latRef);
+        const p1 = lngLatToMeters(b[0], b[1], latRef);
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
+        const len = Math.hypot(dx, dy);
+        if (len < 30) return [];
+
+        const ux = dx / len;
+        const uy = dy / len;
+        const px = -uy;
+        const py = ux;
+
+        const halfLen = 11;
+        const depth = 13;
+        const roadOffset = 14;
+
+        function rect(side, suffix){
+          const cx = (p0.x + p1.x) / 2 + px * side * (roadOffset + depth * 0.5);
+          const cy = (p0.y + p1.y) / 2 + py * side * (roadOffset + depth * 0.5);
+          const pA = [cx - ux * halfLen - px * side * depth * 0.5, cy - uy * halfLen - py * side * depth * 0.5];
+          const pB = [cx + ux * halfLen - px * side * depth * 0.5, cy + uy * halfLen - py * side * depth * 0.5];
+          const pC = [cx + ux * halfLen + px * side * depth * 0.5, cy + uy * halfLen + py * side * depth * 0.5];
+          const pD = [cx - ux * halfLen + px * side * depth * 0.5, cy - uy * halfLen + py * side * depth * 0.5];
+          return toPolyFeature(
+            [
+              metersToLngLat(pA[0], pA[1], latRef),
+              metersToLngLat(pB[0], pB[1], latRef),
+              metersToLngLat(pC[0], pC[1], latRef),
+              metersToLngLat(pD[0], pD[1], latRef)
+            ],
+            idBase + suffix
+          );
+        }
+
+        return [rect(1, "-a"), rect(-1, "-b")];
+      }
+
+      function buildRoadPlots(map, roadLayerIds){
+        if (!roadLayerIds.length) return [];
+        let features = [];
+        try {
+          features = map.queryRenderedFeatures(undefined, { layers: roadLayerIds });
+        } catch (_) {
+          return [];
+        }
+
+        const out = [];
+        const seen = new Set();
+        const maxPlots = 320;
+
+        features.forEach((feature, fIndex) => {
+          if (!feature || !feature.geometry) return;
+          const geom = feature.geometry;
+          const lines = [];
+          if (geom.type === "LineString" && Array.isArray(geom.coordinates)) lines.push(geom.coordinates);
+          if (geom.type === "MultiLineString" && Array.isArray(geom.coordinates)) {
+            geom.coordinates.forEach((line) => lines.push(line));
+          }
+
+          lines.forEach((line, lIndex) => {
+            if (!Array.isArray(line) || line.length < 2) return;
+            for (let i = 0; i < line.length - 1; i += 1) {
+              if (out.length >= maxPlots) return;
+              const a = line[i];
+              const b = line[i + 1];
+              if (!a || !b) continue;
+              const latRef = (a[1] + b[1]) / 2;
+              const p0 = lngLatToMeters(a[0], a[1], latRef);
+              const p1 = lngLatToMeters(b[0], b[1], latRef);
+              const segLen = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+              if (segLen < 70) continue;
+
+              const steps = Math.min(2, Math.max(1, Math.floor(segLen / 140)));
+              for (let s = 0; s < steps; s += 1) {
+                if (out.length >= maxPlots) return;
+                const t0 = (s + 0.15) / steps;
+                const t1 = (s + 0.85) / steps;
+                const q0 = [a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0];
+                const q1 = [a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1];
+                const q0m = lngLatToMeters(q0[0], q0[1], latRef);
+                const q1m = lngLatToMeters(q1[0], q1[1], latRef);
+                const key = [
+                  Math.round(q0m.x / 8), Math.round(q0m.y / 8),
+                  Math.round(q1m.x / 8), Math.round(q1m.y / 8)
+                ].join(":");
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push(...makePlotPair(q0, q1, "plot-" + fIndex + "-" + lIndex + "-" + i + "-" + s));
+              }
+            }
+          });
+        });
+
+        return out.slice(0, maxPlots);
+      }
+
+      function setupRoadPlots(map){
+        const style = map.getStyle();
+        const roadLayerIds = getRoadLayerIds(style);
+        if (!roadLayerIds.length) return;
+
+        const sourceId = "road-plots-source";
+        const fillId = "road-plots-fill";
+        const lineId = "road-plots-line";
+
+        if (!map.getSource(sourceId)) {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: { type: "FeatureCollection", features: [] }
+          });
+        }
+        if (!map.getLayer(fillId)) {
+          map.addLayer({
+            id: fillId,
+            type: "fill",
+            source: sourceId,
+            paint: {
+              "fill-color": "rgba(180, 140, 85, 0.26)",
+              "fill-outline-color": "rgba(197, 163, 110, 0.36)"
+            }
+          });
+        }
+        if (!map.getLayer(lineId)) {
+          map.addLayer({
+            id: lineId,
+            type: "line",
+            source: sourceId,
+            paint: {
+              "line-color": "rgba(225, 194, 138, 0.45)",
+              "line-width": 1
+            }
+          });
+        }
+
+        let timer = null;
+        let lastRefreshZoom = map.getZoom();
+        const refresh = () => {
+          const source = map.getSource(sourceId);
+          if (!source) return;
+          const plots = buildRoadPlots(map, roadLayerIds);
+          source.setData({ type: "FeatureCollection", features: plots });
+        };
+        const refreshDebounced = () => {
+          clearTimeout(timer);
+          timer = setTimeout(refresh, 180);
+        };
+
+        refresh();
+        map.on("moveend", () => {
+          const z = map.getZoom();
+          if (Math.abs(z - lastRefreshZoom) > 0.0001) {
+            lastRefreshZoom = z;
+            return;
+          }
+          refreshDebounced();
+        });
+      }
+
+      function plotRectFromMeters(plot){
+        const halfW = (plot.widthM || 100) * 0.5;
+        const halfH = (plot.heightM || 80) * 0.5;
+        const latRef = plot.lat;
+        const centerM = lngLatToMeters(plot.lng, plot.lat, latRef);
+        const pA = metersToLngLat(centerM.x - halfW, centerM.y - halfH, latRef);
+        const pB = metersToLngLat(centerM.x + halfW, centerM.y - halfH, latRef);
+        const pC = metersToLngLat(centerM.x + halfW, centerM.y + halfH, latRef);
+        const pD = metersToLngLat(centerM.x - halfW, centerM.y + halfH, latRef);
+        const feature = toPolyFeature([pA, pB, pC, pD], "manual-plot-" + plot.id);
+        feature.properties = {
+          id: String(plot.id),
+          label: String(plot.id),
+          center: [plot.lng, plot.lat]
+        };
+        return feature;
+      }
+
+      function setupManualPlots(map){
+        const sourceId = "manual-plots-source";
+        const fillId = "manual-plots-fill";
+        const lineId = "manual-plots-line";
+        const labelId = "manual-plots-label";
+        const features = MANUAL_PLOTS.map(plotRectFromMeters);
+
+        if (!map.getSource(sourceId)) {
+          map.addSource(sourceId, {
+            type: "geojson",
+            data: { type: "FeatureCollection", features: features }
+          });
+        } else {
+          map.getSource(sourceId).setData({ type: "FeatureCollection", features: features });
+        }
+
+        if (!map.getLayer(fillId)) {
+          map.addLayer({
+            id: fillId,
+            type: "fill",
+            source: sourceId,
+            paint: {
+              "fill-color": "rgba(185, 146, 92, 0.30)",
+              "fill-outline-color": "rgba(221, 193, 142, 0.42)"
+            }
+          });
+        }
+        if (!map.getLayer(lineId)) {
+          map.addLayer({
+            id: lineId,
+            type: "line",
+            source: sourceId,
+            paint: {
+              "line-color": "rgba(235, 213, 174, 0.78)",
+              "line-width": 1.3
+            }
+          });
+        }
+        if (!map.getLayer(labelId)) {
+          map.addLayer({
+            id: labelId,
+            type: "symbol",
+            source: sourceId,
+            layout: {
+              "text-field": ["get", "label"],
+              "text-size": 12,
+              "text-font": ["Noto Sans Regular", "Arial Unicode MS Regular"]
+            },
+            paint: {
+              "text-color": "rgba(250, 235, 210, 0.96)",
+              "text-halo-color": "rgba(18, 12, 9, 0.92)",
+              "text-halo-width": 1.2
+            }
+          });
+        }
+      }
+
+      function initLeafletFallback(){
+        const bounds = L.latLngBounds(
+          L.latLng(ISLAND_BOUNDS.south, ISLAND_BOUNDS.west),
+          L.latLng(ISLAND_BOUNDS.north, ISLAND_BOUNDS.east)
+        );
+        const map = L.map("map", {
+          zoomControl: true,
+          attributionControl: true,
+          maxBounds: bounds,
+          maxBoundsViscosity: 1.0
+        }).setView([ISLAND_CENTER[1], ISLAND_CENTER[0]], 16);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 20,
+          attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+        map.setMaxBounds(bounds);
+        L.marker([ISLAND_CENTER[1], ISLAND_CENTER[0]]).addTo(map);
+      }
+
+      async function initVectorMap(){
+        if (!window.maplibregl) return false;
+
+        try {
+          const styleUrl = "https://tiles.openfreemap.org/styles/liberty";
+          const response = await fetch(styleUrl, { mode: "cors" });
+          if (!response.ok) return false;
+          const style = await response.json();
+          hideUrbanLayers(style);
+
+          const map = new maplibregl.Map({
+            container: "map",
+            style: style,
+            center: ISLAND_CENTER,
+            zoom: 16,
+            maxBounds: [
+              [ISLAND_BOUNDS.west, ISLAND_BOUNDS.south],
+              [ISLAND_BOUNDS.east, ISLAND_BOUNDS.north]
+            ],
+            minZoom: 14,
+            attributionControl: true
+          });
+
+          map.addControl(new maplibregl.NavigationControl(), "top-left");
+          map.on("load", () => {
+            setupManualPlots(map);
+            new maplibregl.Marker({ color: "#e1c28a" }).setLngLat(ISLAND_CENTER).addTo(map);
+          });
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      initVectorMap().then((ok) => {
+        if (!ok) initLeafletFallback();
+      });
 
     })();
   </script>
