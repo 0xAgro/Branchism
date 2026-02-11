@@ -98,6 +98,75 @@
       text-underline-offset: 2px;
     }
 
+    .deployBanner{
+      margin-bottom: 8px;
+      padding: 8px 12px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(90,155,110,0.45);
+      background: linear-gradient(180deg, rgba(18,40,24,0.78), rgba(11,28,17,0.86));
+      box-shadow: inset 0 1px 0 rgba(184,236,198,0.09);
+    }
+    .deployHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    .deployTitle{
+      color: rgba(198,238,208,0.95);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .deployState{
+      color: rgba(160,229,180,0.9);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .deployTrack{
+      position: relative;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(140,208,158,0.5);
+      background: rgba(8,18,12,0.72);
+      overflow: visible;
+    }
+    .deployFill{
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(111,224,146,0.88), rgba(56,174,105,0.92));
+      box-shadow: 0 0 10px rgba(94,210,130,0.45);
+    }
+    .deployMark{
+      position:absolute;
+      left: 70%;
+      top: -3px;
+      bottom: -3px;
+      width: 2px;
+      background: rgba(195,247,210,0.96);
+      box-shadow: 0 0 8px rgba(126,232,162,0.6);
+    }
+    .deployMarkLabel{
+      position: absolute;
+      left: 70%;
+      bottom: calc(100% + 2px);
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(190,244,206,0.95);
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
     /* =========================
        INTRO (unchanged)
        ========================= */
@@ -170,7 +239,7 @@
       gap:14px;
       margin-top: 0;
       margin-bottom: 36px;
-      padding: 12px 14px 14px;
+      padding: 0 12px;
       border-radius: var(--radius);
       border: 1px solid rgba(167,122,77,0.35);
       background:
@@ -1539,6 +1608,18 @@
         This application is a mock example. By using this app, you agree to the legal disclaimer
         <a href="https://github.com/0xAgro/Branchism/blob/main/README.md" target="_blank" rel="noopener noreferrer">here</a>.
         You can also <a href="https://github.com/0xAgro/Branchism?tab=readme-ov-file#support" target="_blank" rel="noopener noreferrer">support active research</a> (Ethereum accepted).
+      </div>
+
+      <div class="deployBanner" aria-label="Emergency Facet Deployment status">
+        <div class="deployHead">
+          <span class="deployTitle">Emergency Facet Deployment</span>
+          <span class="deployState">Not Enacted</span>
+        </div>
+        <div class="deployTrack" aria-hidden="true">
+          <span class="deployFill"></span>
+          <span class="deployMark"></span>
+          <span class="deployMarkLabel">70%</span>
+        </div>
       </div>
 
       <header class="topbar">
