@@ -1,9 +1,5 @@
 # Branchism
 
-🚨 This project is currently under active development 🚨
-
-For a general and changing understanding please see [this article](https://open.substack.com/pub/0xagro/p/tool-1-branchism-modified-mutualism).
-
 ## Legal Disclaimer
 
 *This repository contains conceptual designs, illustrative pseudocode, simulations, and interface mock-ups created solely for theoretical, educational, and research purposes.*
@@ -13,6 +9,12 @@ For a general and changing understanding please see [this article](https://open.
 *Any implementation or use of ideas derived from this repository is undertaken independently and entirely at the discretion and responsibility of the implementing party. The author assumes no responsibility for downstream use, modification, deployment, or interpretation of these materials.*
 
 *This project does not claim authority over, nor does it seek to replace or interfere with, any existing legal, governmental, or institutional system. All content is presented in compliance with applicable Japanese law.*
+
+---
+
+🚨 This project is currently under active development 🚨
+
+For a general and changing understanding please see [this article](https://open.substack.com/pub/0xagro/p/tool-1-branchism-modified-mutualism).
 
 ---
 
