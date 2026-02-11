@@ -2,6 +2,8 @@
 
 🚨 This project is currently under active development 🚨
 
+For a general and changing understanding please see [this article](https://open.substack.com/pub/0xagro/p/tool-1-branchism-modified-mutualism).
+
 ## Legal Disclaimer
 
 *This repository contains conceptual designs, illustrative pseudocode, simulations, and interface mock-ups created solely for theoretical, educational, and research purposes.*
@@ -19,6 +21,7 @@
 ```text
 ├── src/                # Illustrative mock interface only; no real assets, identities, or deployable functionality.
 └── mock_contracts/     # Non-executable pseudocode for theoretical illustration only; not deployable and not intended for implementation.
+└── documents/          # Related documents and economic models.
 ```
 
 ---
