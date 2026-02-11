@@ -580,7 +580,7 @@
     .sortControl{
       flex: 0 0 auto;
       min-width: 220px;
-      padding: 10px 12px;
+      padding: 10px 34px 10px 12px;
       border-radius: 999px;
       border: 1px solid rgba(167,122,77,0.35);
       background: rgba(20,13,10,0.55);
@@ -590,6 +590,12 @@
       font-weight: 650;
       outline: none;
       cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e1c28a' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 20px center;
     }
 
     /* Cards (reference layout) */
@@ -1204,6 +1210,118 @@
       border-color: rgba(225,194,138,0.55);
       transform: translateY(-1px);
     }
+
+    .proposalModal{
+      position: fixed;
+      inset: 0;
+      background: rgba(7,5,4,0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      padding: 16px;
+    }
+    .proposalModal.open{
+      display: flex;
+    }
+    .proposalCard{
+      width: min(620px, 96vw);
+      border-radius: 14px;
+      border: 1px solid rgba(167,122,77,0.38);
+      background: rgba(18,12,9,0.98);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.6);
+      padding: 16px;
+    }
+    .proposalCard h3{
+      margin: 0 0 10px;
+      color: var(--gold-3);
+      font-family: "Georgia","Times New Roman",serif;
+      font-size: 20px;
+    }
+    .proposalCard p{
+      margin: 0;
+      color: rgba(232,210,184,0.84);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .proposalInput{
+      width: 100%;
+      min-height: 128px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(167,122,77,0.35);
+      background: rgba(20,13,10,0.8);
+      color: rgba(239,230,214,0.94);
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+      font-family: ui-sans-serif, system-ui;
+    }
+    .proposalInput:focus{
+      border-color: rgba(225,194,138,0.6);
+      box-shadow: 0 0 0 2px rgba(225,194,138,0.18);
+    }
+    .proposalActions{
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .proposalActionsLeft{
+      justify-content: flex-start;
+    }
+    .proposalBtn{
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(167,122,77,0.35);
+      background: rgba(20,13,10,0.55);
+      color: rgba(239,230,214,0.92);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .proposalBtn.primary{
+      color: var(--gold-3);
+      border-color: rgba(225,194,138,0.6);
+      background: linear-gradient(180deg, rgba(120,86,56,0.42), rgba(35,23,17,0.85));
+    }
+    .proposalBtn:hover{
+      transform: translateY(-1px);
+    }
+    .proposalStage[hidden]{
+      display: none;
+    }
+    .proposalLoading{
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      padding: 18px 10px;
+    }
+    .proposalSpinner{
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 3px solid rgba(225,194,138,0.2);
+      border-top-color: rgba(225,194,138,0.95);
+      animation: proposalSpin 0.9s linear infinite;
+    }
+    @keyframes proposalSpin{
+      to { transform: rotate(360deg); }
+    }
+    .proposalRiskList{
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: rgba(239,230,214,0.86);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .proposalLoss{
+      margin-top: 12px;
+      color: var(--gold-3);
+      font-size: 14px;
+      font-weight: 800;
+    }
     .list{
       margin:0;
       padding-left: 18px;
@@ -1316,6 +1434,7 @@
         <div class="right">
           <nav class="tabs" aria-label="Primary">
             <a class="tab active" href="explore.html" aria-current="page">Explore</a>
+            <a class="tab" href="contract.html">Contract Work</a>
             <a class="tab" href="clone.html">Clone</a>
             <a class="tab" href="manage.html">Manage</a>
           </nav>
@@ -1351,6 +1470,15 @@
 
     <!-- ===================== PAGE: YOUR AREA ===================== -->
     <main class="page active" id="page-area" aria-label="Explore">
+      <div class="panel" style="margin-bottom:12px;">
+        <div class="kv" style="border-bottom:0; padding:6px 0; display:flex; align-items:center; gap:8px;">
+          <span style="display:inline-flex; width:18px; height:18px; border-radius:999px; align-items:center; justify-content:center; background:rgba(170,28,28,0.95); border:1px solid rgba(255,195,195,0.5); color:#fff3dc; flex:0 0 auto;">
+            <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 15.4a1.2 1.2 0 1 1 1.2-1.2 1.2 1.2 0 0 1-1.2 1.2Zm1.1-4.3h-2.2V6.8h2.2Z"/></svg>
+          </span>
+          <span>This section is under development.</span>
+          <b>Notice</b>
+        </div>
+      </div>
       <div class="mapPanel">
         <div class="mapHeader">
           <div style="display:flex; gap:10px; align-items:center;">
@@ -1612,7 +1740,7 @@
           <div class="panel">
             <div class="panelHeader">
               <h3>Ruleset Change</h3>
-              <button class="createTaskBtn" type="button">Create Task</button>
+              <button class="createTaskBtn" type="button">Propose change</button>
             </div>
             <ul class="list">
               <li>Switch bean supplier to Yumenosora Roasters (0x7b3e...c9a1) — effective Mar 1</li>
@@ -1624,6 +1752,34 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <div class="proposalModal" id="proposalModal" aria-hidden="true">
+    <div class="proposalCard" role="dialog" aria-modal="true" aria-labelledby="proposalTitle">
+      <section class="proposalStage" id="proposalStageForm">
+        <h3 id="proposalTitle">Propose Ruleset Change</h3>
+        <p>Describe the operational change you want branches to adopt.</p>
+        <textarea id="proposalInput" class="proposalInput" placeholder="Example: shift supplier allocation to 60% local roasters and update milk handling policy."></textarea>
+        <div class="proposalActions">
+          <button type="button" class="proposalBtn" id="proposalCancel">Cancel</button>
+          <button type="button" class="proposalBtn primary" id="proposalSubmit">Propose</button>
+        </div>
+      </section>
+      <section class="proposalStage proposalLoading" id="proposalStageLoading" hidden>
+        <div class="proposalSpinner" aria-hidden="true"></div>
+        <p>gettting response from branches...</p>
+      </section>
+      <section class="proposalStage" id="proposalStageResult" hidden>
+        <h3>Branch Pushback Detected</h3>
+        <p>The following branches signaled fork risk for this change:</p>
+        <ul class="proposalRiskList" id="proposalRiskList"></ul>
+        <p class="proposalLoss" id="proposalLoss"></p>
+        <div class="proposalActions proposalActionsLeft">
+          <button type="button" class="proposalBtn" id="proposalRevert">Revert Changes</button>
+          <button type="button" class="proposalBtn primary" id="proposalProceed">Proceed Despite Risk</button>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -1822,6 +1978,114 @@
         });
 
         updateEmptyState();
+      }
+
+      /* ===== Ruleset proposal flow ===== */
+      const proposeBtn = document.querySelector(".createTaskBtn");
+      const proposalModal = document.getElementById("proposalModal");
+      const proposalInput = document.getElementById("proposalInput");
+      const proposalCancel = document.getElementById("proposalCancel");
+      const proposalSubmit = document.getElementById("proposalSubmit");
+      const proposalRevert = document.getElementById("proposalRevert");
+      const proposalProceed = document.getElementById("proposalProceed");
+      const proposalStageForm = document.getElementById("proposalStageForm");
+      const proposalStageLoading = document.getElementById("proposalStageLoading");
+      const proposalStageResult = document.getElementById("proposalStageResult");
+      const proposalRiskList = document.getElementById("proposalRiskList");
+      const proposalLoss = document.getElementById("proposalLoss");
+      let latestAtRisk = [];
+
+      if (proposeBtn && proposalModal) {
+        const monthlyRevenueText = (document.querySelector(".heroStats .stat .value") || {}).textContent || "0";
+        const monthlyRevenue = Number(monthlyRevenueText.replace(/[^0-9.]/g, "")) || 0;
+
+        function openProposal(){
+          proposalModal.classList.add("open");
+          proposalModal.setAttribute("aria-hidden", "false");
+          proposalStageForm.hidden = false;
+          proposalStageLoading.hidden = true;
+          proposalStageResult.hidden = true;
+          proposalInput.value = "";
+          proposalInput.focus();
+        }
+
+        function closeProposal(){
+          proposalModal.classList.remove("open");
+          proposalModal.setAttribute("aria-hidden", "true");
+        }
+
+        function showLoading(){
+          proposalStageForm.hidden = true;
+          proposalStageLoading.hidden = false;
+          proposalStageResult.hidden = true;
+        }
+
+        function showResult(){
+          const atRisk = [
+            { addr: "0x5d9c...10fa", royalty: 1.6 },
+            { addr: "0x9b42...7e0d", royalty: 1.3 },
+            { addr: "0x1c8e...a2b9", royalty: 1.1 }
+          ];
+
+          const totalRoyalty = atRisk.reduce((sum, x) => sum + x.royalty, 0);
+          const estMonthlyLoss = monthlyRevenue * (totalRoyalty / 100);
+
+          latestAtRisk = atRisk.slice();
+
+          proposalRiskList.innerHTML = atRisk
+            .map((r) => "<li>" + r.addr + " \u2022 " + r.royalty.toFixed(1) + "% royalty</li>")
+            .join("");
+
+          proposalLoss.textContent =
+            "If they fork, estimated loss is " +
+            "\u039e" + estMonthlyLoss.toFixed(4) +
+            " / month (" +
+            "\u039e" + (estMonthlyLoss * 12).toFixed(4) +
+            " / year).";
+
+          proposalStageForm.hidden = true;
+          proposalStageLoading.hidden = true;
+          proposalStageResult.hidden = false;
+        }
+
+        proposeBtn.addEventListener("click", openProposal);
+        proposalCancel.addEventListener("click", closeProposal);
+        proposalRevert.addEventListener("click", closeProposal);
+
+        function proceedDespiteRisk(){
+          if (!latestAtRisk.length) {
+            closeProposal();
+            return;
+          }
+
+          const rows = Array.from(document.querySelectorAll(".branchList .branchItem"));
+          rows.forEach((row) => {
+            const addrEl = row.querySelector(".branchAddr");
+            if (!addrEl) return;
+            const addr = addrEl.textContent.trim();
+            if (latestAtRisk.some((entry) => entry.addr === addr)) {
+              row.remove();
+            }
+          });
+
+          closeProposal();
+        }
+
+        proposalProceed.addEventListener("click", proceedDespiteRisk);
+
+        proposalModal.addEventListener("click", (event) => {
+          if (event.target === proposalModal) closeProposal();
+        });
+
+        proposalSubmit.addEventListener("click", () => {
+          if (!proposalInput.value.trim()) {
+            proposalInput.focus();
+            return;
+          }
+
+          showLoading();
+          setTimeout(showResult, 2200);
+        });
       }
 
       /* ===== Map (Leaflet) ===== */
