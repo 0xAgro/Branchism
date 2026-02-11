@@ -1193,6 +1193,15 @@
     .panelHeader h3{
       margin:0;
     }
+    .ruleDate{
+      margin-left: 8px;
+      font-size: 12px;
+      font-family: ui-sans-serif, system-ui;
+      font-weight: 600;
+      color: rgba(232,210,184,0.7);
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
     .createTaskBtn{
       padding: 6px 10px;
       border-radius: 999px;
@@ -1697,10 +1706,10 @@
             </div>
             <p class="branchReqRule">Auto-accept threshold: 0.5% royalty</p>
             <div class="branchReqList">
-              <div class="branchReqItem"><span>0x7d13...a8f4</span><span class="branchReqMeta"><span class="branchReqPct">0.1%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
-              <div class="branchReqItem"><span>0x2bc9...e11a</span><span class="branchReqMeta"><span class="branchReqPct">0.2%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
-              <div class="branchReqItem"><span>0x94ff...3c0d</span><span class="branchReqMeta"><span class="branchReqPct">0.3%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
               <div class="branchReqItem"><span>0x5a10...b772</span><span class="branchReqMeta"><span class="branchReqPct">0.4%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
+              <div class="branchReqItem"><span>0x94ff...3c0d</span><span class="branchReqMeta"><span class="branchReqPct">0.3%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
+              <div class="branchReqItem"><span>0x2bc9...e11a</span><span class="branchReqMeta"><span class="branchReqPct">0.2%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
+              <div class="branchReqItem"><span>0x7d13...a8f4</span><span class="branchReqMeta"><span class="branchReqPct">0.1%</span><button class="branchAcceptBtn" type="button">Accept</button></span></div>
             </div>
           </div>
         </div>
@@ -1730,7 +1739,7 @@
 
           <div class="panel">
             <div class="panelHeader">
-              <h3>Ruleset Change</h3>
+              <h3>Recent Rule Changes <span class="ruleDate" id="ruleDateLabel"></span></h3>
               <button class="createTaskBtn" type="button">Propose change</button>
             </div>
             <ul class="list">
@@ -1973,6 +1982,11 @@
 
       /* ===== Ruleset proposal flow ===== */
       const proposeBtn = document.querySelector(".createTaskBtn");
+      const ruleDateLabel = document.getElementById("ruleDateLabel");
+      if (ruleDateLabel) {
+        const now = new Date();
+        ruleDateLabel.textContent = now.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+      }
       const proposalModal = document.getElementById("proposalModal");
       const proposalInput = document.getElementById("proposalInput");
       const proposalCancel = document.getElementById("proposalCancel");
