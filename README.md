@@ -30,4 +30,13 @@ For a general and changing understanding please see [this article](https://open.
 
 ## Support
 
-Please consider supporting further research [here](https://buymeacoffee.com/0xagro).
+If you would like to support continued independent theoretical research, you may do so here:
+
+0x5811aa50e366D7040805CFfdA6880E11363fD961
+
+or
+
+https://buymeacoffee.com/0xagro
+
+Contributions are entirely voluntary and are provided solely to support independent theoretical research. No rights, privileges, governance participation, or future claims are granted in exchange for any contribution. Donations are non-refundable.
+
