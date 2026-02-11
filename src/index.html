@@ -36,6 +36,7 @@
     *{ box-sizing:border-box; }
     html,body{ min-height:100%; }
     html{
+      background-color: #1a130f;
       background:
         radial-gradient(900px 700px at 30% 10%, rgba(146,106,70,0.20), transparent 60%),
         radial-gradient(900px 700px at 90% 40%, rgba(98,69,46,0.18), transparent 60%),
@@ -52,6 +53,7 @@
       overflow-y: auto;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none; /* IE/Edge legacy */
+      background-color: #1a130f;
       background: transparent;
     }
     body::-webkit-scrollbar{ width:0; height:0; }
@@ -254,6 +256,7 @@
       color: var(--gold-3);
       text-shadow: 0 10px 26px rgba(0,0,0,0.55);
       line-height: 1;
+      white-space: nowrap;
     }
 
     .right{
@@ -1014,7 +1017,10 @@
       .left{
         width: 100%;
         min-width: 0;
-        justify-content: flex-start;
+        justify-content: center;
+        padding-left: 0;
+        margin-top: 0;
+        position: relative;
       }
       .right{
         width: 100%;
@@ -1033,17 +1039,27 @@
       }
       .profileMenu{
         position: absolute;
-        top: 34px;
+        top: 12px;
         right: 12px;
         z-index: 12;
       }
       .profile{ width:100%; justify-content:space-between; }
-      .brand{ min-width: unset; }
+      .brand{
+        min-width: unset;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+      .brandTitle{
+        position: static;
+        margin: 0;
+        text-align: center;
+      }
       .card{ grid-template-columns: 1fr; }
       .thumb{ height: 190px; }
       .cardAction{ justify-content:flex-start; }
-      .logo{ width: 90px; height: 90px; }
-      .brandTitle h1{ font-size: 26px; }
+      .logo{ width: 64px; height: 64px; }
+      .brandTitle h1{ font-size: 14px; }
     }
   </style>
 </head>
