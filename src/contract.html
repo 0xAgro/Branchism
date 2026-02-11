@@ -67,6 +67,38 @@
     }
     body::-webkit-scrollbar{ width:0; height:0; }
 
+    .legalBanner{
+      position: relative;
+      padding-right: 34px;
+    }
+    .legalDismiss{
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(167,122,77,0.45);
+      border-radius: 999px;
+      background: rgba(24,16,12,0.88);
+      color: rgba(232,210,184,0.9);
+      font-size: 12px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .legalDismiss:hover,
+    .legalDismiss:focus-visible{
+      border-color: rgba(225,194,138,0.78);
+      color: rgba(245,227,198,0.98);
+      background: rgba(40,26,18,0.92);
+    }
+    .legalBanner.isDismissed{
+      display: none;
+    }
+
     a{ color:inherit; text-decoration:none; }
     .wrap{
       max-width: var(--max);
@@ -1379,6 +1411,7 @@
         This application is a mock example. By using this app, you agree to the legal disclaimer
         <a href="https://github.com/0xAgro/Branchism/blob/main/README.md" target="_blank" rel="noopener noreferrer">here</a>.
         You can also <a href="https://github.com/0xAgro/Branchism?tab=readme-ov-file#support" target="_blank" rel="noopener noreferrer">support active research</a> (Ethereum accepted).
+        <button class="legalDismiss" type="button" aria-label="Dismiss legal notice">&times;</button>
       </div>
 
       <div class="deployBanner" aria-label="Emergency Facet Deployment status">
@@ -1654,7 +1687,24 @@
 
       document.getElementById('introLine2').textContent = seasonText[season] || "夏です。";
       document.getElementById('introTree').src = seasonImage[season] || "images/spring.png";
-      document.getElementById('headerLogo').src = seasonImage[season] || "images/spring.png";
+      document.getElementById("headerLogo").src = seasonImage[season] || "images/spring.png";
+
+      const legalBanner = document.querySelector(".legalBanner");
+      const legalDismissBtn = document.querySelector(".legalDismiss");
+      const legalDismissKey = "root_legal_dismissed";
+      try {
+        if (localStorage.getItem(legalDismissKey) === "1" && legalBanner) {
+          legalBanner.classList.add("isDismissed");
+        }
+      } catch (_) {}
+      if (legalDismissBtn && legalBanner) {
+        legalDismissBtn.addEventListener("click", () => {
+          legalBanner.classList.add("isDismissed");
+          try {
+            localStorage.setItem(legalDismissKey, "1");
+          } catch (_) {}
+        });
+      }
 
       /* ===== Intro sequence (0.75x, tree lingers longer) ===== */
       const intro = document.getElementById('intro');
