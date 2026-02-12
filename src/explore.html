@@ -3834,15 +3834,15 @@
         const a = map.latLngToContainerPoint([p1[1], p1[0]]);
         const b = map.latLngToContainerPoint([p2[1], p2[0]]);
         const widthPx = Math.max(24, Math.round(Math.abs(b.x - a.x)));
-        const tick20Px = Math.max(1, Math.round(widthPx * 0.2));
+        const tick30Px = Math.max(1, Math.round(widthPx * 0.3));
 
         const el = document.createElement("div");
         el.className = "mapUnitScale";
         el.innerHTML =
           '<div>100 units</div>' +
           '<div class="mapUnitScaleBar" style="width:' + widthPx + 'px">' +
-            '<span class="mapUnitTick" style="left:' + tick20Px + 'px"></span>' +
-            '<span class="mapUnitTickLabel" style="left:' + tick20Px + 'px">20</span>' +
+            '<span class="mapUnitTick" style="left:' + tick30Px + 'px"></span>' +
+            '<span class="mapUnitTickLabel" style="left:' + tick30Px + 'px">30</span>' +
           '</div>' +
           '<div class="mapUnitScaleSub">1 unit = 1.9m</div>';
         map.getContainer().appendChild(el);
@@ -3856,15 +3856,15 @@
         const a = map.project([p1[0], p1[1]]);
         const b = map.project([p2[0], p2[1]]);
         const widthPx = Math.max(24, Math.round(Math.abs(b.x - a.x)));
-        const tick20Px = Math.max(1, Math.round(widthPx * 0.2));
+        const tick30Px = Math.max(1, Math.round(widthPx * 0.3));
 
         const el = document.createElement("div");
         el.className = "mapUnitScale";
         el.innerHTML =
           '<div>100 units</div>' +
           '<div class="mapUnitScaleBar" style="width:' + widthPx + 'px">' +
-            '<span class="mapUnitTick" style="left:' + tick20Px + 'px"></span>' +
-            '<span class="mapUnitTickLabel" style="left:' + tick20Px + 'px">20</span>' +
+            '<span class="mapUnitTick" style="left:' + tick30Px + 'px"></span>' +
+            '<span class="mapUnitTickLabel" style="left:' + tick30Px + 'px">30</span>' +
           '</div>' +
           '<div class="mapUnitScaleSub">1 unit = 1.9m</div>';
         map.getContainer().appendChild(el);
