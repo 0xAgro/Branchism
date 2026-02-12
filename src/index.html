@@ -557,6 +557,20 @@
       margin-left: 6px;
       letter-spacing: 0.2px;
     }
+    .landTaxTrigger{
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin-left: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold-3);
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
 
     /* =========================
        Sub-tabs header inside pages
@@ -1692,6 +1706,7 @@
               <div class="profile">
                 <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
                 <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
+                <div class="pill">Land Tax / yr <button type="button" class="landTaxTrigger" id="landTaxTrigger">Ξ0.2345</button></div>
               </div>
             </div>
           </div>
@@ -2151,6 +2166,34 @@
       if (search) search.addEventListener('input', renderCloneCards);
       if (sortClone) sortClone.addEventListener('change', renderCloneCards);
       renderCloneCards();
+
+      /* ===== Land tax popup (all tabs) ===== */
+      const landTaxTrigger = document.getElementById("landTaxTrigger");
+      const LAND_TAX_KEY = "branchism_land_tax_yearly";
+      function readLandTaxValue(){
+        try {
+          const raw = Number(localStorage.getItem(LAND_TAX_KEY));
+          if (Number.isFinite(raw) && raw >= 0) return raw;
+        } catch (_) {}
+        return 0.2345;
+      }
+      function fmtEth(value){
+        return "\u039e" + Number(value).toFixed(4);
+      }
+      if (landTaxTrigger) {
+        const taxValue = readLandTaxValue();
+        landTaxTrigger.textContent = fmtEth(taxValue);
+        landTaxTrigger.addEventListener("click", () => {
+          const residencyTax = 0;
+          const businessTax = taxValue;
+          alert(
+            "Land Tax Breakdown\n\n" +
+            "Primary residency: " + fmtEth(residencyTax) + " / yr (zero due to size constraint)\n" +
+            "Cafe Nakamoto business land tax: " + fmtEth(businessTax) + " / yr (taken directly from profit)\n\n" +
+            "Total annual land tax: " + fmtEth(residencyTax + businessTax) + " / yr"
+          );
+        });
+      }
 
       /* ===== Branch request acceptance (session only) ===== */
       const branchRequestsEl = document.querySelector('.branchRequests');

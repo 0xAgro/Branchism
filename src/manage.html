@@ -384,6 +384,14 @@
       align-items:center;
       gap:10px;
     }
+    .profileMenu::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 10px;
+    }
     .profileNotify{
       position: absolute;
       top: -6px;
@@ -468,6 +476,7 @@
 
     .profileBtn:hover ~ .profilePanel,
     .profileBtn:focus-visible ~ .profilePanel,
+    .profileMenu:hover .profilePanel,
     .profilePanel:hover,
     .profileMenu:focus-within .profilePanel{
       display:block;
@@ -511,6 +520,8 @@
       color: var(--gold-3);
       background: rgba(86,60,38,0.45);
       border-color: rgba(193,143,95,0.45);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35), 0 0 0 1px rgba(209,164,110,0.22) inset;
     }
     .tab.active{
       color: var(--gold-3);
@@ -556,6 +567,20 @@
       color: var(--gold-3);
       margin-left: 6px;
       letter-spacing: 0.2px;
+    }
+    .landTaxTrigger{
+      appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin-left: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold-3);
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     /* =========================
@@ -999,6 +1024,15 @@
       font-variant-numeric: tabular-nums;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
+      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+    .branchItem:hover,
+    .branchItem:focus-within{
+      transform: scale(1.015);
+      border-color: rgba(225,194,138,0.38);
+      background: rgba(25,17,13,0.72);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.35);
     }
     .branchLeft{
       display:flex;
@@ -1060,18 +1094,13 @@
       white-space: nowrap;
       z-index: 4;
       box-shadow: 0 10px 18px rgba(0,0,0,0.45);
+      display: none;
     }
     .forceForkBtn:hover,
     .forceForkBtn:focus-visible{
       border-color: rgba(255,210,210,0.98);
       background: linear-gradient(180deg, rgba(214,69,69,0.78), rgba(138,34,34,0.84));
       color: #fff8f4;
-    }
-    .branchItem:hover .forceForkBtn,
-    .branchItem:focus-within .forceForkBtn{
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
     }
     .forceForkBtn.forced{
       border-color: rgba(255,188,188,0.92);
@@ -1534,6 +1563,81 @@
       font-size: 14px;
       font-weight: 800;
     }
+    .performanceMeta{
+      margin-top: 6px;
+      color: rgba(232,210,184,0.76);
+      font-size: 12px;
+    }
+    .performanceChart{
+      margin-top: 12px;
+      border: 1px solid rgba(167,122,77,0.26);
+      border-radius: 12px;
+      background: rgba(20,13,10,0.72);
+      padding: 8px 8px 10px;
+    }
+    .performanceLegend{
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(232,210,184,0.84);
+    }
+    .legendItem{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legendDot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+    .performanceSvg{
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .chartAxis{
+      stroke: rgba(167,122,77,0.75);
+      stroke-width: 1;
+    }
+    .chartGrid{
+      stroke: rgba(167,122,77,0.25);
+      stroke-width: 1;
+    }
+    .chartLabel{
+      fill: rgba(232,210,184,0.82);
+      font-size: 11px;
+    }
+    .chartLineExpenses{
+      fill: none;
+      stroke: rgba(212,132,92,0.95);
+      stroke-width: 2;
+    }
+    .chartLineProfit{
+      fill: none;
+      stroke: rgba(130,217,147,0.95);
+      stroke-width: 2;
+    }
+    .chartPointProfit{
+      fill: rgba(130,217,147,0.95);
+      stroke: rgba(20,13,10,0.92);
+      stroke-width: 1;
+    }
+    .chartRoyaltyLabel{
+      fill: rgba(225,194,138,0.97);
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .performanceForkAction{
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(167,122,77,0.24);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
     .list{
       margin:0;
       padding-left: 18px;
@@ -1692,6 +1796,7 @@
               <div class="profile">
                 <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
                 <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
+                <div class="pill">Land Tax / yr <button type="button" class="landTaxTrigger" id="landTaxTrigger">Ξ0.2345</button></div>
               </div>
             </div>
           </div>
@@ -2031,6 +2136,35 @@
     </div>
   </div>
 
+  <div class="proposalModal" id="branchPerformanceModal" aria-hidden="true">
+    <div class="proposalCard" role="dialog" aria-modal="true" aria-labelledby="branchPerformanceTitle">
+      <section class="proposalStage" id="branchPerformanceStage">
+        <h3 id="branchPerformanceTitle">Branch Performance</h3>
+        <p id="branchPerformanceSummary"></p>
+        <p class="performanceMeta" id="branchPerformanceMeta"></p>
+        <div class="performanceChart" id="branchPerformanceChart"></div>
+        <div class="performanceForkAction">
+          <button type="button" class="proposalBtn" id="branchPerformanceClose">Close</button>
+          <button type="button" class="proposalBtn primary" id="branchPerformanceFork">Force Fork</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="proposalModal" id="landTaxModal" aria-hidden="true">
+    <div class="proposalCard" role="dialog" aria-modal="true" aria-labelledby="landTaxTitle">
+      <section class="proposalStage" id="landTaxStage">
+        <h3 id="landTaxTitle">Land Tax Breakdown</h3>
+        <p>Owned assets and annual tax estimate:</p>
+        <ul class="proposalRiskList" id="landTaxList"></ul>
+        <p class="proposalLoss" id="landTaxTotal"></p>
+        <div class="proposalActions proposalActionsLeft">
+          <button type="button" class="proposalBtn primary" id="landTaxClose">Close</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     (function(){
@@ -2151,6 +2285,53 @@
       if (search) search.addEventListener('input', renderCloneCards);
       if (sortClone) sortClone.addEventListener('change', renderCloneCards);
       renderCloneCards();
+
+      /* ===== Land tax breakdown modal ===== */
+      const landTaxTrigger = document.getElementById("landTaxTrigger");
+      const landTaxModal = document.getElementById("landTaxModal");
+      const landTaxList = document.getElementById("landTaxList");
+      const landTaxTotal = document.getElementById("landTaxTotal");
+      const landTaxClose = document.getElementById("landTaxClose");
+      const LAND_TAX_KEY = "branchism_land_tax_yearly";
+
+      function formatTaxEth(value){
+        return "\u039e" + Number(value).toFixed(4);
+      }
+
+      function openLandTaxModal(){
+        if (!landTaxModal || !landTaxList || !landTaxTotal) return;
+        const primaryResidencyTax = 0;
+        const cafeBusinessTax = Number(landTaxTrigger ? String(landTaxTrigger.textContent).replace(/[^0-9.]/g, "") : "0") || 0.2345;
+        const total = primaryResidencyTax + cafeBusinessTax;
+
+        landTaxList.innerHTML =
+          "<li>Primary residency \u2022 " + formatTaxEth(primaryResidencyTax) + " / yr (zero tax due to size constraint exemption)</li>" +
+          "<li>Cafe Nakamoto business land tax \u2022 " + formatTaxEth(cafeBusinessTax) + " / yr (taken directly from profit)</li>";
+        landTaxTotal.textContent = "Total annual land tax: " + formatTaxEth(total) + " / yr";
+
+        landTaxModal.classList.add("open");
+        landTaxModal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeLandTaxModal(){
+        if (!landTaxModal) return;
+        landTaxModal.classList.remove("open");
+        landTaxModal.setAttribute("aria-hidden", "true");
+      }
+
+      if (landTaxTrigger && landTaxModal) {
+        let storedTax = 0.2345;
+        try {
+          const raw = Number(localStorage.getItem(LAND_TAX_KEY));
+          if (Number.isFinite(raw) && raw >= 0) storedTax = raw;
+        } catch (_) {}
+        landTaxTrigger.textContent = formatTaxEth(storedTax);
+        landTaxTrigger.addEventListener("click", openLandTaxModal);
+        if (landTaxClose) landTaxClose.addEventListener("click", closeLandTaxModal);
+        landTaxModal.addEventListener("click", (event) => {
+          if (event.target === landTaxModal) closeLandTaxModal();
+        });
+      }
 
       /* ===== Branch request acceptance (session only) ===== */
       const branchRequestsEl = document.querySelector('.branchRequests');
@@ -2398,7 +2579,14 @@
       const forkWarnings = document.getElementById("forkWarnings");
       const forkCancel = document.getElementById("forkCancel");
       const forkConfirm = document.getElementById("forkConfirm");
+      const branchPerformanceModal = document.getElementById("branchPerformanceModal");
+      const branchPerformanceSummary = document.getElementById("branchPerformanceSummary");
+      const branchPerformanceMeta = document.getElementById("branchPerformanceMeta");
+      const branchPerformanceChart = document.getElementById("branchPerformanceChart");
+      const branchPerformanceClose = document.getElementById("branchPerformanceClose");
+      const branchPerformanceFork = document.getElementById("branchPerformanceFork");
       let activeForkContext = null;
+      let activePerformanceBranch = null;
       const FORK_WINDOW_MS = 90 * 24 * 60 * 60 * 1000;
       let forkTimerTicking = false;
 
@@ -2411,6 +2599,127 @@
         const remaining = Math.max(0, FORK_WINDOW_MS - elapsed);
         const months = remaining / (30 * 24 * 60 * 60 * 1000);
         return months.toFixed(1) + " months";
+      }
+
+      function closeBranchPerformanceModal(){
+        if (!branchPerformanceModal) return;
+        branchPerformanceModal.classList.remove("open");
+        branchPerformanceModal.setAttribute("aria-hidden", "true");
+        activePerformanceBranch = null;
+      }
+
+      function getBranchPerformanceSeries(branchAddr, royaltyPct){
+        const key = String(branchAddr || "");
+        let seed = 0;
+        for (let i = 0; i < key.length; i += 1) seed = (seed * 31 + key.charCodeAt(i)) >>> 0;
+        const rand = () => {
+          seed = (1664525 * seed + 1013904223) >>> 0;
+          return seed / 4294967296;
+        };
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+        const baseRevenue = 1.6 + rand() * 1.1 + royaltyPct * 0.32;
+        const out = [];
+        for (let i = 0; i < months.length; i += 1) {
+          const seasonal = 0.9 + rand() * 0.42;
+          const revenue = baseRevenue * seasonal;
+          const expenseRatio = 0.58 + rand() * 0.18;
+          const expenses = revenue * expenseRatio;
+          const profit = Math.max(0.05, revenue - expenses);
+          const royalty = profit * (royaltyPct / 100);
+          out.push({
+            month: months[i],
+            expenses: expenses,
+            profit: profit,
+            royalty: royalty
+          });
+        }
+        return out;
+      }
+
+      function renderBranchPerformance(row){
+        if (!branchPerformanceModal || !row) return;
+        const addrNode = row.querySelector(".branchAddr");
+        const royaltyNode = row.querySelector(".branchRoyalty");
+        const addr = addrNode ? addrNode.textContent.trim() : "unknown";
+        const royaltyText = royaltyNode ? royaltyNode.textContent.trim() : "0% royalty";
+        const royaltyPct = parsePct(royaltyText);
+        const series = getBranchPerformanceSeries(addr, royaltyPct);
+        const yMax = Math.max.apply(null, series.reduce((acc, x) => {
+          acc.push(x.expenses, x.profit);
+          return acc;
+        }, []));
+        const chartMax = Math.max(0.2, yMax * 1.15);
+        const width = 640;
+        const height = 300;
+        const margin = { top: 16, right: 14, bottom: 38, left: 56 };
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+        const xStep = series.length > 1 ? innerW / (series.length - 1) : innerW;
+        const yToPx = (v) => margin.top + innerH - (v / chartMax) * innerH;
+        const xToPx = (i) => margin.left + i * xStep;
+        const pathFrom = (key) => series.map((point, i) => (i === 0 ? "M" : "L") + xToPx(i).toFixed(2) + " " + yToPx(point[key]).toFixed(2)).join(" ");
+
+        const yTicks = 4;
+        const grid = [];
+        for (let i = 0; i <= yTicks; i += 1) {
+          const v = (chartMax / yTicks) * i;
+          const y = yToPx(v);
+          grid.push(
+            '<line class="chartGrid" x1="' + margin.left + '" y1="' + y.toFixed(2) + '" x2="' + (width - margin.right) + '" y2="' + y.toFixed(2) + '"></line>' +
+            '<text class="chartLabel" x="' + (margin.left - 8) + '" y="' + (y + 4).toFixed(2) + '" text-anchor="end">\u039e' + v.toFixed(2) + "</text>"
+          );
+        }
+
+        const xLabels = series.map((point, i) => {
+          const x = xToPx(i);
+          return '<text class="chartLabel" x="' + x.toFixed(2) + '" y="' + (height - 12) + '" text-anchor="middle">' + point.month + "</text>";
+        }).join("");
+        const profitPoints = series.map((point, i) => {
+          const x = xToPx(i);
+          const y = yToPx(point.profit);
+          return '<circle class="chartPointProfit" cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="3"></circle>';
+        }).join("");
+        const royaltyLabels = series.map((point, i) => {
+          const x = xToPx(i);
+          const y = yToPx(point.profit) - 8;
+          return '<text class="chartRoyaltyLabel" x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" text-anchor="middle">\u039e' + point.royalty.toFixed(3) + "</text>";
+        }).join("");
+
+        branchPerformanceSummary.textContent =
+          "Performance for " + addr + " (" + royaltyText + ").";
+        branchPerformanceMeta.textContent =
+          "Royalty labels show " + royaltyText + " of (profit after expenses), where profit = revenue - expenses.";
+
+        branchPerformanceChart.innerHTML =
+          '<svg class="performanceSvg" viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Branch performance chart">' +
+            grid.join("") +
+            '<line class="chartAxis" x1="' + margin.left + '" y1="' + margin.top + '" x2="' + margin.left + '" y2="' + (height - margin.bottom) + '"></line>' +
+            '<line class="chartAxis" x1="' + margin.left + '" y1="' + (height - margin.bottom) + '" x2="' + (width - margin.right) + '" y2="' + (height - margin.bottom) + '"></line>' +
+            '<text class="chartLabel" x="' + (margin.left - 36) + '" y="' + (margin.top - 4) + '">ETH</text>' +
+            '<path class="chartLineExpenses" d="' + pathFrom("expenses") + '"></path>' +
+            '<path class="chartLineProfit" d="' + pathFrom("profit") + '"></path>' +
+            profitPoints +
+            royaltyLabels +
+            xLabels +
+          "</svg>" +
+          '<div class="performanceLegend">' +
+            '<span class="legendItem"><span class="legendDot" style="background:rgba(212,132,92,0.95)"></span>Expenses</span>' +
+            '<span class="legendItem"><span class="legendDot" style="background:rgba(130,217,147,0.95)"></span>Profit after expenses</span>' +
+            '<span class="legendItem"><span class="legendDot" style="background:rgba(225,194,138,0.97)"></span>Royalty amount (label)</span>' +
+          "</div>";
+
+        const forceBtn = row.querySelector(".forceForkBtn");
+        const pending = row.classList.contains("forkPending");
+        if (branchPerformanceFork) {
+          branchPerformanceFork.textContent = pending ? "Undo Force Fork" : "Force Fork";
+          branchPerformanceFork.dataset.mode = pending ? "undo" : "force";
+          branchPerformanceFork.disabled = !forceBtn;
+        }
+
+        activePerformanceBranch = row;
+        branchPerformanceModal.classList.add("open");
+        branchPerformanceModal.setAttribute("aria-hidden", "false");
       }
 
       function ensureForkBadge(item, startMs){
@@ -2507,11 +2816,19 @@
           }
 
           const revertBtn = event.target.closest(".forkTimerBtn");
-          if (!revertBtn) return;
+          if (revertBtn) {
+            event.preventDefault();
+            const row = revertBtn.closest(".branchItem");
+            const btn = row ? row.querySelector(".forceForkBtn") : null;
+            if (btn) openForkModal(btn, true);
+            return;
+          }
+
+          const row = event.target.closest(".branchItem");
+          if (!row) return;
+          if (event.target.closest(".branchActions")) return;
           event.preventDefault();
-          const row = revertBtn.closest(".branchItem");
-          const btn = row ? row.querySelector(".forceForkBtn") : null;
-          if (btn) openForkModal(btn, true);
+          renderBranchPerformance(row);
         });
 
         forkCancel.addEventListener("click", closeForkModal);
@@ -2542,6 +2859,25 @@
         forkModal.addEventListener("click", (event) => {
           if (event.target === forkModal) closeForkModal();
         });
+
+        if (branchPerformanceClose) {
+          branchPerformanceClose.addEventListener("click", closeBranchPerformanceModal);
+        }
+        if (branchPerformanceFork) {
+          branchPerformanceFork.addEventListener("click", () => {
+            if (!activePerformanceBranch) return;
+            const forceBtn = activePerformanceBranch.querySelector(".forceForkBtn");
+            if (!forceBtn) return;
+            const mode = branchPerformanceFork.dataset.mode === "undo";
+            closeBranchPerformanceModal();
+            openForkModal(forceBtn, mode);
+          });
+        }
+        if (branchPerformanceModal) {
+          branchPerformanceModal.addEventListener("click", (event) => {
+            if (event.target === branchPerformanceModal) closeBranchPerformanceModal();
+          });
+        }
 
         tickForkBadges();
       }
