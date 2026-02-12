@@ -384,6 +384,14 @@
       align-items:center;
       gap:10px;
     }
+    .profileMenu::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 10px;
+    }
     .profileNotify{
       position: absolute;
       top: -6px;
@@ -468,6 +476,7 @@
 
     .profileBtn:hover ~ .profilePanel,
     .profileBtn:focus-visible ~ .profilePanel,
+    .profileMenu:hover .profilePanel,
     .profilePanel:hover,
     .profileMenu:focus-within .profilePanel{
       display:block;
@@ -1819,27 +1828,45 @@
       /* ===== Land tax popup (all tabs) ===== */
       const landTaxTrigger = document.getElementById("landTaxTrigger");
       const LAND_TAX_KEY = "branchism_land_tax_yearly";
-      function readLandTaxValue(){
+      const EXTRA_LAND_TAX_KEY = "branchism_extra_land_tax_yearly";
+      const BASE_CAFE_LAND_TAX = 0.2345;
+      function readLandTaxState(){
+        let extra = 0;
         try {
-          const raw = Number(localStorage.getItem(LAND_TAX_KEY));
-          if (Number.isFinite(raw) && raw >= 0) return raw;
+          const extraRaw = Number(localStorage.getItem(EXTRA_LAND_TAX_KEY));
+          if (Number.isFinite(extraRaw) && extraRaw >= 0) {
+            extra = extraRaw;
+          } else {
+            const legacyTotal = Number(localStorage.getItem(LAND_TAX_KEY));
+            if (Number.isFinite(legacyTotal) && legacyTotal >= BASE_CAFE_LAND_TAX) {
+              extra = legacyTotal - BASE_CAFE_LAND_TAX;
+            }
+          }
         } catch (_) {}
-        return 0.2345;
+        const total = BASE_CAFE_LAND_TAX + extra;
+        try {
+          localStorage.setItem(EXTRA_LAND_TAX_KEY, String(extra));
+          localStorage.setItem(LAND_TAX_KEY, String(total));
+        } catch (_) {}
+        return { extra, total };
       }
       function fmtEth(value){
         return "\u039e" + Number(value).toFixed(4);
       }
       if (landTaxTrigger) {
-        const taxValue = readLandTaxValue();
-        landTaxTrigger.textContent = fmtEth(taxValue);
+        const taxState = readLandTaxState();
+        landTaxTrigger.textContent = fmtEth(taxState.total);
         landTaxTrigger.addEventListener("click", () => {
+          const latestTaxState = readLandTaxState();
           const residencyTax = 0;
-          const businessTax = taxValue;
+          const businessTax = BASE_CAFE_LAND_TAX;
+          const additionalLandTaxDue = latestTaxState.extra;
           alert(
             "Land Tax Breakdown\n\n" +
             "Primary residency: " + fmtEth(residencyTax) + " / yr (zero due to size constraint)\n" +
-            "Cafe Nakamoto business land tax: " + fmtEth(businessTax) + " / yr (taken directly from profit)\n\n" +
-            "Total annual land tax: " + fmtEth(residencyTax + businessTax) + " / yr"
+            "Cafe Nakamoto business land tax: " + fmtEth(businessTax) + " / yr (taken directly from profit)\n" +
+            "Additional land tax due: " + fmtEth(additionalLandTaxDue) + " / yr\n\n" +
+            "Total annual land tax due: " + fmtEth(residencyTax + businessTax + additionalLandTaxDue) + " / yr"
           );
         });
       }

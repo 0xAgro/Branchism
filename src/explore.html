@@ -385,6 +385,14 @@
       align-items:center;
       gap:10px;
     }
+    .profileMenu::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 10px;
+    }
     .profileNotify{
       position: absolute;
       top: -6px;
@@ -469,6 +477,7 @@
 
     .profileBtn:hover ~ .profilePanel,
     .profileBtn:focus-visible ~ .profilePanel,
+    .profileMenu:hover .profilePanel,
     .profilePanel:hover,
     .profileMenu:focus-within .profilePanel{
       display:block;
@@ -922,6 +931,10 @@
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
+      z-index: 1;
+    }
+    .mapStoreMarker:hover{
+      z-index: 1200;
     }
     .mapStoreDiamond{
       position: absolute;
@@ -1048,7 +1061,7 @@
       pointer-events: none;
       transition: opacity 140ms ease, transform 140ms ease;
       white-space: nowrap;
-      z-index: 40;
+      z-index: 2000;
     }
     .mapStorePanelTitle{
       color: var(--gold-3);
@@ -2862,6 +2875,60 @@
         east: 139.945
       };
       const ISLAND_CENTER = [139.9205, 35.64101];
+      // Locked parcel coordinates. Do not derive or auto-adjust these from other parcel adds.
+      const FIXED_PARCELS = Object.freeze({
+        "1": Object.freeze([139.91997495, 35.64126783]),
+        "2": Object.freeze([139.91965440, 35.64338203]),
+        "3": Object.freeze([139.92400732, 35.64226478]),
+        "4": Object.freeze([139.92488940, 35.64468834]),
+        "5": Object.freeze([139.92016397, 35.64125064]),
+        "6": Object.freeze([139.92037399, 35.64125064])
+      });
+      const EXTRA_PARCELS = Object.freeze([
+        { number: "7", name: "Maxwell Mechanics", wallet: "0x4e1a...6bf2", royalty: "0.9%", lng: 139.92014297, lat: 35.64195536 },
+        { number: "8", name: "Andresen Systems Co.", wallet: "0x2b7c...90de", royalty: "0.8%", lng: 139.92035301, lat: 35.64229915 },
+        { number: "9", name: "Garzik Fabrication", wallet: "0x9ad5...1c73", royalty: "0.7%", lng: 139.92056303, lat: 35.64264295 }
+      ]);
+
+      function addExtraBusinessParcelsLeaflet(map){
+        EXTRA_PARCELS.forEach((p) => {
+          const markerEl = createBusinessMarkerElement({
+            number: p.number,
+            name: p.name,
+            wallet: p.wallet,
+            royalty: p.royalty,
+            status: "Pending Review",
+            statusIcon: "company",
+            offsetX: 0,
+            offsetY: 0,
+            size: 20
+          });
+          const icon = L.divIcon({
+            className: "",
+            html: markerEl.outerHTML,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+          });
+          L.marker([p.lat, p.lng], { icon: icon, interactive: true }).addTo(map);
+        });
+      }
+
+      function addExtraBusinessParcelsMapLibre(map){
+        EXTRA_PARCELS.forEach((p) => {
+          const markerEl = createBusinessMarkerElement({
+            number: p.number,
+            name: p.name,
+            wallet: p.wallet,
+            royalty: p.royalty,
+            status: "Pending Review",
+            statusIcon: "company",
+            offsetX: 0,
+            offsetY: 0,
+            size: 20
+          });
+          new maplibregl.Marker({ element: markerEl, anchor: "center" }).setLngLat([p.lng, p.lat]).addTo(map);
+        });
+      }
 
       function getRoadLayerIds(style){
         if (!style || !Array.isArray(style.layers)) return [];
@@ -3386,9 +3453,9 @@
         } else if (!vacant && statusIcon === "company") {
           statusIconMarkup =
             '<span class="mapStoreStatusIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 20h18v2H3v-2Zm2-2V7.5L12 3l7 4.5V18h-3v-6h-8v6H5Zm5-8h4V8h-4v2Z"/></svg></span>';
-        } else if (!vacant && statusIcon === "construction") {
+        } else if (statusIcon === "construction") {
           statusIconMarkup =
-            '<span class="mapStoreStatusIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19h18v2H3v-2Zm6-2h2v-5H9v5Zm4 0h2V9h-2v8Zm5-6.5L12 3 6 10.5h12Z"/></svg></span>';
+            '<span class="mapStoreStatusIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 19h20v2H2v-2Zm4.8-3.5 4.1-4.1 1.4 1.4-4.1 4.1H6.8v-1.4Zm8.5-8.5 1.5-1.5 3.2 3.2-1.5 1.5-3.2-3.2Zm-1 2.4 1.4 1.4-4.8 4.8H9.5v-1.4l4.8-4.8Z"/></svg></span>';
         } else if (!vacant && statusIcon === "star") {
           statusIconMarkup =
             '<span class="mapStoreStatusIcon star" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9z"/></svg></span>';
@@ -3405,7 +3472,6 @@
             '<div class="mapStorePanelTitle">' + String(config.name || "Business") + '</div>' +
             parcelLine +
             '<div class="mapStorePanelWallet">Wallet: ' + String(config.wallet || "-") + '</div>' +
-            '<div class="mapStorePanelRoyalty">Royalty: ' + String(config.royalty || "-") + '</div>' +
             askingLine +
             '<div class="mapStorePanelStatus">Status: ' + String(config.status || "-") + '</div>' +
           '</div>';
@@ -3416,6 +3482,8 @@
       const walletValueEl = document.getElementById("walletValue");
       const landTaxValueEl = document.getElementById("landTaxTrigger");
       const LAND_TAX_KEY = "branchism_land_tax_yearly";
+      const EXTRA_LAND_TAX_KEY = "branchism_extra_land_tax_yearly";
+      const BASE_CAFE_LAND_TAX = 0.2345;
       const landBidModal = document.getElementById("landBidModal");
       const landBidTitle = document.getElementById("landBidTitle");
       const landBidSummary = document.getElementById("landBidSummary");
@@ -3427,17 +3495,21 @@
       const landBidSubmit = document.getElementById("landBidSubmit");
       const landBidBuyNow = document.getElementById("landBidBuyNow");
 
-      function readStoredLandTax(){
+      function readStoredExtraLandTax(){
         try {
-          const raw = Number(localStorage.getItem(LAND_TAX_KEY));
+          const raw = Number(localStorage.getItem(EXTRA_LAND_TAX_KEY));
           if (Number.isFinite(raw) && raw >= 0) return raw;
+          const legacyTotal = Number(localStorage.getItem(LAND_TAX_KEY));
+          if (Number.isFinite(legacyTotal) && legacyTotal >= BASE_CAFE_LAND_TAX) {
+            return legacyTotal - BASE_CAFE_LAND_TAX;
+          }
         } catch (_) {}
-        return 0.2345;
+        return 0;
       }
 
       const userState = {
         walletEth: 2.1621,
-        landTaxEthPerYear: readStoredLandTax()
+        landTaxEthPerYear: readStoredExtraLandTax()
       };
 
       const parcelStates = {
@@ -3501,6 +3573,10 @@
         return "\u039e" + (Number(value) || 0).toFixed(4);
       }
 
+      function getTotalLandTaxDue(){
+        return BASE_CAFE_LAND_TAX + userState.landTaxEthPerYear;
+      }
+
       function renderLandSalesChart(parcelState){
         if (!landSalesChart) return;
         const history = Array.isArray(parcelState.salesHistory) ? parcelState.salesHistory : [];
@@ -3555,21 +3631,24 @@
 
       function renderWalletAndTax(){
         if (walletValueEl) walletValueEl.textContent = formatEthValue(userState.walletEth);
-        if (landTaxValueEl) landTaxValueEl.textContent = formatEthValue(userState.landTaxEthPerYear);
+        if (landTaxValueEl) landTaxValueEl.textContent = formatEthValue(getTotalLandTaxDue());
         try {
-          localStorage.setItem(LAND_TAX_KEY, String(userState.landTaxEthPerYear));
+          localStorage.setItem(EXTRA_LAND_TAX_KEY, String(userState.landTaxEthPerYear));
+          localStorage.setItem(LAND_TAX_KEY, String(getTotalLandTaxDue()));
         } catch (_) {}
       }
 
       if (landTaxValueEl) {
         landTaxValueEl.addEventListener("click", () => {
           const residencyTax = 0;
-          const businessTax = userState.landTaxEthPerYear;
+          const businessTax = BASE_CAFE_LAND_TAX;
+          const additionalLandTaxDue = userState.landTaxEthPerYear;
           alert(
             "Land Tax Breakdown\n\n" +
             "Primary residency: " + formatEthValue(residencyTax) + " / yr (zero due to size constraint)\n" +
-            "Cafe Nakamoto business land tax: " + formatEthValue(businessTax) + " / yr (taken directly from profit)\n\n" +
-            "Total annual land tax: " + formatEthValue(residencyTax + businessTax) + " / yr"
+            "Cafe Nakamoto business land tax: " + formatEthValue(businessTax) + " / yr (taken directly from profit)\n" +
+            "Additional land tax due: " + formatEthValue(additionalLandTaxDue) + " / yr\n\n" +
+            "Total annual land tax due: " + formatEthValue(residencyTax + businessTax + additionalLandTaxDue) + " / yr"
           );
         });
       }
@@ -3589,11 +3668,9 @@
           element.appendChild(badge);
         }
         const title = element.querySelector(".mapStorePanelTitle");
-        const royalty = element.querySelector(".mapStorePanelRoyalty");
         const status = element.querySelector(".mapStorePanelStatus");
         const asking = element.querySelector(".mapStorePanelAsking");
         if (title) title.textContent = "Owned Land Parcel";
-        if (royalty) royalty.textContent = "Royalty: -";
         if (status) status.textContent = "Status: Owned by you";
         if (asking) asking.remove();
       }
@@ -3700,9 +3777,7 @@
       renderWalletAndTax();
 
       function addLeafletCenterRedSquare(map){
-        const latRef1 = ISLAND_CENTER[1];
-        const centerM1 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef1);
-        const marker1LngLat = metersToLngLat(centerM1.x - 47.5, centerM1.y + 28.5, latRef1);
+        const marker1LngLat = FIXED_PARCELS["1"];
         const el1 = createStoreMarkerElement();
         const icon1 = L.divIcon({
           className: "",
@@ -3711,7 +3786,7 @@
           iconAnchor: [10, 10]
         });
         L.marker([marker1LngLat[1], marker1LngLat[0]], { icon: icon1, interactive: true }).addTo(map);
-        const marker5LngLat = metersToLngLat(centerM1.x - 30.4, centerM1.y + 26.6, latRef1);
+        const marker5LngLat = FIXED_PARCELS["5"];
         const el5 = createBusinessMarkerElement({
           number: "5",
           name: "Wuille Workshop Branch",
@@ -3730,7 +3805,7 @@
           iconAnchor: [10, 10]
         });
         L.marker([marker5LngLat[1], marker5LngLat[0]], { icon: icon5, interactive: true }).addTo(map);
-        const marker6LngLat = metersToLngLat(centerM1.x - 11.4, centerM1.y + 26.6, latRef1);
+        const marker6LngLat = FIXED_PARCELS["6"];
         const el6 = createBusinessMarkerElement({
           number: "6",
           name: "Back Hardware Co. Branch",
@@ -3749,10 +3824,8 @@
           iconAnchor: [10, 10]
         });
         L.marker([marker6LngLat[1], marker6LngLat[0]], { icon: icon6, interactive: true }).addTo(map);
-
-        const latRef2 = ISLAND_CENTER[1];
-        const centerM2 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef2);
-        const marker2LngLat = metersToLngLat(centerM2.x - 76.5, centerM2.y + 205.2, latRef2);
+        addExtraBusinessParcelsLeaflet(map);
+        const marker2LngLat = FIXED_PARCELS["2"];
         const el2 = createBusinessMarkerElement({
           number: "2",
           name: "Finney Mobility Works Branch",
@@ -3773,7 +3846,7 @@
         });
         L.marker([marker2LngLat[1], marker2LngLat[0]], { icon: icon2, interactive: true }).addTo(map);
 
-        const marker3LngLat = metersToLngLat(centerM2.x + 317.3, centerM2.y + 81.7, latRef2);
+        const marker3LngLat = FIXED_PARCELS["3"];
         const el3 = createBusinessMarkerElement({
           number: "3",
           name: "Empty Land Parcel",
@@ -3800,7 +3873,7 @@
           if (root && root.classList.contains("vacant")) openLandBidModal("parcel-3", root);
         });
 
-        const marker4LngLat = metersToLngLat(centerM2.x + 397.1, centerM2.y + 347.7, latRef2);
+        const marker4LngLat = FIXED_PARCELS["4"];
         const el4 = createBusinessMarkerElement({
           number: "4",
           name: "Empty Land Parcel",
@@ -3808,6 +3881,7 @@
           royalty: "-",
           status: "Unlisted parcel",
           vacant: true,
+          statusIcon: "construction",
           offsetX: 0,
           offsetY: 0,
           width: 77,
@@ -3932,12 +4006,10 @@
 
           map.on("load", () => {
             map.touchZoomRotate.disableRotation();
-            const latRef1 = ISLAND_CENTER[1];
-            const centerM1 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef1);
-            const marker1LngLat = metersToLngLat(centerM1.x - 47.5, centerM1.y + 28.5, latRef1);
+            const marker1LngLat = FIXED_PARCELS["1"];
             const squareEl = createStoreMarkerElement();
             new maplibregl.Marker({ element: squareEl, anchor: "center" }).setLngLat(marker1LngLat).addTo(map);
-            const marker5LngLat = metersToLngLat(centerM1.x - 30.4, centerM1.y + 26.6, latRef1);
+            const marker5LngLat = FIXED_PARCELS["5"];
             const squareEl5 = createBusinessMarkerElement({
               number: "5",
               name: "Wuille Workshop Branch",
@@ -3950,7 +4022,7 @@
               size: 20
             });
             new maplibregl.Marker({ element: squareEl5, anchor: "center" }).setLngLat(marker5LngLat).addTo(map);
-            const marker6LngLat = metersToLngLat(centerM1.x - 11.4, centerM1.y + 26.6, latRef1);
+            const marker6LngLat = FIXED_PARCELS["6"];
             const squareEl6 = createBusinessMarkerElement({
               number: "6",
               name: "Back Hardware Co. Branch",
@@ -3963,9 +4035,8 @@
               size: 20
             });
             new maplibregl.Marker({ element: squareEl6, anchor: "center" }).setLngLat(marker6LngLat).addTo(map);
-            const latRef2 = ISLAND_CENTER[1];
-            const centerM2 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef2);
-            const marker2LngLat = metersToLngLat(centerM2.x - 76.5, centerM2.y + 205.2, latRef2);
+            addExtraBusinessParcelsMapLibre(map);
+            const marker2LngLat = FIXED_PARCELS["2"];
             const squareEl2 = createBusinessMarkerElement({
               number: "2",
               name: "Finney Mobility Works Branch",
@@ -3980,7 +4051,7 @@
             });
             new maplibregl.Marker({ element: squareEl2, anchor: "center" }).setLngLat(marker2LngLat).addTo(map);
 
-            const marker3LngLat = metersToLngLat(centerM2.x + 317.3, centerM2.y + 81.7, latRef2);
+            const marker3LngLat = FIXED_PARCELS["3"];
             const squareEl3 = createBusinessMarkerElement({
               number: "3",
               name: "Empty Land Parcel",
@@ -3998,7 +4069,7 @@
             attachParcelInteraction(squareEl3, "parcel-3");
             new maplibregl.Marker({ element: squareEl3, anchor: "center" }).setLngLat(marker3LngLat).addTo(map);
 
-            const marker4LngLat = metersToLngLat(centerM2.x + 397.1, centerM2.y + 347.7, latRef2);
+            const marker4LngLat = FIXED_PARCELS["4"];
             const squareEl4 = createBusinessMarkerElement({
               number: "4",
               name: "Empty Land Parcel",
@@ -4006,6 +4077,7 @@
               royalty: "-",
               status: "Unlisted parcel",
               vacant: true,
+              statusIcon: "construction",
               offsetX: 0,
               offsetY: 0,
               width: 77,

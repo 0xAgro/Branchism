@@ -2293,21 +2293,47 @@
       const landTaxTotal = document.getElementById("landTaxTotal");
       const landTaxClose = document.getElementById("landTaxClose");
       const LAND_TAX_KEY = "branchism_land_tax_yearly";
+      const EXTRA_LAND_TAX_KEY = "branchism_extra_land_tax_yearly";
+      const BASE_CAFE_LAND_TAX = 0.2345;
 
       function formatTaxEth(value){
         return "\u039e" + Number(value).toFixed(4);
       }
 
+      function readLandTaxState(){
+        let extra = 0;
+        try {
+          const extraRaw = Number(localStorage.getItem(EXTRA_LAND_TAX_KEY));
+          if (Number.isFinite(extraRaw) && extraRaw >= 0) {
+            extra = extraRaw;
+          } else {
+            const legacyTotal = Number(localStorage.getItem(LAND_TAX_KEY));
+            if (Number.isFinite(legacyTotal) && legacyTotal >= BASE_CAFE_LAND_TAX) {
+              extra = legacyTotal - BASE_CAFE_LAND_TAX;
+            }
+          }
+        } catch (_) {}
+        const total = BASE_CAFE_LAND_TAX + extra;
+        try {
+          localStorage.setItem(EXTRA_LAND_TAX_KEY, String(extra));
+          localStorage.setItem(LAND_TAX_KEY, String(total));
+        } catch (_) {}
+        return { extra, total };
+      }
+
       function openLandTaxModal(){
         if (!landTaxModal || !landTaxList || !landTaxTotal) return;
+        const taxState = readLandTaxState();
         const primaryResidencyTax = 0;
-        const cafeBusinessTax = Number(landTaxTrigger ? String(landTaxTrigger.textContent).replace(/[^0-9.]/g, "") : "0") || 0.2345;
-        const total = primaryResidencyTax + cafeBusinessTax;
+        const cafeBusinessTax = BASE_CAFE_LAND_TAX;
+        const additionalLandTaxDue = taxState.extra;
+        const total = primaryResidencyTax + cafeBusinessTax + additionalLandTaxDue;
 
         landTaxList.innerHTML =
           "<li>Primary residency \u2022 " + formatTaxEth(primaryResidencyTax) + " / yr (zero tax due to size constraint exemption)</li>" +
-          "<li>Cafe Nakamoto business land tax \u2022 " + formatTaxEth(cafeBusinessTax) + " / yr (taken directly from profit)</li>";
-        landTaxTotal.textContent = "Total annual land tax: " + formatTaxEth(total) + " / yr";
+          "<li>Cafe Nakamoto business land tax \u2022 " + formatTaxEth(cafeBusinessTax) + " / yr (taken directly from profit)</li>" +
+          "<li>Additional land tax due \u2022 " + formatTaxEth(additionalLandTaxDue) + " / yr</li>";
+        landTaxTotal.textContent = "Total annual land tax due: " + formatTaxEth(total) + " / yr";
 
         landTaxModal.classList.add("open");
         landTaxModal.setAttribute("aria-hidden", "false");
@@ -2320,12 +2346,8 @@
       }
 
       if (landTaxTrigger && landTaxModal) {
-        let storedTax = 0.2345;
-        try {
-          const raw = Number(localStorage.getItem(LAND_TAX_KEY));
-          if (Number.isFinite(raw) && raw >= 0) storedTax = raw;
-        } catch (_) {}
-        landTaxTrigger.textContent = formatTaxEth(storedTax);
+        const taxState = readLandTaxState();
+        landTaxTrigger.textContent = formatTaxEth(taxState.total);
         landTaxTrigger.addEventListener("click", openLandTaxModal);
         if (landTaxClose) landTaxClose.addEventListener("click", closeLandTaxModal);
         landTaxModal.addEventListener("click", (event) => {
