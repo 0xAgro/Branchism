@@ -891,6 +891,159 @@
     .leaflet-container{
       background: #14100d;
     }
+    .mapStoreMarker{
+      position: relative;
+      width: 20px;
+      height: 20px;
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .mapStoreDiamond{
+      position: absolute;
+      inset: 0;
+      background: rgba(168,126,76,0.34);
+      border: 2px solid rgba(231,210,170,0.72);
+      box-sizing: border-box;
+      transform: rotate(45deg);
+      transform-origin: center;
+      opacity: 0.54;
+      transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.28);
+      backdrop-filter: blur(1px);
+    }
+    .mapStoreMarker.owned .mapStoreDiamond{
+      background: rgba(94, 162, 109, 0.44);
+      border-color: rgba(193, 255, 206, 0.86);
+      box-shadow: 0 12px 24px rgba(36,88,48,0.34);
+    }
+    .mapStoreMarker.vacant .mapStoreDiamond{
+      background: rgba(126, 146, 162, 0.34);
+      border-color: rgba(204, 219, 231, 0.9);
+      border-style: dashed;
+      box-shadow: 0 12px 24px rgba(34,48,60,0.34);
+    }
+    .mapStoreLabel{
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f8ecd8;
+      font-weight: 900;
+      font-size: 10px;
+      line-height: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+    .mapStoreOwnerBadge{
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(190,255,208,0.82);
+      background: rgba(29,76,40,0.96);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+      color: rgba(221,255,231,0.95);
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .mapStoreOwnerBadge svg{
+      width: 9px;
+      height: 9px;
+      fill: currentColor;
+    }
+    .mapStorePanel{
+      position: absolute;
+      left: 50%;
+      bottom: 36px;
+      transform: translate(-50%, 6px);
+      min-width: 206px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(167,122,77,0.42);
+      background: rgba(20,13,10,0.94);
+      color: rgba(232,210,184,0.92);
+      font-size: 11px;
+      line-height: 1.35;
+      box-shadow: 0 14px 24px rgba(0,0,0,0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+      white-space: nowrap;
+      z-index: 40;
+    }
+    .mapStorePanelTitle{
+      color: var(--gold-3);
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+    .mapStoreMarker:hover .mapStoreDiamond{
+      opacity: 0.92;
+      background: rgba(191,146,92,0.62);
+      transform: rotate(45deg) translateY(-6px) scale(1.25);
+      box-shadow: 0 20px 32px rgba(0,0,0,0.42);
+    }
+    .mapStoreMarker.owned:hover .mapStoreDiamond{
+      background: rgba(106,182,123,0.74);
+    }
+    .mapStoreMarker.vacant:hover .mapStoreDiamond{
+      background: rgba(145,168,186,0.62);
+    }
+    .mapStoreMarker:hover .mapStorePanel{
+      opacity: 1;
+      transform: translate(-50%, -4px);
+    }
+    .mapUnitScale{
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 60;
+      pointer-events: none;
+      background: rgba(20,13,10,0.82);
+      border: 1px solid rgba(167,122,77,0.45);
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: rgba(232,210,184,0.92);
+      font-size: 11px;
+      line-height: 1.2;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+    .mapUnitScaleBar{
+      position: relative;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(231,210,170,0.95), rgba(167,122,77,0.95));
+      margin-top: 5px;
+      min-width: 24px;
+    }
+    .mapUnitTick{
+      position: absolute;
+      top: -4px;
+      width: 2px;
+      height: 14px;
+      background: rgba(255, 248, 233, 0.95);
+      box-shadow: 0 0 6px rgba(255, 240, 205, 0.45);
+      transform: translateX(-1px);
+    }
+    .mapUnitTickLabel{
+      position: absolute;
+      top: -16px;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: rgba(248,232,203,0.92);
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .mapUnitScaleSub{
+      margin-top: 4px;
+      font-size: 10px;
+      color: rgba(232,210,184,0.74);
+    }
 
     /* Manage: single business page */
     .businessPage{
@@ -1691,8 +1844,9 @@
           <div class="profileNotifyTip">You have 4 branch requests</div>
           <div class="profilePanel" role="menu" aria-label="Wallet">
               <div class="profile">
-                <div class="pill">Wallet <span class="value">Ξ2.1621</span></div>
+                <div class="pill">Wallet <span class="value" id="walletValue">Ξ2.1621</span></div>
                 <div class="pill">Debt Allowance <span class="value">Ξ1</span></div>
+                <div class="pill">Land Tax / yr <span class="value" id="landTaxValue">Ξ0.0000</span></div>
               </div>
             </div>
           </div>
@@ -2036,6 +2190,23 @@
         <div class="proposalActions proposalActionsLeft">
           <button type="button" class="proposalBtn" id="forkCancel">Cancel</button>
           <button type="button" class="proposalBtn primary" id="forkConfirm">Confirm</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="proposalModal" id="landBidModal" aria-hidden="true">
+    <div class="proposalCard" role="dialog" aria-modal="true" aria-labelledby="landBidTitle">
+      <section class="proposalStage" id="landBidStage">
+        <h3 id="landBidTitle">Empty Land Parcel (Mock)</h3>
+        <p id="landBidSummary"></p>
+        <ul class="proposalRiskList" id="landBidList"></ul>
+        <p id="landBidWarnings" style="margin-top:10px; color: rgba(232,210,184,0.82); line-height:1.5;"></p>
+        <input id="landBidOffer" class="proposalInput" type="number" step="0.0001" min="0" placeholder="Enter offer in ETH, e.g. 175" style="min-height:0; height:42px;" />
+        <div class="proposalActions proposalActionsLeft">
+          <button type="button" class="proposalBtn" id="landBidCancel">Cancel</button>
+          <button type="button" class="proposalBtn" id="landBidSubmit">Submit Offer</button>
+          <button type="button" class="proposalBtn primary" id="landBidBuyNow">Buy Full Price (Ξ200)</button>
         </div>
       </section>
     </div>
@@ -2579,19 +2750,7 @@
         north: 35.651,
         east: 139.945
       };
-      const ISLAND_CENTER = [139.9162, 35.640126];
-
-      // Numbered plots you can direct me to move by ID in follow-up edits.
-      const MANUAL_PLOTS = [
-        { id: 1, lng: 139.9148, lat: 35.6442, widthM: 120, heightM: 90 },
-        { id: 2, lng: 139.9196, lat: 35.6450, widthM: 110, heightM: 85 },
-        { id: 3, lng: 139.9251, lat: 35.6444, widthM: 130, heightM: 95 },
-        { id: 4, lng: 139.9304, lat: 35.6430, widthM: 105, heightM: 80 },
-        { id: 5, lng: 139.9342, lat: 35.6396, widthM: 125, heightM: 88 },
-        { id: 6, lng: 139.9298, lat: 35.6362, widthM: 112, heightM: 86 },
-        { id: 7, lng: 139.9231, lat: 35.6348, widthM: 118, heightM: 90 },
-        { id: 8, lng: 139.9167, lat: 35.6363, widthM: 108, heightM: 84 }
-      ];
+      const ISLAND_CENTER = [139.9205, 35.64101];
 
       function getRoadLayerIds(style){
         if (!style || !Array.isArray(style.layers)) return [];
@@ -2621,6 +2780,73 @@
 
       function metersToLngLat(x, y, latRef){
         return [x / metersPerDegLng(latRef), y / METERS_PER_DEG_LAT];
+      }
+
+      function makeSeededRng(seed){
+        let state = seed >>> 0;
+        return function next(){
+          state = (1664525 * state + 1013904223) >>> 0;
+          return state / 4294967296;
+        };
+      }
+
+      function buildRandomPlots(count){
+        const latRef = ISLAND_CENTER[1];
+        const westM = lngLatToMeters(ISLAND_BOUNDS.west, latRef, latRef).x;
+        const eastM = lngLatToMeters(ISLAND_BOUNDS.east, latRef, latRef).x;
+        const southM = lngLatToMeters(0, ISLAND_BOUNDS.south, latRef).y;
+        const northM = lngLatToMeters(0, ISLAND_BOUNDS.north, latRef).y;
+
+        const rng = makeSeededRng(0xA93C17);
+        const out = [];
+        const maxAttempts = 3500;
+        const edgeGap = 70;
+        const minGap = 40;
+
+        for (let attempts = 0; attempts < maxAttempts && out.length < count; attempts += 1) {
+          const widthM = 170 + Math.floor(rng() * 120);   // 170..289
+          const heightM = 120 + Math.floor(rng() * 90);   // 120..209
+
+          const halfW = widthM * 0.5;
+          const halfH = heightM * 0.5;
+          const minX = westM + edgeGap + halfW;
+          const maxX = eastM - edgeGap - halfW;
+          const minY = southM + edgeGap + halfH;
+          const maxY = northM - edgeGap - halfH;
+          if (maxX <= minX || maxY <= minY) break;
+
+          const cx = minX + rng() * (maxX - minX);
+          const cy = minY + rng() * (maxY - minY);
+
+          const left = cx - halfW - minGap;
+          const right = cx + halfW + minGap;
+          const bottom = cy - halfH - minGap;
+          const top = cy + halfH + minGap;
+
+          const overlap = out.some((p) => {
+            const pHalfW = p.widthM * 0.5;
+            const pHalfH = p.heightM * 0.5;
+            const pLeft = p.cx - pHalfW - minGap;
+            const pRight = p.cx + pHalfW + minGap;
+            const pBottom = p.cy - pHalfH - minGap;
+            const pTop = p.cy + pHalfH + minGap;
+            return !(right < pLeft || left > pRight || top < pBottom || bottom > pTop);
+          });
+          if (overlap) continue;
+
+          const lngLat = metersToLngLat(cx, cy, latRef);
+          out.push({
+            id: out.length + 1,
+            lng: lngLat[0],
+            lat: lngLat[1],
+            widthM: widthM,
+            heightM: heightM,
+            cx: cx,
+            cy: cy
+          });
+        }
+
+        return out.slice(0, count);
       }
 
       function toPolyFeature(lngLatCorners, id){
@@ -2811,12 +3037,72 @@
         return feature;
       }
 
+      function buildCenterSquareFeature(){
+        const plot = {
+          id: "C",
+          lng: ISLAND_CENTER[0],
+          lat: ISLAND_CENTER[1],
+          widthM: 760,
+          heightM: 760
+        };
+        const feature = plotRectFromMeters(plot);
+        feature.properties = {
+          id: "center-square",
+          label: "CENTER",
+          center: [plot.lng, plot.lat]
+        };
+        return feature;
+      }
+
+      function buildStaticNumberedPlots(){
+        const latRef = ISLAND_CENTER[1];
+        const centerM = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef);
+        const specs = [
+          { id: 1, dx: -1750, dy: 760, w: 230, h: 170 },
+          { id: 2, dx: -980, dy: 820, w: 210, h: 150 },
+          { id: 3, dx: -220, dy: 760, w: 220, h: 160 },
+          { id: 4, dx: 560, dy: 620, w: 240, h: 170 },
+          { id: 5, dx: 1320, dy: 480, w: 220, h: 160 },
+          { id: 6, dx: 1260, dy: -140, w: 230, h: 170 },
+          { id: 7, dx: 430, dy: -470, w: 210, h: 150 },
+          { id: 8, dx: -410, dy: -590, w: 220, h: 160 },
+          { id: 9, dx: -1260, dy: -420, w: 230, h: 170 },
+          { id: 10, dx: -1770, dy: 40, w: 220, h: 160 }
+        ];
+        return specs.map((s) => {
+          const p = metersToLngLat(centerM.x + s.dx, centerM.y + s.dy, latRef);
+          return plotRectFromMeters({
+            id: s.id,
+            lng: p[0],
+            lat: p[1],
+            widthM: s.w,
+            heightM: s.h
+          });
+        });
+      }
+
+      let cachedPlotSet = null;
+
+      function getPlotSet(){
+        if (cachedPlotSet) return cachedPlotSet;
+        const center = buildCenterSquareFeature();
+        const numbered = buildStaticNumberedPlots();
+        cachedPlotSet = { center: center, numbered: numbered };
+        return cachedPlotSet;
+      }
+
       function setupManualPlots(map){
         const sourceId = "manual-plots-source";
         const fillId = "manual-plots-fill";
         const lineId = "manual-plots-line";
         const labelId = "manual-plots-label";
-        const features = MANUAL_PLOTS.map(plotRectFromMeters);
+        const centerSourceId = "center-square-source";
+        const centerFillId = "center-square-fill";
+        const centerLineId = "center-square-line";
+        const centerLabelId = "center-square-label";
+        const plotSet = getPlotSet();
+        const features = plotSet.numbered;
+        const centerFeature = plotSet.center;
 
         if (!map.getSource(sourceId)) {
           map.addSource(sourceId, {
@@ -2833,8 +3119,8 @@
             type: "fill",
             source: sourceId,
             paint: {
-              "fill-color": "rgba(185, 146, 92, 0.30)",
-              "fill-outline-color": "rgba(221, 193, 142, 0.42)"
+              "fill-color": "rgba(214, 171, 108, 0.48)",
+              "fill-outline-color": "rgba(240, 216, 174, 0.90)"
             }
           });
         }
@@ -2844,8 +3130,8 @@
             type: "line",
             source: sourceId,
             paint: {
-              "line-color": "rgba(235, 213, 174, 0.78)",
-              "line-width": 1.3
+              "line-color": "rgba(255, 234, 198, 0.98)",
+              "line-width": 2.2
             }
           });
         }
@@ -2856,16 +3142,424 @@
             source: sourceId,
             layout: {
               "text-field": ["get", "label"],
-              "text-size": 12,
+              "text-size": 16,
               "text-font": ["Noto Sans Regular", "Arial Unicode MS Regular"]
             },
             paint: {
-              "text-color": "rgba(250, 235, 210, 0.96)",
-              "text-halo-color": "rgba(18, 12, 9, 0.92)",
-              "text-halo-width": 1.2
+              "text-color": "rgba(255, 245, 225, 0.98)",
+              "text-halo-color": "rgba(18, 12, 9, 0.98)",
+              "text-halo-width": 1.8
             }
           });
         }
+
+        if (!map.getSource(centerSourceId)) {
+          map.addSource(centerSourceId, {
+            type: "geojson",
+            data: { type: "FeatureCollection", features: [centerFeature] }
+          });
+        } else {
+          map.getSource(centerSourceId).setData({ type: "FeatureCollection", features: [centerFeature] });
+        }
+        if (!map.getLayer(centerFillId)) {
+          map.addLayer({
+            id: centerFillId,
+            type: "fill",
+            source: centerSourceId,
+            paint: {
+              "fill-color": "rgba(92, 173, 245, 0.28)",
+              "fill-outline-color": "rgba(153, 213, 255, 0.95)"
+            }
+          });
+        }
+        if (!map.getLayer(centerLineId)) {
+          map.addLayer({
+            id: centerLineId,
+            type: "line",
+            source: centerSourceId,
+            paint: {
+              "line-color": "rgba(185, 232, 255, 1)",
+              "line-width": 3.6
+            }
+          });
+        }
+        if (!map.getLayer(centerLabelId)) {
+          map.addLayer({
+            id: centerLabelId,
+            type: "symbol",
+            source: centerSourceId,
+            layout: {
+              "text-field": ["get", "label"],
+              "text-size": 18,
+              "text-font": ["Noto Sans Bold", "Arial Unicode MS Bold"]
+            },
+            paint: {
+              "text-color": "rgba(220, 245, 255, 0.98)",
+              "text-halo-color": "rgba(18, 12, 9, 0.98)",
+              "text-halo-width": 2
+            }
+          });
+        }
+      }
+
+      function drawLeafletPlots(map){
+        const plotSet = getPlotSet();
+        const centerCoords = plotSet.center.geometry.coordinates[0].map((pt) => [pt[1], pt[0]]);
+        L.polygon(centerCoords, {
+          color: "rgba(185,232,255,1)",
+          weight: 3,
+          fillColor: "rgba(92,173,245,0.28)",
+          fillOpacity: 0.35
+        }).addTo(map).bindTooltip("CENTER", {
+          permanent: true,
+          direction: "center",
+          className: "leaflet-plot-label"
+        });
+
+        plotSet.numbered.forEach((feature) => {
+          const coords = feature.geometry.coordinates[0].map((pt) => [pt[1], pt[0]]);
+          L.polygon(coords, {
+            color: "rgba(255,234,198,0.98)",
+            weight: 2,
+            fillColor: "rgba(214,171,108,0.48)",
+            fillOpacity: 0.5
+          }).addTo(map).bindTooltip(String(feature.properties.label), {
+            permanent: true,
+            direction: "center",
+            className: "leaflet-plot-label"
+          });
+        });
+      }
+
+      function createStoreMarkerElement(){
+        return createBusinessMarkerElement({
+          number: "1",
+          name: "Cafe Nakamoto (Mock)",
+          wallet: "0x4f2a...9c1b",
+          royalty: "1.1%",
+          status: "Pre-deployment",
+          owned: true,
+          offsetX: 0,
+          offsetY: 0,
+          size: 20
+        });
+      }
+
+      function createBusinessMarkerElement(config){
+        const el = document.createElement("div");
+        el.className = "mapStoreMarker";
+        const size = Number(config.size) || 20;
+        const width = Number(config.width) || size;
+        const height = Number(config.height) || size;
+        const offsetX = Number(config.offsetX) || 0;
+        const offsetY = Number(config.offsetY) || 0;
+        const rotate = Number(config.rotate) || 0;
+        const owned = Boolean(config.owned);
+        const vacant = Boolean(config.vacant);
+        el.style.width = width + "px";
+        el.style.height = height + "px";
+        el.style.transform = "translate(" + offsetX + "px, " + offsetY + "px) rotate(" + rotate + "deg)";
+        if (owned) el.classList.add("owned");
+        if (vacant) el.classList.add("vacant");
+        const askingLine = config.askingPrice
+          ? '<div class="mapStorePanelAsking">Asking: ' + String(config.askingPrice) + '</div>'
+          : "";
+        el.innerHTML =
+          '<span class="mapStoreDiamond" aria-hidden="true"></span>' +
+          '<span class="mapStoreLabel">' + String(config.number || "1") + '</span>' +
+          (owned
+            ? '<span class="mapStoreOwnerBadge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9z"/></svg></span>'
+            : '') +
+          '<div class="mapStorePanel" role="note" aria-label="Mock store details">' +
+            '<div class="mapStorePanelTitle">' + String(config.name || "Business") + '</div>' +
+            '<div class="mapStorePanelWallet">Wallet: ' + String(config.wallet || "-") + '</div>' +
+            '<div class="mapStorePanelRoyalty">Royalty: ' + String(config.royalty || "-") + '</div>' +
+            askingLine +
+            '<div class="mapStorePanelStatus">Status: ' + String(config.status || "-") + '</div>' +
+          '</div>';
+        return el;
+      }
+
+      /* ===== Land parcel purchase flow ===== */
+      const walletValueEl = document.getElementById("walletValue");
+      const landTaxValueEl = document.getElementById("landTaxValue");
+      const landBidModal = document.getElementById("landBidModal");
+      const landBidTitle = document.getElementById("landBidTitle");
+      const landBidSummary = document.getElementById("landBidSummary");
+      const landBidList = document.getElementById("landBidList");
+      const landBidWarnings = document.getElementById("landBidWarnings");
+      const landBidOffer = document.getElementById("landBidOffer");
+      const landBidCancel = document.getElementById("landBidCancel");
+      const landBidSubmit = document.getElementById("landBidSubmit");
+      const landBidBuyNow = document.getElementById("landBidBuyNow");
+
+      const userState = {
+        walletEth: 2.1621,
+        landTaxEthPerYear: 0
+      };
+
+      const parcelState = {
+        id: "parcel-3",
+        number: "3",
+        name: "Empty Land Parcel",
+        wallet: "0x9bc1...42aa",
+        askingPriceEth: 1.95,
+        minimumAcceptedOfferEth: 1.72,
+        areaSqm: 4100,
+        annualTaxEth: 0.1394,
+        status: "Owner asks to sell",
+        owned: false
+      };
+
+      const parcelBidRows = [
+        { address: "0x85ae...f1a2", amount: 1.73 },
+        { address: "0x1bc4...29df", amount: 1.79 },
+        { address: "0x74fd...c03e", amount: 1.88 }
+      ];
+
+      let activeLandParcelElement = null;
+
+      function formatEthValue(value){
+        return "\u039e" + (Number(value) || 0).toFixed(4);
+      }
+
+      function renderWalletAndTax(){
+        if (walletValueEl) walletValueEl.textContent = formatEthValue(userState.walletEth);
+        if (landTaxValueEl) landTaxValueEl.textContent = formatEthValue(userState.landTaxEthPerYear);
+      }
+
+      function setParcelOwnedVisual(element){
+        if (!element) return;
+        element.classList.remove("vacant");
+        element.classList.add("owned");
+        let badge = element.querySelector(".mapStoreOwnerBadge");
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "mapStoreOwnerBadge";
+          badge.setAttribute("aria-hidden", "true");
+          badge.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9z"/></svg>';
+          element.appendChild(badge);
+        }
+        const title = element.querySelector(".mapStorePanelTitle");
+        const royalty = element.querySelector(".mapStorePanelRoyalty");
+        const status = element.querySelector(".mapStorePanelStatus");
+        const asking = element.querySelector(".mapStorePanelAsking");
+        if (title) title.textContent = "Owned Land Parcel";
+        if (royalty) royalty.textContent = "Royalty: -";
+        if (status) status.textContent = "Status: Owned by you";
+        if (asking) asking.remove();
+      }
+
+      function openLandBidModal(parcelElement){
+        if (!landBidModal || !landBidList || !landBidWarnings || !landBidSummary || !landBidTitle) return;
+        activeLandParcelElement = parcelElement || null;
+        landBidModal.classList.add("open");
+        landBidModal.setAttribute("aria-hidden", "false");
+        if (landBidOffer) landBidOffer.value = "";
+        landBidTitle.textContent = parcelState.name + " (Mock)";
+        landBidSummary.textContent =
+          "Open bids and direct purchase for parcel #" + parcelState.number + ". Asking price is " +
+          formatEthValue(parcelState.askingPriceEth) + ".";
+        landBidList.innerHTML = parcelBidRows
+          .map((row) => "<li>" + row.address + " \u2022 bid " + formatEthValue(row.amount) + "</li>")
+          .join("");
+        landBidWarnings.innerHTML =
+          "Primary residency warning: you already own a primary residency. " +
+          "To switch residency, you must forfeit your current one first.<br>" +
+          "Estimated land tax by size (" + parcelState.areaSqm.toLocaleString() + " sqm): " +
+          formatEthValue(parcelState.annualTaxEth) + " / year.<br>" +
+          "If this purchase is for a new business, your current business must be terminated first.";
+        landBidBuyNow.textContent = "Buy Full Price (" + formatEthValue(parcelState.askingPriceEth) + ")";
+      }
+
+      function closeLandBidModal(){
+        if (!landBidModal) return;
+        landBidModal.classList.remove("open");
+        landBidModal.setAttribute("aria-hidden", "true");
+        activeLandParcelElement = null;
+      }
+
+      function completeParcelPurchase(priceEth){
+        if (parcelState.owned) {
+          landBidWarnings.textContent = "Parcel already owned.";
+          return;
+        }
+        if (userState.walletEth < priceEth) {
+          landBidWarnings.textContent =
+            "Insufficient wallet funds. Required " + formatEthValue(priceEth) + ", available " + formatEthValue(userState.walletEth) + ".";
+          return;
+        }
+        userState.walletEth -= priceEth;
+        userState.landTaxEthPerYear += parcelState.annualTaxEth;
+        parcelState.owned = true;
+        parcelState.status = "Owned by you";
+        renderWalletAndTax();
+        if (activeLandParcelElement) setParcelOwnedVisual(activeLandParcelElement);
+        closeLandBidModal();
+      }
+
+      function attachParcelInteraction(parcelElement){
+        if (!parcelElement) return;
+        parcelElement.dataset.parcelId = parcelState.id;
+        parcelElement.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (parcelState.owned) return;
+          openLandBidModal(parcelElement);
+        });
+      }
+
+      if (landBidModal) {
+        landBidCancel.addEventListener("click", closeLandBidModal);
+        landBidModal.addEventListener("click", (event) => {
+          if (event.target === landBidModal) closeLandBidModal();
+        });
+        landBidSubmit.addEventListener("click", () => {
+          const offer = Number(landBidOffer ? landBidOffer.value : 0);
+          if (!offer || offer <= 0) {
+            landBidWarnings.textContent = "Enter a valid offer in ETH.";
+            return;
+          }
+          if (offer < parcelState.minimumAcceptedOfferEth) {
+            landBidWarnings.textContent =
+              "Offer rejected. Lowest acceptable bid is " + formatEthValue(parcelState.minimumAcceptedOfferEth) + ".";
+            return;
+          }
+          completeParcelPurchase(offer);
+        });
+        landBidBuyNow.addEventListener("click", () => {
+          completeParcelPurchase(parcelState.askingPriceEth);
+        });
+      }
+
+      renderWalletAndTax();
+
+      function addLeafletCenterRedSquare(map){
+        const latRef1 = ISLAND_CENTER[1];
+        const centerM1 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef1);
+        const marker1LngLat = metersToLngLat(centerM1.x - 47.5, centerM1.y + 28.5, latRef1);
+        const el1 = createStoreMarkerElement();
+        const icon1 = L.divIcon({
+          className: "",
+          html: el1.outerHTML,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        L.marker([marker1LngLat[1], marker1LngLat[0]], { icon: icon1, interactive: true }).addTo(map);
+
+        const latRef2 = ISLAND_CENTER[1];
+        const centerM2 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef2);
+        const marker2LngLat = metersToLngLat(centerM2.x - 76.5, centerM2.y + 167.2, latRef2);
+        const el2 = createBusinessMarkerElement({
+          number: "2",
+          name: "Finney Mobility Works",
+          wallet: "0x7a9d...31f2",
+          royalty: "0.9%",
+          status: "Pending Review",
+          offsetX: 0,
+          offsetY: 0,
+          width: 120,
+          height: 144
+        });
+        const icon2 = L.divIcon({
+          className: "",
+          html: el2.outerHTML,
+          iconSize: [120, 144],
+          iconAnchor: [60, 72]
+        });
+        L.marker([marker2LngLat[1], marker2LngLat[0]], { icon: icon2, interactive: true }).addTo(map);
+
+        const marker3LngLat = metersToLngLat(centerM2.x + 317.3, centerM2.y + 43.7, latRef2);
+        const el3 = createBusinessMarkerElement({
+          number: "3",
+          name: "Empty Land Parcel",
+          wallet: "0x9bc1...42aa",
+          royalty: "-",
+          askingPrice: "Ξ1.9500",
+          status: "Owner asks to sell",
+          vacant: true,
+          offsetX: 0,
+          offsetY: 0,
+          width: 96,
+          height: 96
+        });
+        const icon3 = L.divIcon({
+          className: "",
+          html: el3.outerHTML,
+          iconSize: [96, 96],
+          iconAnchor: [48, 48]
+        });
+        const marker3 = L.marker([marker3LngLat[1], marker3LngLat[0]], { icon: icon3, interactive: true }).addTo(map);
+        marker3.on("click", () => {
+          const root = marker3.getElement() ? marker3.getElement().querySelector(".mapStoreMarker") : null;
+          if (root && root.classList.contains("vacant")) openLandBidModal(root);
+        });
+
+        const marker4LngLat = metersToLngLat(centerM2.x + 399, centerM2.y + 304, latRef2);
+        const el4 = createBusinessMarkerElement({
+          number: "4",
+          name: "Empty Land Parcel",
+          wallet: "0x6de3...18bc",
+          royalty: "-",
+          askingPrice: "Ξ2.2400",
+          status: "Owner asks to sell",
+          vacant: true,
+          offsetX: 0,
+          offsetY: 0,
+          width: 77,
+          height: 77
+        });
+        const icon4 = L.divIcon({
+          className: "",
+          html: el4.outerHTML,
+          iconSize: [77, 77],
+          iconAnchor: [38.5, 38.5]
+        });
+        L.marker([marker4LngLat[1], marker4LngLat[0]], { icon: icon4, interactive: true }).addTo(map);
+      }
+
+      function addUnitScaleLeaflet(map){
+        const latRef = ISLAND_CENTER[1];
+        const centerM = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef);
+        const p1 = metersToLngLat(centerM.x, centerM.y, latRef);
+        const p2 = metersToLngLat(centerM.x + 190, centerM.y, latRef); // 100 units = 190m
+        const a = map.latLngToContainerPoint([p1[1], p1[0]]);
+        const b = map.latLngToContainerPoint([p2[1], p2[0]]);
+        const widthPx = Math.max(24, Math.round(Math.abs(b.x - a.x)));
+        const tick20Px = Math.max(1, Math.round(widthPx * 0.2));
+
+        const el = document.createElement("div");
+        el.className = "mapUnitScale";
+        el.innerHTML =
+          '<div>100 units</div>' +
+          '<div class="mapUnitScaleBar" style="width:' + widthPx + 'px">' +
+            '<span class="mapUnitTick" style="left:' + tick20Px + 'px"></span>' +
+            '<span class="mapUnitTickLabel" style="left:' + tick20Px + 'px">20</span>' +
+          '</div>' +
+          '<div class="mapUnitScaleSub">1 unit = 1.9m</div>';
+        map.getContainer().appendChild(el);
+      }
+
+      function addUnitScaleMapLibre(map){
+        const latRef = ISLAND_CENTER[1];
+        const centerM = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef);
+        const p1 = metersToLngLat(centerM.x, centerM.y, latRef);
+        const p2 = metersToLngLat(centerM.x + 190, centerM.y, latRef); // 100 units = 190m
+        const a = map.project([p1[0], p1[1]]);
+        const b = map.project([p2[0], p2[1]]);
+        const widthPx = Math.max(24, Math.round(Math.abs(b.x - a.x)));
+        const tick20Px = Math.max(1, Math.round(widthPx * 0.2));
+
+        const el = document.createElement("div");
+        el.className = "mapUnitScale";
+        el.innerHTML =
+          '<div>100 units</div>' +
+          '<div class="mapUnitScaleBar" style="width:' + widthPx + 'px">' +
+            '<span class="mapUnitTick" style="left:' + tick20Px + 'px"></span>' +
+            '<span class="mapUnitTickLabel" style="left:' + tick20Px + 'px">20</span>' +
+          '</div>' +
+          '<div class="mapUnitScaleSub">1 unit = 1.9m</div>';
+        map.getContainer().appendChild(el);
       }
 
       function initLeafletFallback(){
@@ -2874,8 +3568,14 @@
           L.latLng(ISLAND_BOUNDS.north, ISLAND_BOUNDS.east)
         );
         const map = L.map("map", {
-          zoomControl: true,
+          zoomControl: false,
           attributionControl: true,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          touchZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          dragging: false,
           maxBounds: bounds,
           maxBoundsViscosity: 1.0
         }).setView([ISLAND_CENTER[1], ISLAND_CENTER[0]], 16);
@@ -2885,7 +3585,8 @@
           attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
         map.setMaxBounds(bounds);
-        L.marker([ISLAND_CENTER[1], ISLAND_CENTER[0]]).addTo(map);
+        addLeafletCenterRedSquare(map);
+        addUnitScaleLeaflet(map);
       }
 
       async function initVectorMap(){
@@ -2907,14 +3608,76 @@
               [ISLAND_BOUNDS.west, ISLAND_BOUNDS.south],
               [ISLAND_BOUNDS.east, ISLAND_BOUNDS.north]
             ],
-            minZoom: 14,
+            minZoom: 16,
+            maxZoom: 16,
+            scrollZoom: false,
+            dragPan: false,
+            boxZoom: false,
+            doubleClickZoom: false,
+            keyboard: false,
+            dragRotate: false,
+            touchPitch: false,
+            pitchWithRotate: false,
+            maxPitch: 0,
             attributionControl: true
           });
 
-          map.addControl(new maplibregl.NavigationControl(), "top-left");
           map.on("load", () => {
-            setupManualPlots(map);
-            new maplibregl.Marker({ color: "#e1c28a" }).setLngLat(ISLAND_CENTER).addTo(map);
+            map.touchZoomRotate.disableRotation();
+            const latRef1 = ISLAND_CENTER[1];
+            const centerM1 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef1);
+            const marker1LngLat = metersToLngLat(centerM1.x - 47.5, centerM1.y + 28.5, latRef1);
+            const squareEl = createStoreMarkerElement();
+            new maplibregl.Marker({ element: squareEl, anchor: "center" }).setLngLat(marker1LngLat).addTo(map);
+            const latRef2 = ISLAND_CENTER[1];
+            const centerM2 = lngLatToMeters(ISLAND_CENTER[0], ISLAND_CENTER[1], latRef2);
+            const marker2LngLat = metersToLngLat(centerM2.x - 76.5, centerM2.y + 167.2, latRef2);
+            const squareEl2 = createBusinessMarkerElement({
+              number: "2",
+              name: "Finney Mobility Works",
+              wallet: "0x7a9d...31f2",
+              royalty: "0.9%",
+              status: "Pending Review",
+              offsetX: 0,
+              offsetY: 0,
+              width: 120,
+              height: 144
+            });
+            new maplibregl.Marker({ element: squareEl2, anchor: "center" }).setLngLat(marker2LngLat).addTo(map);
+
+            const marker3LngLat = metersToLngLat(centerM2.x + 317.3, centerM2.y + 43.7, latRef2);
+            const squareEl3 = createBusinessMarkerElement({
+              number: "3",
+              name: "Empty Land Parcel",
+              wallet: "0x9bc1...42aa",
+              royalty: "-",
+              askingPrice: "Ξ1.9500",
+              status: "Owner asks to sell",
+              vacant: true,
+              offsetX: 0,
+              offsetY: 0,
+              width: 96,
+              height: 96
+            });
+            attachParcelInteraction(squareEl3);
+            new maplibregl.Marker({ element: squareEl3, anchor: "center" }).setLngLat(marker3LngLat).addTo(map);
+
+            const marker4LngLat = metersToLngLat(centerM2.x + 399, centerM2.y + 304, latRef2);
+            const squareEl4 = createBusinessMarkerElement({
+              number: "4",
+              name: "Empty Land Parcel",
+              wallet: "0x6de3...18bc",
+              royalty: "-",
+              askingPrice: "Ξ2.2400",
+              status: "Owner asks to sell",
+              vacant: true,
+              offsetX: 0,
+              offsetY: 0,
+              width: 77,
+              height: 77
+            });
+            new maplibregl.Marker({ element: squareEl4, anchor: "center" }).setLngLat(marker4LngLat).addTo(map);
+            addUnitScaleMapLibre(map);
           });
           return true;
         } catch (_) {

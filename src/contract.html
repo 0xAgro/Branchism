@@ -729,6 +729,7 @@
     }
 
     .thumbWrap{
+      position: relative;
       border-radius: var(--radius-sm);
       border: 1px solid rgba(203,180,138,0.22);
       overflow:hidden;
@@ -741,6 +742,22 @@
       object-fit: cover;
       display:block;
       filter: saturate(0.95) contrast(1.05);
+    }
+    .thumbMockTag{
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(167,122,77,0.3);
+      background: rgba(15,10,8,0.72);
+      color: rgba(232,210,184,0.88);
+      font-size: 10px;
+      line-height: 1.2;
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
     }
 
     .cardMain{
@@ -1601,7 +1618,7 @@
 
       <section class="grid">
         <article class="card">
-          <div class="thumbWrap"><img class="thumb" src="images/police.png" alt="Policing service" /></div>
+          <div class="thumbWrap"><img class="thumb" src="images/police.png" alt="Policing service" /><span class="thumbMockTag">Not real. No real authority.</span></div>
           <div class="cardMain">
             <h3 class="title">Policing Unit</h3>
             <div class="rev">- <span class="unit">-</span></div>
@@ -1616,7 +1633,7 @@
         </article>
 
         <article class="card">
-          <div class="thumbWrap"><img class="thumb" src="images/fire_fight.png" alt="Firefighting service" /></div>
+          <div class="thumbWrap"><img class="thumb" src="images/fire_fight.png" alt="Firefighting service" /><span class="thumbMockTag">Not real. No real authority.</span></div>
           <div class="cardMain">
             <h3 class="title">Firefighting Team</h3>
             <div class="rev">- <span class="unit">-</span></div>
@@ -1631,7 +1648,7 @@
         </article>
 
         <article class="card">
-          <div class="thumbWrap"><img class="thumb" src="images/grid.png" alt="Grid work service" /></div>
+          <div class="thumbWrap"><img class="thumb" src="images/grid.png" alt="Grid work service" /><span class="thumbMockTag">Not real. No real authority.</span></div>
           <div class="cardMain">
             <h3 class="title">Grid Work Crew</h3>
             <div class="rev">- <span class="unit">-</span></div>
@@ -1646,7 +1663,7 @@
         </article>
 
         <article class="card">
-          <div class="thumbWrap"><img class="thumb" src="images/emergency.png" alt="Emergency response service" /></div>
+          <div class="thumbWrap"><img class="thumb" src="images/emergency.png" alt="Emergency response service" /><span class="thumbMockTag">Not real. No real authority.</span></div>
           <div class="cardMain">
             <h3 class="title">Emergency Response</h3>
             <div class="rev">- <span class="unit">-</span></div>
