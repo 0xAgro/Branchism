@@ -933,6 +933,17 @@
       -webkit-user-select: none;
       z-index: 1;
     }
+    .mapStoreMarker.idleFloat{
+      animation: mapParcelIdleFloat 2.4s ease-in-out infinite;
+    }
+    .mapStoreMarker.idleFloat:hover{
+      animation-play-state: paused;
+    }
+    @keyframes mapParcelIdleFloat{
+      0%{ top: 0; }
+      50%{ top: -2px; }
+      100%{ top: 0; }
+    }
     .mapStoreMarker:hover{
       z-index: 1200;
     }
@@ -2878,20 +2889,23 @@
       // Locked parcel coordinates. Do not derive or auto-adjust these from other parcel adds.
       const FIXED_PARCELS = Object.freeze({
         "1": Object.freeze([139.91997495, 35.64126783]),
-        "2": Object.freeze([139.91965440, 35.64338203]),
-        "3": Object.freeze([139.92400732, 35.64226478]),
-        "4": Object.freeze([139.92488940, 35.64468834]),
+        "2": Object.freeze([139.91965440, 35.64425864]),
+        "3": Object.freeze([139.92400732, 35.64312420]),
+        "4": Object.freeze([139.92493140, 35.64554776]),
         "5": Object.freeze([139.92016397, 35.64125064]),
         "6": Object.freeze([139.92037399, 35.64125064])
       });
       const EXTRA_PARCELS = Object.freeze([
         { number: "7", name: "Maxwell Mechanics Branch", wallet: "0x4e1a...6bf2", royalty: "0.9%", lng: 139.92014297, lat: 35.64195536 },
         { number: "8", name: "Andresen Systems Co. Branch", wallet: "0x2b7c...90de", royalty: "0.8%", lng: 139.92035301, lat: 35.64229915 },
-        { number: "9", name: "Garzik Fabrication Branch", wallet: "0x9ad5...1c73", royalty: "0.7%", lng: 139.92056303, lat: 35.64264295 }
+        { number: "9", name: "Garzik Fabrication Branch", wallet: "0x9ad5...1c73", royalty: "0.7%", lng: 139.92056303, lat: 35.64264295 },
+        { number: "11", name: "Wood Acre Farms Branch", wallet: "0x6ab3...4d12", royalty: "0.9%", lng: 139.91782723, lat: 35.64180071, width: 117.6, height: 101.76 }
       ]);
 
       function addExtraBusinessParcelsLeaflet(map){
         EXTRA_PARCELS.forEach((p) => {
+          const width = Number(p.width) || 20;
+          const height = Number(p.height) || 20;
           const markerEl = createBusinessMarkerElement({
             number: p.number,
             name: p.name,
@@ -2899,15 +2913,17 @@
             royalty: p.royalty,
             status: "Pending Review",
             statusIcon: "company",
+            noIdleFloat: Boolean(p.noIdleFloat),
             offsetX: 0,
             offsetY: 0,
-            size: 20
+            width: width,
+            height: height
           });
           const icon = L.divIcon({
             className: "",
             html: markerEl.outerHTML,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            iconSize: [width, height],
+            iconAnchor: [width / 2, height / 2]
           });
           L.marker([p.lat, p.lng], { icon: icon, interactive: true }).addTo(map);
         });
@@ -2915,6 +2931,8 @@
 
       function addExtraBusinessParcelsMapLibre(map){
         EXTRA_PARCELS.forEach((p) => {
+          const width = Number(p.width) || 20;
+          const height = Number(p.height) || 20;
           const markerEl = createBusinessMarkerElement({
             number: p.number,
             name: p.name,
@@ -2922,9 +2940,11 @@
             royalty: p.royalty,
             status: "Pending Review",
             statusIcon: "company",
+            noIdleFloat: Boolean(p.noIdleFloat),
             offsetX: 0,
             offsetY: 0,
-            size: 20
+            width: width,
+            height: height
           });
           new maplibregl.Marker({ element: markerEl, anchor: "center" }).setLngLat([p.lng, p.lat]).addTo(map);
         });
@@ -3437,9 +3457,11 @@
         const vacant = Boolean(config.vacant);
         const forSale = Boolean(config.forSale);
         const statusIcon = String(config.statusIcon || "");
+        const noIdleFloat = Boolean(config.noIdleFloat);
         el.style.width = width + "px";
         el.style.height = height + "px";
         el.style.transform = "translate(" + offsetX + "px, " + offsetY + "px) rotate(" + rotate + "deg)";
+        if (!noIdleFloat) el.classList.add("idleFloat");
         if (owned) el.classList.add("owned");
         if (vacant) el.classList.add("vacant");
         const askingLine = config.askingPrice
@@ -3858,14 +3880,14 @@
           forSale: true,
           offsetX: 0,
           offsetY: 0,
-          width: 96,
-          height: 96
+          width: 92.2,
+          height: 92.2
         });
         const icon3 = L.divIcon({
           className: "",
           html: el3.outerHTML,
-          iconSize: [96, 96],
-          iconAnchor: [48, 48]
+          iconSize: [92.2, 92.2],
+          iconAnchor: [46.1, 46.1]
         });
         const marker3 = L.marker([marker3LngLat[1], marker3LngLat[0]], { icon: icon3, interactive: true }).addTo(map);
         marker3.on("click", () => {
@@ -3884,14 +3906,14 @@
           statusIcon: "construction",
           offsetX: 0,
           offsetY: 0,
-          width: 77,
-          height: 77
+          width: 92.22,
+          height: 82.72
         });
         const icon4 = L.divIcon({
           className: "",
           html: el4.outerHTML,
-          iconSize: [77, 77],
-          iconAnchor: [38.5, 38.5]
+          iconSize: [92.22, 82.72],
+          iconAnchor: [46.11, 41.36]
         });
         const marker4 = L.marker([marker4LngLat[1], marker4LngLat[0]], { icon: icon4, interactive: true }).addTo(map);
         marker4.on("click", () => {
@@ -4063,8 +4085,8 @@
               forSale: true,
               offsetX: 0,
               offsetY: 0,
-              width: 96,
-              height: 96
+              width: 92.2,
+              height: 92.2
             });
             attachParcelInteraction(squareEl3, "parcel-3");
             new maplibregl.Marker({ element: squareEl3, anchor: "center" }).setLngLat(marker3LngLat).addTo(map);
@@ -4080,8 +4102,8 @@
               statusIcon: "construction",
               offsetX: 0,
               offsetY: 0,
-              width: 77,
-              height: 77
+              width: 92.22,
+              height: 82.72
             });
             attachParcelInteraction(squareEl4, "parcel-4");
             new maplibregl.Marker({ element: squareEl4, anchor: "center" }).setLngLat(marker4LngLat).addTo(map);
