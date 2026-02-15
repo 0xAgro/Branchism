@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Root</title>
+  <title>Root</title>
   <link rel="icon" type="image/png" href="images/summer.png" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
   <script>
     (function(){
       try {
-        if (sessionStorage.getItem('root_intro_seen')) {
-          document.documentElement.classList.add('intro-seen');
-        }
+        document.documentElement.classList.add('intro-seen');
+        try { sessionStorage.setItem('root_intro_seen', '1'); } catch (_) {}
       } catch (_) {}
     })();
   </script>
@@ -892,6 +891,31 @@
       color: rgba(232,210,184,0.8);
       font-size: 13px;
     }
+    .mapHeaderTools{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .mapEditBtn{
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid rgba(167,122,77,0.45);
+      background: rgba(24,16,12,0.74);
+      color: rgba(232,210,184,0.92);
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .mapEditBtn.active{
+      border-color: rgba(126, 215, 151, 0.75);
+      color: rgba(206, 255, 219, 0.95);
+      background: rgba(24, 68, 40, 0.55);
+    }
+    .mapEditBtn:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
     .badge{
       padding: 6px 10px;
       border-radius: 999px;
@@ -920,6 +944,127 @@
       display: block;
       filter: saturate(0.95) contrast(1.05);
     }
+    .mapSurface{
+      position: relative;
+      width: 100%;
+      height: min(520px, 65vh);
+    }
+    .mapSurface #map{
+      width: 100%;
+      height: 100%;
+    }
+    .parcelEditOverlay{
+      position: absolute;
+      inset: 0;
+      z-index: 1800;
+      pointer-events: none;
+      display: none;
+    }
+    .parcelGuideOverlay{
+      position: absolute;
+      inset: 0;
+      z-index: 1700;
+      pointer-events: none;
+      display: block;
+    }
+    .parcelEditOverlay.active{
+      display: block;
+      pointer-events: auto;
+      background: rgba(20,13,10,0.1);
+    }
+    .parcelHandle{
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      transform: translate(-50%, -50%);
+      border: 2px solid rgba(255,233,198,0.92);
+      background: rgba(24,16,12,0.86);
+      color: rgba(255,233,198,0.94);
+      font-size: 11px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    .parcelHandle.owned{
+      border-color: rgba(180, 255, 194, 0.95);
+      background: rgba(28, 84, 42, 0.88);
+      color: rgba(227, 255, 235, 0.95);
+    }
+    .parcelHandle.vacant{
+      border-color: rgba(215, 227, 237, 0.95);
+      background: rgba(43, 60, 74, 0.9);
+      color: rgba(235, 243, 249, 0.95);
+    }
+    .parcelHandle:active{
+      cursor: grabbing;
+    }
+    .parcelGuideLine{
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.72;
+      z-index: 0;
+    }
+    .parcelGuideLine.h{
+      height: 0;
+      border-top: 3px solid rgba(225, 48, 48, 0.9);
+    }
+    .parcelGuideLine.v{
+      width: 0;
+      border-left: 3px solid rgba(225, 48, 48, 0.9);
+    }
+    .parcelGuideLabel{
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      padding: 2px 5px;
+      border-radius: 6px;
+      border: 1px solid rgba(167,122,77,0.4);
+      background: rgba(24,16,12,0.78);
+      color: rgba(246,232,214,0.95);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .parcelCoordPanel{
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 1850;
+      min-width: 200px;
+      max-width: min(46vw, 320px);
+      max-height: 42%;
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(167,122,77,0.42);
+      background: rgba(19, 12, 9, 0.88);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.38);
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: rgba(241,224,200,0.92);
+      backdrop-filter: blur(2px);
+    }
+    .parcelCoordPanel strong{
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: rgba(247,233,213,0.96);
+      margin-bottom: 6px;
+    }
+    .parcelCoordRow{
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: rgba(233,212,185,0.9);
+    }
     .leaflet-container{
       background: #14100d;
     }
@@ -935,6 +1080,22 @@
     }
     .mapStoreMarker.idleFloat{
       animation: mapParcelIdleFloat 2.4s ease-in-out infinite;
+    }
+    .mapModeDeveloper .mapSurface .mapStoreMarker.idleFloat{
+      animation: none;
+    }
+    .mapModeProduction .mapStoreMarker.prodHoverable:hover{
+      z-index: 3;
+    }
+    .mapModeProduction .mapStoreMarker.prodHoverable:hover .mapStoreDiamond{
+      transform: rotate(45deg) scale(1.18);
+      filter: brightness(1.08);
+      box-shadow: 0 0 0 1px rgba(255,226,188,0.44), 0 10px 24px rgba(0,0,0,0.5);
+    }
+    .mapModeProduction .mapStoreMarker.prodHoverable:hover .mapStorePanel{
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
     .mapStoreMarker.idleFloat:hover{
       animation-play-state: paused;
@@ -1137,6 +1298,22 @@
     .mapStoreMarker:hover .mapStorePanel{
       opacity: 1;
       transform: translate(-50%, -4px);
+    }
+    .mapStoreMarker[data-parcel-number="18"] .mapStorePanel{
+      top: calc(100% + 4px);
+      bottom: auto;
+      transform: translate(-50%, 0);
+    }
+    .mapStoreMarker[data-parcel-number="18"]:hover .mapStorePanel{
+      transform: translate(-50%, 0);
+    }
+    .mapStoreMarker[data-parcel-number="19"] .mapStorePanel{
+      top: auto;
+      bottom: calc(100% + 4px);
+      transform: translate(-50%, 0);
+    }
+    .mapStoreMarker[data-parcel-number="19"]:hover .mapStorePanel{
+      transform: translate(-50%, 0);
     }
     .mapUnitScale{
       position: absolute;
@@ -1985,8 +2162,8 @@
       <header class="topbar">
         <div class="left">
           <div class="brand">
-            <img class="logo" id="headerLogo" src="images/spring.png" alt="The Root logo" />
-            <div class="brandTitle"><h1>The Root</h1></div>
+            <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
+            <div class="brandTitle"><h1>Root</h1></div>
           </div>
         </div>
 
@@ -2042,15 +2219,34 @@
       <div class="mapPanel">
         <div class="mapHeader">
           <div style="display:flex; gap:10px; align-items:center;">
-            <span class="badge">Tokyo</span>
+            <button class="badge" type="button">Chancellor District</button>
             <span>Map view (OpenStreetMap embed)</span>
           </div>
-          <span class="badge">Static</span>
+          <div class="mapHeaderTools">
+            <span class="badge">Static</span>
+            <button class="mapEditBtn" id="toggleParcelEdit" type="button">Edit Parcels</button>
+            <select class="mapEditBtn" id="parcelTypeSelect" aria-label="Parcel type">
+              <option value="business">Business</option>
+              <option value="empty">Empty Land</option>
+              <option value="forsale">Empty Land (For Sale)</option>
+              <option value="reserved" selected>Reserved Land</option>
+            </select>
+            <button class="mapEditBtn" id="addParcelBtn" type="button">Add Parcel</button>
+            <button class="mapEditBtn" id="saveParcelLayout" type="button">Save Layout</button>
+            <button class="mapEditBtn" id="resetParcelLayout" type="button">Reset</button>
+            <button class="mapEditBtn" id="showOffsetBtn" type="button">Show</button>
+            <button class="mapEditBtn" id="exportParcelLayout" type="button">Copy JSON</button>
+          </div>
         </div>
         <div class="mapDataNotice">
-          All map parcels, ownership, and business values shown here are mock data and do not represent real-world land or assets.
+          All map parcels, ownership, and business values shown here are mock data and do not represent real-world land or assets. Land parcels are only shown for a general understanding; land between plotted parcels is assumed to be privately owned in theory and available for bidding.
         </div>
-        <div id="map" role="img" aria-label="Tokyo Map"></div>
+        <div class="mapSurface">
+          <div id="map" role="img" aria-label="Tokyo Map"></div>
+          <div class="parcelGuideOverlay" id="parcelGuideOverlay" aria-hidden="true"></div>
+          <div class="parcelEditOverlay" id="parcelEditOverlay" aria-hidden="true"></div>
+          <div class="parcelCoordPanel" id="parcelCoordPanel" aria-live="polite"></div>
+        </div>
       </div>
     </main>
 
@@ -2940,19 +3136,291 @@
         { number: "8", name: "Andresen Systems Co. Branch", wallet: "0x2b7c...90de", royalty: "0.8%", lng: 139.92035301, lat: 35.64229915, status: "Pending Review", statusIcon: "company", width: 20, height: 20 },
         { number: "9", name: "Garzik Fabrication Branch", wallet: "0x9ad5...1c73", royalty: "0.7%", lng: 139.92056303, lat: 35.64264295, status: "Pending Review", statusIcon: "company", width: 20, height: 20 },
         { number: "11", name: "Wood Acre Farms Branch", wallet: "0x6ab3...4d12", royalty: "0.9%", lng: 139.91782723, lat: 35.64180071, status: "Pending Review", statusIcon: "company", width: 117.6, height: 101.76 },
-        { number: "12", name: "Le Jardin Proudhon", wallet: "0x91de...8a54", royalty: "-", lng: 139.91921336, lat: 35.64212729, status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", reserved: true, noIdleFloat: true, width: 82.7, height: 183 }
+        { number: "12", name: "Le Jardin Proudhon", wallet: "0x91de...8a54", royalty: "-", lng: 139.91921336, lat: 35.64212729, status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", reserved: true, noIdleFloat: true, width: 87.7, height: 193 }
       ]);
-      const EXTRA_PARCELS = Object.freeze(PARCELS.filter((p) => !["1", "2", "3", "4", "5", "6"].includes(String(p.number))));
+      // Toggle manually in code: true = developer mode, false = production mode.
+      const MAP_DEVELOPER_MODE = false;
+      const ADDED_PARCEL_Y_SAVE_OFFSET = 430;
+      const PARCEL_LAYOUT_KEY = "branchism_parcel_screen_layout_v2";
+      const PARCEL_REF_KEY = "branchism_parcel_screen_ref_v1";
+      const ADDED_PARCELS_KEY = "branchism_added_parcels_v1";
+      const PARCEL_OFFSET_REPORT_KEY = "branchism_parcel_offset_report_v1";
+      const PARCEL_LAYOUT_MIGRATED_KEY = "branchism_parcel_screen_layout_migrated_v3";
+      const PRODUCTION_PARCEL_SNAPSHOT = {
+        referenceSize: { w: 1002, h: 498 },
+        parcels: [
+          { number: "2", cx: 422.1843674952087, cy: -775.8800173507956, lng: 139.91965439999575, lat: 35.64589153000031 },
+          { number: "3", cx: 827.9059178864302, cy: -645.7640126827092, lng: 139.92400731999675, lat: 35.64475709000047 },
+          { number: "4", cx: 914.0364165657177, cy: -923.7394793228292, lng: 139.92493139999664, lat: 35.64718065000021 },
+          { number: "12", cx: 376.07646002507755, cy: 123.8570591902318, lng: 139.91921335999677, lat: 35.64212729000049 },
+          { number: "13", name: "Rosenfeld Tool & Supply Branch", cx: 508.75, cy: -63, lng: 139.92063679265618, lat: 35.64366929718584 },
+          { number: "14", name: "Assia Asset Workshop Branch", cx: 526.75, cy: -64.5, lng: 139.92082991170554, lat: 35.64368237547819 },
+          { number: "15", name: "Charlon Woodcraft Branch", cx: 545.75, cy: -64.5, lng: 139.92103375958993, lat: 35.64368237547819 },
+          { number: "16", name: "Friedrich Fields", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 311.25, cy: -310.8999938964844, lng: 139.9184534745179, lat: 35.64535114792652 },
+          { number: "17", name: "Stirner Grove", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 548.25, cy: -368.8999938964844, lng: 139.92098547982755, lat: 35.64556911459343 },
+          { number: "18", name: "Nishida Garden", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 140, height: 75, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 511.75, cy: -550.3999938964844, lng: 139.92086209821434, lat: 35.64674176505325 },
+          { number: "19", name: "Giardino Emo", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 240, height: 260, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 952.25, cy: -124.39999389648438, lng: 139.9252877430883, lat: 35.64282705061693 }
+        ]
+      };
+
+      function readParcelLayout(){
+        try {
+          const raw = JSON.parse(localStorage.getItem(PARCEL_LAYOUT_KEY) || "{}");
+          if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+          const cleaned = {};
+          Object.keys(raw).forEach((key) => {
+            const entry = raw[key];
+            if (!entry || typeof entry !== "object") return;
+            const cx = Number(entry.cx);
+            const cy = Number(entry.cy);
+            const lng = Number(entry.lng);
+            const lat = Number(entry.lat);
+            const hasPx = Number.isFinite(cx) && Number.isFinite(cy);
+            const hasGeo = Number.isFinite(lng) && Number.isFinite(lat);
+            if (!hasPx && !hasGeo) return;
+            cleaned[String(key)] = Object.assign(
+              {},
+              hasPx ? { cx: cx, cy: cy } : {},
+              hasGeo ? { lng: lng, lat: lat } : {}
+            );
+          });
+          return cleaned;
+        } catch (_) {
+          return {};
+        }
+      }
+
+      function readParcelReferenceSize(){
+        try {
+          const raw = JSON.parse(localStorage.getItem(PARCEL_REF_KEY) || "null");
+          if (!raw || typeof raw !== "object") return null;
+          const w = Number(raw.w);
+          const h = Number(raw.h);
+          if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return null;
+          return { w: w, h: h };
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function writeParcelLayout(data){
+        try {
+          localStorage.setItem(PARCEL_LAYOUT_KEY, JSON.stringify(data || {}));
+        } catch (_) {}
+      }
+
+      function writeParcelReferenceSize(size){
+        try {
+          if (!size || !Number.isFinite(Number(size.w)) || !Number.isFinite(Number(size.h))) return;
+          localStorage.setItem(PARCEL_REF_KEY, JSON.stringify({ w: Number(size.w), h: Number(size.h) }));
+        } catch (_) {}
+      }
+
+      let PARCEL_LAYOUT = readParcelLayout();
+      let PARCEL_REF = readParcelReferenceSize();
+
+      function readAddedParcels(){
+        try {
+          const raw = JSON.parse(localStorage.getItem(ADDED_PARCELS_KEY) || "[]");
+          if (!Array.isArray(raw)) return [];
+          return raw.filter((p) => p && typeof p === "object" && p.number != null).map((p) => Object.assign({
+            name: "Parcel " + String(p.number),
+            wallet: "0x4f2a...9c1b",
+            royalty: "0.8%",
+            lng: ISLAND_CENTER[0],
+            lat: ISLAND_CENTER[1],
+            status: "Pending Review",
+            statusIcon: "company",
+            width: 20,
+            height: 20,
+            ySaveOffsetApplied: true
+          }, p));
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function writeAddedParcels(items){
+        try {
+          localStorage.setItem(ADDED_PARCELS_KEY, JSON.stringify(Array.isArray(items) ? items : []));
+        } catch (_) {}
+      }
+
+      let ADDED_PARCELS = readAddedParcels();
+
+      function applyProductionSnapshot(){
+        if (MAP_DEVELOPER_MODE) return;
+        const baseNumbers = new Set(PARCELS.map((p) => String(p.number)));
+        const snapshotAll = (PRODUCTION_PARCEL_SNAPSHOT.parcels || [])
+          .filter((p) => p && p.number != null);
+        const newOnly = snapshotAll.filter((p) => !baseNumbers.has(String(p.number)));
+
+        PARCEL_LAYOUT = {};
+        snapshotAll.forEach((p) => {
+          const n = String(p.number);
+          PARCEL_LAYOUT[n] = { cx: Number(p.cx), cy: Number(p.cy), lng: Number(p.lng), lat: Number(p.lat) };
+        });
+        PARCEL_REF = {
+          w: Number(PRODUCTION_PARCEL_SNAPSHOT.referenceSize.w),
+          h: Number(PRODUCTION_PARCEL_SNAPSHOT.referenceSize.h)
+        };
+
+        ADDED_PARCELS = newOnly
+          .map((p) => Object.assign({
+            name: "Parcel " + String(p.number),
+            wallet: "0x4f2a...9c1b",
+            royalty: "0.8%",
+            status: "Pending Review",
+            statusIcon: "company",
+            width: 20,
+            height: 20,
+            ySaveOffsetApplied: true
+          }, p));
+      }
+
+      function applyDeveloperSeedFromProduction(){
+        if (!MAP_DEVELOPER_MODE) return;
+        const baseNumbers = new Set(PARCELS.map((p) => String(p.number)));
+        const newOnly = (PRODUCTION_PARCEL_SNAPSHOT.parcels || [])
+          .filter((p) => p && p.number != null && !baseNumbers.has(String(p.number)));
+        const snapshotNumbers = new Set(newOnly.map((p) => String(p.number)));
+        const preservedAdded = ADDED_PARCELS.filter((p) => p && p.number != null && !snapshotNumbers.has(String(p.number)));
+
+        const nextLayout = Object.assign({}, PARCEL_LAYOUT);
+        newOnly.forEach((p) => {
+          const n = String(p.number);
+          nextLayout[n] = { cx: Number(p.cx), cy: Number(p.cy), lng: Number(p.lng), lat: Number(p.lat) };
+        });
+        PARCEL_LAYOUT = nextLayout;
+        if (!PARCEL_REF) {
+          PARCEL_REF = {
+            w: Number(PRODUCTION_PARCEL_SNAPSHOT.referenceSize.w),
+            h: Number(PRODUCTION_PARCEL_SNAPSHOT.referenceSize.h)
+          };
+        }
+        ADDED_PARCELS = newOnly.map((p) => Object.assign({
+          name: "Parcel " + String(p.number),
+          wallet: "0x4f2a...9c1b",
+          royalty: "0.8%",
+          status: "Pending Review",
+          statusIcon: "company",
+          width: 20,
+          height: 20,
+          ySaveOffsetApplied: true
+        }, p)).concat(preservedAdded);
+      }
+
+      applyProductionSnapshot();
+      applyDeveloperSeedFromProduction();
+
+      function getAllParcels(){
+        return PARCELS.concat(ADDED_PARCELS);
+      }
+
+      function getExtraParcels(){
+        return getAllParcels().filter((p) => !["1", "2", "3", "4", "5", "6"].includes(String(p.number)));
+      }
 
       function getParcelConfig(number){
         const id = String(number);
-        for (let i = 0; i < PARCELS.length; i += 1) {
-          if (String(PARCELS[i].number) === id) return PARCELS[i];
+        const all = getAllParcels();
+        for (let i = 0; i < all.length; i += 1) {
+          if (String(all[i].number) === id) return all[i];
         }
         return null;
       }
+
+      function getMapContainerSize(map){
+        const c = map && map.getContainer ? map.getContainer() : null;
+        const w = Math.max(1, Number(c && c.clientWidth) || 1);
+        const h = Math.max(1, Number(c && c.clientHeight) || 1);
+        return { w: w, h: h };
+      }
+
+      function ensureParcelReferenceSize(map){
+        const size = getMapContainerSize(map);
+        if (!PARCEL_REF) {
+          PARCEL_REF = { w: size.w, h: size.h };
+          writeParcelReferenceSize(PARCEL_REF);
+        }
+      }
+
+      function currentPxToReferencePx(x, y, map){
+        const size = getMapContainerSize(map);
+        PARCEL_REF = { w: size.w, h: size.h };
+        return {
+          cx: Number(x),
+          cy: Number(y)
+        };
+      }
+
+      function referencePxToCurrentPx(cx, cy, map){
+        const size = getMapContainerSize(map);
+        PARCEL_REF = { w: size.w, h: size.h };
+        return {
+          x: Number(cx),
+          y: Number(cy)
+        };
+      }
+
+      function getParcelReferencePoint(parcel, map, engine){
+        const n = String(parcel.number);
+        const override = PARCEL_LAYOUT[n];
+        if (override && Number.isFinite(Number(override.cx)) && Number.isFinite(Number(override.cy))) {
+          return { cx: Number(override.cx), cy: Number(override.cy) };
+        }
+        if (override && Number.isFinite(Number(override.lng)) && Number.isFinite(Number(override.lat))) {
+          let gx = 0;
+          let gy = 0;
+          if (engine === "maplibre") {
+            const gpt = map.project([Number(override.lng), Number(override.lat)]);
+            gx = Number(gpt.x);
+            gy = Number(gpt.y);
+          } else {
+            const gpt = map.latLngToContainerPoint([Number(override.lat), Number(override.lng)]);
+            gx = Number(gpt.x);
+            gy = Number(gpt.y);
+          }
+          return currentPxToReferencePx(gx, gy, map);
+        }
+        let x = 0;
+        let y = 0;
+        if (engine === "maplibre") {
+          const pt = map.project([Number(parcel.lng), Number(parcel.lat)]);
+          x = Number(pt.x);
+          y = Number(pt.y);
+        } else {
+          const pt = map.latLngToContainerPoint([Number(parcel.lat), Number(parcel.lng)]);
+          x = Number(pt.x);
+          y = Number(pt.y);
+        }
+        return currentPxToReferencePx(x, y, map);
+      }
+
+      function getParcelCurrentPoint(parcel, map, engine){
+        const refPt = getParcelReferencePoint(parcel, map, engine);
+        return referencePxToCurrentPx(refPt.cx, refPt.cy, map);
+      }
+
+      function getParcelLngLatFromScreen(parcel, map, engine){
+        const pt = getParcelCurrentPoint(parcel, map, engine);
+        if (engine === "maplibre") {
+          const ll = map.unproject([pt.x, pt.y]);
+          return [Number(ll.lng), Number(ll.lat)];
+        }
+        const ll = map.containerPointToLatLng([pt.x, pt.y]);
+        return [Number(ll.lng), Number(ll.lat)];
+      }
+
+      function getParcelLngLatForLeaflet(map, parcel){
+        return getParcelLngLatFromScreen(parcel, map, "leaflet");
+      }
+
+      function getParcelLngLatForMapLibre(map, parcel){
+        return getParcelLngLatFromScreen(parcel, map, "maplibre");
+      }
       function addExtraBusinessParcelsLeaflet(map){
-        EXTRA_PARCELS.forEach((p) => {
+        getExtraParcels().forEach((p) => {
           const width = Number(p.width) || 20;
           const height = Number(p.height) || 20;
           const markerEl = createBusinessMarkerElement({
@@ -2979,12 +3447,13 @@
             iconSize: [width, height],
             iconAnchor: [width / 2, height / 2]
           });
-          L.marker([p.lat, p.lng], { icon: icon, interactive: true }).addTo(map);
+          const markerLngLat = getParcelLngLatForLeaflet(map, p);
+          L.marker([markerLngLat[1], markerLngLat[0]], { icon: icon, interactive: true }).addTo(map);
         });
       }
 
       function addExtraBusinessParcelsMapLibre(map){
-        EXTRA_PARCELS.forEach((p) => {
+        getExtraParcels().forEach((p) => {
           const width = Number(p.width) || 20;
           const height = Number(p.height) || 20;
           const markerEl = createBusinessMarkerElement({
@@ -3005,7 +3474,8 @@
             width: width,
             height: height
           });
-          new maplibregl.Marker({ element: markerEl, anchor: "center" }).setLngLat([p.lng, p.lat]).addTo(map);
+          const markerLngLat = getParcelLngLatForMapLibre(map, p);
+          new maplibregl.Marker({ element: markerEl, anchor: "center" }).setLngLat(markerLngLat).addTo(map);
         });
       }
 
@@ -3506,6 +3976,7 @@
       function createBusinessMarkerElement(config){
         const el = document.createElement("div");
         el.className = "mapStoreMarker";
+        el.dataset.parcelNumber = String(config.number || "");
         const size = Number(config.size) || 20;
         const width = Number(config.width) || size;
         const height = Number(config.height) || size;
@@ -3525,6 +3996,7 @@
         if (owned) el.classList.add("owned");
         if (vacant) el.classList.add("vacant");
         if (reserved) el.classList.add("reserved");
+        if (!reserved) el.classList.add("prodHoverable");
         const askingLine = config.askingPrice
           ? '<div class="mapStorePanelAsking">Asking: ' + String(config.askingPrice) + '</div>'
           : "";
@@ -3865,7 +4337,7 @@
 
       function addLeafletCenterRedSquare(map){
         const p1 = getParcelConfig("1");
-        const marker1LngLat = [Number(p1.lng), Number(p1.lat)];
+        const marker1LngLat = getParcelLngLatForLeaflet(map, p1);
         const el1 = createBusinessMarkerElement({
           number: p1.number,
           name: p1.name,
@@ -3885,7 +4357,7 @@
         });
         L.marker([marker1LngLat[1], marker1LngLat[0]], { icon: icon1, interactive: true }).addTo(map);
         const p5 = getParcelConfig("5");
-        const marker5LngLat = [Number(p5.lng), Number(p5.lat)];
+        const marker5LngLat = getParcelLngLatForLeaflet(map, p5);
         const el5 = createBusinessMarkerElement({
           number: p5.number,
           name: p5.name,
@@ -3906,7 +4378,7 @@
         });
         L.marker([marker5LngLat[1], marker5LngLat[0]], { icon: icon5, interactive: true }).addTo(map);
         const p6 = getParcelConfig("6");
-        const marker6LngLat = [Number(p6.lng), Number(p6.lat)];
+        const marker6LngLat = getParcelLngLatForLeaflet(map, p6);
         const el6 = createBusinessMarkerElement({
           number: p6.number,
           name: p6.name,
@@ -3928,7 +4400,7 @@
         L.marker([marker6LngLat[1], marker6LngLat[0]], { icon: icon6, interactive: true }).addTo(map);
         addExtraBusinessParcelsLeaflet(map);
         const p2 = getParcelConfig("2");
-        const marker2LngLat = [Number(p2.lng), Number(p2.lat)];
+        const marker2LngLat = getParcelLngLatForLeaflet(map, p2);
         const el2 = createBusinessMarkerElement({
           number: p2.number,
           name: p2.name,
@@ -3950,7 +4422,7 @@
         L.marker([marker2LngLat[1], marker2LngLat[0]], { icon: icon2, interactive: true }).addTo(map);
 
         const p3 = getParcelConfig("3");
-        const marker3LngLat = [Number(p3.lng), Number(p3.lat)];
+        const marker3LngLat = getParcelLngLatForLeaflet(map, p3);
         const el3 = createBusinessMarkerElement({
           number: p3.number,
           name: p3.name,
@@ -3978,7 +4450,7 @@
         });
 
         const p4 = getParcelConfig("4");
-        const marker4LngLat = [Number(p4.lng), Number(p4.lat)];
+        const marker4LngLat = getParcelLngLatForLeaflet(map, p4);
         const el4 = createBusinessMarkerElement({
           number: p4.number,
           name: p4.name,
@@ -4049,6 +4521,488 @@
         map.getContainer().appendChild(el);
       }
 
+      function applyMapModeUI(){
+        document.body.classList.toggle("mapModeProduction", !MAP_DEVELOPER_MODE);
+        document.body.classList.toggle("mapModeDeveloper", MAP_DEVELOPER_MODE);
+        const toolIds = [
+          "toggleParcelEdit",
+          "parcelTypeSelect",
+          "addParcelBtn",
+          "saveParcelLayout",
+          "resetParcelLayout",
+          "showOffsetBtn",
+          "exportParcelLayout"
+        ];
+        toolIds.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.style.display = MAP_DEVELOPER_MODE ? "" : "none";
+        });
+        const guideOverlay = document.getElementById("parcelGuideOverlay");
+        const editOverlay = document.getElementById("parcelEditOverlay");
+        const coordPanel = document.getElementById("parcelCoordPanel");
+        if (guideOverlay) guideOverlay.style.display = MAP_DEVELOPER_MODE ? "block" : "none";
+        if (editOverlay) editOverlay.style.display = MAP_DEVELOPER_MODE ? "" : "none";
+        if (coordPanel) coordPanel.style.display = MAP_DEVELOPER_MODE ? "block" : "none";
+      }
+
+      function initParcelEditorUI(map, engine){
+        const guideOverlay = document.getElementById("parcelGuideOverlay");
+        const overlay = document.getElementById("parcelEditOverlay");
+        const coordPanel = document.getElementById("parcelCoordPanel");
+        const toggleBtn = document.getElementById("toggleParcelEdit");
+        const parcelTypeSelect = document.getElementById("parcelTypeSelect");
+        const addBtn = document.getElementById("addParcelBtn");
+        const saveBtn = document.getElementById("saveParcelLayout");
+        const resetBtn = document.getElementById("resetParcelLayout");
+        const showBtn = document.getElementById("showOffsetBtn");
+        const exportBtn = document.getElementById("exportParcelLayout");
+        if (!guideOverlay || !overlay || !coordPanel || !toggleBtn || !parcelTypeSelect || !addBtn || !saveBtn || !resetBtn || !showBtn || !exportBtn || !map) return;
+
+        const state = {
+          enabled: false,
+          dragging: null
+        };
+
+        function migrateLegacyScreenLayoutIfNeeded(){
+          // Disabled: legacy migration introduced vertical drift for newly added parcels.
+          try { localStorage.setItem(PARCEL_LAYOUT_MIGRATED_KEY, "1"); } catch (_) {}
+        }
+
+        function syncAddedParcelsFromLayout(){
+          let changed = false;
+          ADDED_PARCELS = ADDED_PARCELS.map((parcel) => {
+            const n = String(parcel.number);
+            const entry = PARCEL_LAYOUT[n];
+            if (!entry || !Number.isFinite(Number(entry.cx)) || !Number.isFinite(Number(entry.cy))) return parcel;
+            const px = referencePxToCurrentPx(Number(entry.cx), Number(entry.cy), map);
+            const ll = engine === "maplibre"
+              ? map.unproject([px.x, px.y])
+              : map.containerPointToLatLng([px.x, px.y]);
+            const lng = Number(ll.lng);
+            const lat = Number(ll.lat);
+            if (Number(parcel.lng) === lng && Number(parcel.lat) === lat) return parcel;
+            changed = true;
+            return Object.assign({}, parcel, { lng: lng, lat: lat });
+          });
+          if (changed) writeAddedParcels(ADDED_PARCELS);
+        }
+
+        function applySaveYOffsetToNewParcels(){
+          // Intentionally no-op: forced Y offsets caused drift.
+        }
+
+        function getMapCenterLngLat(){
+          if (engine === "maplibre") {
+            const center = map.getCenter();
+            return [Number(center.lng), Number(center.lat)];
+          }
+          const center = map.getCenter();
+          return [Number(center.lng), Number(center.lat)];
+        }
+
+        function containerClientToReference(clientX, clientY){
+          const c = map.getContainer();
+          const rect = c.getBoundingClientRect();
+          const point = [clientX - rect.left, clientY - rect.top];
+          return currentPxToReferencePx(point[0], point[1], map);
+        }
+
+        function seedLayoutForAllParcels(){
+          let changed = false;
+          getAllParcels().forEach((parcel) => {
+            const n = String(parcel.number);
+            const existing = PARCEL_LAYOUT[n];
+            const hasPx = existing && Number.isFinite(Number(existing.cx)) && Number.isFinite(Number(existing.cy));
+            const hasGeo = existing && Number.isFinite(Number(existing.lng)) && Number.isFinite(Number(existing.lat));
+            if (hasPx && hasGeo) return;
+            const refPt = getParcelReferencePoint(parcel, map, engine);
+            const geo = getParcelLngLatFromScreen(parcel, map, engine);
+            PARCEL_LAYOUT[n] = {
+              cx: refPt.cx,
+              cy: refPt.cy,
+              lng: Number(geo[0]),
+              lat: Number(geo[1])
+            };
+            changed = true;
+          });
+          if (changed) writeParcelLayout(PARCEL_LAYOUT);
+        }
+
+        function renderCoordinatePanel(){
+          const addedSet = new Set(ADDED_PARCELS.map((p) => String(p.number)));
+          const rows = getAllParcels()
+            .slice()
+            .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0))
+            .map((parcel) => {
+              const refPt = getParcelReferencePoint(parcel, map, engine);
+              const shownY = addedSet.has(String(parcel.number))
+                ? (Number(refPt.cy) + ADDED_PARCEL_Y_SAVE_OFFSET)
+                : Number(refPt.cy);
+              return '<div class="parcelCoordRow"><span>#' + String(parcel.number) + '</span><span>(' + Math.round(refPt.cx) + ', ' + Math.round(shownY) + ')</span></div>';
+            })
+            .join("");
+          coordPanel.innerHTML = "<strong>Parcel Centers (px from top-left)</strong>" + rows;
+        }
+
+        function getVisualParcelCenter(parcel){
+          const container = map.getContainer();
+          const marker = container.querySelector('.mapStoreMarker[data-parcel-number="' + String(parcel.number) + '"]');
+          if (!marker) return getParcelCurrentPoint(parcel, map, engine);
+          const cRect = container.getBoundingClientRect();
+          const anchor = marker.querySelector(".mapStoreDiamond") || marker;
+          const mRect = anchor.getBoundingClientRect();
+          return {
+            x: (mRect.left - cRect.left) + (mRect.width / 2),
+            y: (mRect.top - cRect.top) + (mRect.height / 2)
+          };
+        }
+
+        function captureAddedParcelCentersToLayout(){
+          ADDED_PARCELS.forEach((parcel) => {
+            const n = String(parcel.number);
+            const v = getVisualParcelCenter(parcel);
+            const adjustedY = v.y - ADDED_PARCEL_Y_SAVE_OFFSET;
+            const ref = currentPxToReferencePx(v.x, adjustedY, map);
+            const ll = getParcelLngLatFromCurrentPx(v.x, adjustedY);
+            PARCEL_LAYOUT[n] = {
+              cx: ref.cx,
+              cy: ref.cy,
+              lng: Number(ll[0]),
+              lat: Number(ll[1])
+            };
+          });
+        }
+
+        function getParcelLngLatFromCurrentPx(x, y){
+          if (engine === "maplibre") {
+            const ll = map.unproject([x, y]);
+            return [Number(ll.lng), Number(ll.lat)];
+          }
+          const ll = map.containerPointToLatLng([x, y]);
+          return [Number(ll.lng), Number(ll.lat)];
+        }
+
+        function storeCalibrationReport(report){
+          try {
+            localStorage.setItem(PARCEL_OFFSET_REPORT_KEY, JSON.stringify(report));
+            window.__branchismLastOffsetReport = report;
+          } catch (_) {}
+        }
+
+        function exportParcelSnapshot(){
+          const productionNumbers = new Set(
+            (PRODUCTION_PARCEL_SNAPSHOT.parcels || [])
+              .filter((p) => p && p.number != null)
+              .map((p) => String(p.number))
+          );
+          const exportParcels = ADDED_PARCELS.filter((parcel) => !productionNumbers.has(String(parcel.number)));
+          const payload = {
+            generatedAt: new Date().toISOString(),
+            mode: MAP_DEVELOPER_MODE ? "developer" : "production",
+            referenceSize: PARCEL_REF,
+            parcels: exportParcels.map((parcel) => {
+              const n = String(parcel.number);
+              const ref = getParcelReferencePoint(parcel, map, engine);
+              const ll = getParcelLngLatFromScreen(parcel, map, engine);
+              return Object.assign({}, parcel, {
+                number: n,
+                cx: Number(ref.cx),
+                cy: Number(ref.cy),
+                lng: Number(ll[0]),
+                lat: Number(ll[1])
+              });
+            })
+          };
+          const text = JSON.stringify(payload, null, 2);
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => {});
+          } else {
+            try {
+              const ta = document.createElement("textarea");
+              ta.value = text;
+              document.body.appendChild(ta);
+              ta.focus();
+              ta.select();
+              document.execCommand("copy");
+              ta.remove();
+            } catch (_) {}
+          }
+        }
+
+        function getParcelClass(parcel){
+          if (parcel.owned) return "parcelHandle owned";
+          if (parcel.vacant) return "parcelHandle vacant";
+          return "parcelHandle";
+        }
+
+        function render(){
+          guideOverlay.innerHTML = "";
+          overlay.innerHTML = "";
+          const addedSet = new Set(ADDED_PARCELS.map((p) => String(p.number)));
+          getAllParcels().forEach((parcel) => {
+            const pt = getVisualParcelCenter(parcel);
+            const refPt = getParcelReferencePoint(parcel, map, engine);
+            const shownY = addedSet.has(String(parcel.number))
+              ? (Number(refPt.cy) + ADDED_PARCEL_Y_SAVE_OFFSET)
+              : Number(refPt.cy);
+
+            const hGuide = document.createElement("div");
+            hGuide.className = "parcelGuideLine h";
+            hGuide.style.left = "0px";
+            hGuide.style.top = String(pt.y) + "px";
+            hGuide.style.width = String(Math.max(0, pt.x)) + "px";
+            guideOverlay.appendChild(hGuide);
+
+            const vGuide = document.createElement("div");
+            vGuide.className = "parcelGuideLine v";
+            vGuide.style.left = String(pt.x) + "px";
+            vGuide.style.top = "0px";
+            vGuide.style.height = String(Math.max(0, pt.y)) + "px";
+            guideOverlay.appendChild(vGuide);
+
+            const xLabel = document.createElement("div");
+            xLabel.className = "parcelGuideLabel";
+            xLabel.style.left = String(Math.max(18, pt.x * 0.5)) + "px";
+            xLabel.style.top = String(Math.max(10, pt.y - 12)) + "px";
+            xLabel.textContent = "x " + String(Math.round(refPt.cx));
+            guideOverlay.appendChild(xLabel);
+
+            const yLabel = document.createElement("div");
+            yLabel.className = "parcelGuideLabel";
+            yLabel.style.left = String(Math.max(24, pt.x + 18)) + "px";
+            yLabel.style.top = String(Math.max(10, pt.y * 0.5)) + "px";
+            yLabel.textContent = "y " + String(Math.round(shownY));
+            guideOverlay.appendChild(yLabel);
+
+            const el = document.createElement("button");
+            el.type = "button";
+            el.className = getParcelClass(parcel);
+            el.style.left = String(pt.x) + "px";
+            el.style.top = String(pt.y) + "px";
+            el.textContent = String(parcel.number);
+            el.dataset.parcel = String(parcel.number);
+            el.title = String(parcel.name || ("Parcel " + String(parcel.number)));
+            el.addEventListener("pointerdown", (event) => {
+              if (!state.enabled) return;
+              event.preventDefault();
+              state.dragging = {
+                number: String(parcel.number)
+              };
+              el.setPointerCapture(event.pointerId);
+            });
+            overlay.appendChild(el);
+          });
+          renderCoordinatePanel();
+        }
+
+        function pointerMove(event){
+          if (!state.enabled || !state.dragging) return;
+          const ref = containerClientToReference(event.clientX, event.clientY);
+          const c = map.getContainer();
+          const rect = c.getBoundingClientRect();
+          const point = [event.clientX - rect.left, event.clientY - rect.top];
+          const ll = engine === "maplibre"
+            ? map.unproject(point)
+            : map.containerPointToLatLng(point);
+          PARCEL_LAYOUT[state.dragging.number] = {
+            cx: ref.cx,
+            cy: ref.cy,
+            lng: Number(ll.lng),
+            lat: Number(ll.lat)
+          };
+          syncAddedParcelsFromLayout();
+          render();
+        }
+
+        function pointerUp(){
+          if (state.dragging) writeParcelLayout(PARCEL_LAYOUT);
+          state.dragging = null;
+        }
+
+        window.addEventListener("pointermove", pointerMove);
+        window.addEventListener("pointerup", pointerUp);
+
+        toggleBtn.addEventListener("click", () => {
+          state.enabled = !state.enabled;
+          overlay.classList.toggle("active", state.enabled);
+          toggleBtn.classList.toggle("active", state.enabled);
+          toggleBtn.textContent = state.enabled ? "Editing…" : "Edit Parcels";
+          render();
+        });
+
+        addBtn.addEventListener("click", () => {
+          const all = getAllParcels();
+          let maxN = 0;
+          all.forEach((p) => { maxN = Math.max(maxN, Number(p.number) || 0); });
+          const n = String(maxN + 1);
+          const center = getMapCenterLngLat();
+          const parcelType = String(parcelTypeSelect.value || "reserved");
+          const newParcel = {
+            number: n,
+            name: parcelType === "reserved" ? "Reserved Land Parcel" : "Parcel " + n,
+            wallet: "0x4f2a...9c1b",
+            royalty: parcelType === "business" ? "0.8%" : "-",
+            lng: center[0],
+            lat: center[1],
+            status: "Pending Review",
+            statusIcon: "company",
+            width: 20,
+            height: 20
+          };
+          if (parcelType === "empty") {
+            newParcel.name = "Empty Land Parcel";
+            newParcel.status = "Unlisted parcel";
+            newParcel.vacant = true;
+            newParcel.width = 92.2;
+            newParcel.height = 92.2;
+          } else if (parcelType === "forsale") {
+            newParcel.name = "Empty Land Parcel";
+            newParcel.status = "Owner asks to sell";
+            newParcel.vacant = true;
+            newParcel.forSale = true;
+            newParcel.askingPrice = "Ξ1.9500";
+            newParcel.width = 92.2;
+            newParcel.height = 92.2;
+          } else if (parcelType === "reserved") {
+            // Default reserved plot: same orientation as business, 3x width and 2x height.
+            newParcel.status = "Reserved land (cannot be bought or sold)";
+            newParcel.reserved = true;
+            newParcel.statusIcon = "nature";
+            newParcel.noIdleFloat = true;
+            newParcel.width = 60;
+            newParcel.height = 40;
+          }
+          ADDED_PARCELS = ADDED_PARCELS.concat([newParcel]);
+          writeAddedParcels(ADDED_PARCELS);
+          const currentCenterPx = engine === "maplibre"
+            ? map.project(center)
+            : map.latLngToContainerPoint([center[1], center[0]]);
+          const centerRef = currentPxToReferencePx(Number(currentCenterPx.x), Number(currentCenterPx.y), map);
+          PARCEL_LAYOUT[n] = {
+            cx: centerRef.cx,
+            cy: centerRef.cy,
+            lng: Number(center[0]),
+            lat: Number(center[1])
+          };
+          ADDED_PARCELS = ADDED_PARCELS.map((parcel) => (
+            String(parcel.number) === n
+              ? Object.assign({}, parcel, { lng: Number(center[0]), lat: Number(center[1]), ySaveOffsetApplied: true })
+              : parcel
+          ));
+          writeAddedParcels(ADDED_PARCELS);
+          writeParcelLayout(PARCEL_LAYOUT);
+          state.enabled = true;
+          overlay.classList.add("active");
+          toggleBtn.classList.add("active");
+          toggleBtn.textContent = "Editing…";
+          render();
+        });
+
+        saveBtn.addEventListener("click", () => {
+          captureAddedParcelCentersToLayout();
+          applySaveYOffsetToNewParcels();
+          syncAddedParcelsFromLayout();
+          writeParcelLayout(PARCEL_LAYOUT);
+          writeAddedParcels(ADDED_PARCELS);
+          saveBtn.textContent = "Saved";
+          window.setTimeout(() => { saveBtn.textContent = "Save Layout"; }, 900);
+          window.location.reload();
+        });
+
+        resetBtn.addEventListener("click", () => {
+          PARCEL_LAYOUT = {};
+          writeParcelLayout({});
+          PARCEL_REF = null;
+          writeParcelReferenceSize({ w: 0, h: 0 });
+          try { localStorage.removeItem(PARCEL_REF_KEY); } catch (_) {}
+          ADDED_PARCELS = [];
+          writeAddedParcels([]);
+          render();
+          window.location.reload();
+        });
+
+        showBtn.addEventListener("click", () => {
+          const p1 = getParcelConfig("1");
+          const p13 = getParcelConfig("13");
+          if (!p1 || !p13) {
+            showBtn.textContent = "Need #1 + #13";
+            window.setTimeout(() => { showBtn.textContent = "Show"; }, 1200);
+            return;
+          }
+
+          const oneVisual = getVisualParcelCenter(p1);
+          const thirteenVisual = getVisualParcelCenter(p13);
+          const oneRealRef = currentPxToReferencePx(oneVisual.x, oneVisual.y, map);
+          const thirteenRealRef = currentPxToReferencePx(thirteenVisual.x, thirteenVisual.y, map);
+          const oneSavedRef = getParcelReferencePoint(p1, map, engine);
+          const thirteenSavedRef = getParcelReferencePoint(p13, map, engine);
+
+          // Target is the measured real spacing on screen; if #13 is placed on #1 this is near zero.
+          const targetDx = thirteenRealRef.cx - oneRealRef.cx;
+          const targetDy = thirteenRealRef.cy - oneRealRef.cy;
+          const savedDx = thirteenSavedRef.cx - oneSavedRef.cx;
+          const savedDy = thirteenSavedRef.cy - oneSavedRef.cy;
+          const corrX = savedDx - targetDx;
+          const corrY = savedDy - targetDy;
+
+          const beforeAfter = [];
+          getAllParcels().forEach((parcel) => {
+            const n = String(parcel.number);
+            if (n === "1") return;
+            const oldRef = getParcelReferencePoint(parcel, map, engine);
+            const newRef = { cx: oldRef.cx - corrX, cy: oldRef.cy - corrY };
+            const currentPx = referencePxToCurrentPx(newRef.cx, newRef.cy, map);
+            const ll = getParcelLngLatFromCurrentPx(currentPx.x, currentPx.y);
+            PARCEL_LAYOUT[n] = { cx: newRef.cx, cy: newRef.cy, lng: ll[0], lat: ll[1] };
+            beforeAfter.push({
+              parcel: n,
+              oldCx: oldRef.cx,
+              oldCy: oldRef.cy,
+              newCx: newRef.cx,
+              newCy: newRef.cy
+            });
+          });
+          writeParcelLayout(PARCEL_LAYOUT);
+          render();
+
+          storeCalibrationReport({
+            timestamp: new Date().toISOString(),
+            referenceSize: PARCEL_REF,
+            real: { one: oneRealRef, thirteen: thirteenRealRef, targetDx: targetDx, targetDy: targetDy },
+            saved: { one: oneSavedRef, thirteen: thirteenSavedRef, savedDx: savedDx, savedDy: savedDy },
+            correctionApplied: { corrX: corrX, corrY: corrY },
+            updatedParcels: beforeAfter
+          });
+
+          showBtn.textContent = "Applied";
+          window.setTimeout(() => { showBtn.textContent = "Show"; }, 1200);
+        });
+
+        exportBtn.addEventListener("click", () => {
+          exportParcelSnapshot();
+          exportBtn.textContent = "Copied";
+          window.setTimeout(() => { exportBtn.textContent = "Copy JSON"; }, 900);
+        });
+
+        if (engine === "maplibre") {
+          map.on("resize", render);
+          map.on("move", render);
+        } else {
+          map.on("zoom", render);
+          map.on("move", render);
+          map.on("resize", render);
+        }
+        window.addEventListener("resize", render);
+        migrateLegacyScreenLayoutIfNeeded();
+        ensureParcelReferenceSize(map);
+        syncAddedParcelsFromLayout();
+        render();
+        seedLayoutForAllParcels();
+        syncAddedParcelsFromLayout();
+        render();
+      }
+
       function initLeafletFallback(){
         const bounds = L.latLngBounds(
           L.latLng(ISLAND_BOUNDS.south, ISLAND_BOUNDS.west),
@@ -4074,6 +5028,7 @@
         map.setMaxBounds(bounds);
         addLeafletCenterRedSquare(map);
         addUnitScaleLeaflet(map);
+        if (MAP_DEVELOPER_MODE) initParcelEditorUI(map, "leaflet");
       }
 
       async function initVectorMap(){
@@ -4112,7 +5067,7 @@
           map.on("load", () => {
             map.touchZoomRotate.disableRotation();
             const p1 = getParcelConfig("1");
-            const marker1LngLat = [Number(p1.lng), Number(p1.lat)];
+            const marker1LngLat = getParcelLngLatForMapLibre(map, p1);
             const squareEl = createBusinessMarkerElement({
               number: p1.number,
               name: p1.name,
@@ -4126,7 +5081,7 @@
             });
             new maplibregl.Marker({ element: squareEl, anchor: "center" }).setLngLat(marker1LngLat).addTo(map);
             const p5 = getParcelConfig("5");
-            const marker5LngLat = [Number(p5.lng), Number(p5.lat)];
+            const marker5LngLat = getParcelLngLatForMapLibre(map, p5);
             const squareEl5 = createBusinessMarkerElement({
               number: p5.number,
               name: p5.name,
@@ -4141,7 +5096,7 @@
             });
             new maplibregl.Marker({ element: squareEl5, anchor: "center" }).setLngLat(marker5LngLat).addTo(map);
             const p6 = getParcelConfig("6");
-            const marker6LngLat = [Number(p6.lng), Number(p6.lat)];
+            const marker6LngLat = getParcelLngLatForMapLibre(map, p6);
             const squareEl6 = createBusinessMarkerElement({
               number: p6.number,
               name: p6.name,
@@ -4157,7 +5112,7 @@
             new maplibregl.Marker({ element: squareEl6, anchor: "center" }).setLngLat(marker6LngLat).addTo(map);
             addExtraBusinessParcelsMapLibre(map);
             const p2 = getParcelConfig("2");
-            const marker2LngLat = [Number(p2.lng), Number(p2.lat)];
+            const marker2LngLat = getParcelLngLatForMapLibre(map, p2);
             const squareEl2 = createBusinessMarkerElement({
               number: p2.number,
               name: p2.name,
@@ -4173,7 +5128,7 @@
             new maplibregl.Marker({ element: squareEl2, anchor: "center" }).setLngLat(marker2LngLat).addTo(map);
 
             const p3 = getParcelConfig("3");
-            const marker3LngLat = [Number(p3.lng), Number(p3.lat)];
+            const marker3LngLat = getParcelLngLatForMapLibre(map, p3);
             const squareEl3 = createBusinessMarkerElement({
               number: p3.number,
               name: p3.name,
@@ -4192,7 +5147,7 @@
             new maplibregl.Marker({ element: squareEl3, anchor: "center" }).setLngLat(marker3LngLat).addTo(map);
 
             const p4 = getParcelConfig("4");
-            const marker4LngLat = [Number(p4.lng), Number(p4.lat)];
+            const marker4LngLat = getParcelLngLatForMapLibre(map, p4);
             const squareEl4 = createBusinessMarkerElement({
               number: p4.number,
               name: p4.name,
@@ -4209,6 +5164,7 @@
             attachParcelInteraction(squareEl4, "parcel-4");
             new maplibregl.Marker({ element: squareEl4, anchor: "center" }).setLngLat(marker4LngLat).addTo(map);
             addUnitScaleMapLibre(map);
+            if (MAP_DEVELOPER_MODE) initParcelEditorUI(map, "maplibre");
           });
           return true;
         } catch (_) {
@@ -4216,6 +5172,7 @@
         }
       }
 
+      applyMapModeUI();
       initVectorMap().then((ok) => {
         if (!ok) initLeafletFallback();
       });

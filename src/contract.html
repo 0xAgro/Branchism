@@ -3,15 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Root</title>
+  <title>Root</title>
   <link rel="icon" type="image/png" href="images/summer.png" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script>
     (function(){
       try {
-        if (sessionStorage.getItem('root_intro_seen')) {
-          document.documentElement.classList.add('intro-seen');
-        }
+        document.documentElement.classList.add('intro-seen');
+        try { sessionStorage.setItem('root_intro_seen', '1'); } catch (_) {}
       } catch (_) {}
     })();
   </script>
@@ -1474,8 +1473,8 @@
       <header class="topbar">
         <div class="left">
           <div class="brand">
-            <img class="logo" id="headerLogo" src="images/spring.png" alt="The Root logo" />
-            <div class="brandTitle"><h1>The Root</h1></div>
+            <img class="logo" id="headerLogo" src="images/spring.png" alt="Root logo" />
+            <div class="brandTitle"><h1>Root</h1></div>
           </div>
         </div>
 
