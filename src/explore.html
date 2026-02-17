@@ -927,6 +927,14 @@
       font-family: ui-sans-serif, system-ui;
       letter-spacing: 0.2px;
     }
+    .mapSwitchBtn{
+      cursor: pointer;
+    }
+    .mapSwitchBtn.active{
+      border-color: rgba(126, 215, 151, 0.75);
+      color: rgba(206, 255, 219, 0.95);
+      background: rgba(24, 68, 40, 0.55);
+    }
     .mapDataNotice{
       padding: 8px 12px;
       border-bottom: 1px solid rgba(167,122,77,0.24);
@@ -937,7 +945,8 @@
       text-align: center;
     }
     .mapFrame,
-    #map{
+    #map,
+    #contractMap{
       width: 100%;
       height: min(520px, 65vh);
       border: 0;
@@ -952,6 +961,33 @@
     .mapSurface #map{
       width: 100%;
       height: 100%;
+    }
+    .contractNode{
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(62,48,36,0.65);
+      background: radial-gradient(circle at 32% 26%, rgba(255,248,234,0.96), rgba(238,222,198,0.92) 52%, rgba(208,181,146,0.88));
+      color: rgba(49, 34, 22, 0.95);
+      font-size: 15px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.28);
+    }
+    .contractNodeLabel{
+      background: rgba(22, 15, 10, 0.9);
+      color: rgba(242, 224, 198, 0.96);
+      border: 1px solid rgba(161, 123, 86, 0.6);
+      border-radius: 8px;
+      padding: 3px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+    }
+    .contractNodeLabel::before{
+      display: none;
     }
     .parcelEditOverlay{
       position: absolute;
@@ -1329,6 +1365,7 @@
       font-size: 11px;
       line-height: 1.2;
       box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      display: none !important;
     }
     .mapUnitScaleBar{
       position: relative;
@@ -2219,10 +2256,10 @@
       <div class="mapPanel">
         <div class="mapHeader">
           <div style="display:flex; gap:10px; align-items:center;">
-            <button class="badge" type="button">Chancellor District</button>
-            <span>Map view (OpenStreetMap embed)</span>
+            <button class="badge mapSwitchBtn active" id="districtMapBtn" type="button">Chancellor District</button>
+            <button class="badge mapSwitchBtn" id="contractMapBtn" type="button">Contract Map</button>
           </div>
-          <div class="mapHeaderTools">
+          <div class="mapHeaderTools" id="mapHeaderTools">
             <span class="badge">Static</span>
             <button class="mapEditBtn" id="toggleParcelEdit" type="button">Edit Parcels</button>
             <select class="mapEditBtn" id="parcelTypeSelect" aria-label="Parcel type">
@@ -2238,11 +2275,12 @@
             <button class="mapEditBtn" id="exportParcelLayout" type="button">Copy JSON</button>
           </div>
         </div>
-        <div class="mapDataNotice">
+        <div class="mapDataNotice" id="mapDataNotice">
           All map parcels, ownership, and business values shown here are mock data and do not represent real-world land or assets. Land parcels are only shown for a general understanding; land between plotted parcels is assumed to be privately owned in theory and available for bidding.
         </div>
         <div class="mapSurface">
           <div id="map" role="img" aria-label="Tokyo Map"></div>
+          <div id="contractMap" role="img" aria-label="Toronto Ontario Canada Map" style="display:none;"></div>
           <div class="parcelGuideOverlay" id="parcelGuideOverlay" aria-hidden="true"></div>
           <div class="parcelEditOverlay" id="parcelEditOverlay" aria-hidden="true"></div>
           <div class="parcelCoordPanel" id="parcelCoordPanel" aria-live="polite"></div>
@@ -3140,6 +3178,8 @@
       ]);
       // Toggle manually in code: true = developer mode, false = production mode.
       const MAP_DEVELOPER_MODE = false;
+      let activeTopMapMode = "district";
+      let contractMapInstance = null;
       const ADDED_PARCEL_Y_SAVE_OFFSET = 430;
       const PARCEL_LAYOUT_KEY = "branchism_parcel_screen_layout_v2";
       const PARCEL_REF_KEY = "branchism_parcel_screen_ref_v1";
@@ -3149,16 +3189,16 @@
       const PRODUCTION_PARCEL_SNAPSHOT = {
         referenceSize: { w: 1002, h: 498 },
         parcels: [
-          { number: "2", cx: 422.1843674952087, cy: -775.8800173507956, lng: 139.91965439999575, lat: 35.64589153000031 },
-          { number: "3", cx: 827.9059178864302, cy: -645.7640126827092, lng: 139.92400731999675, lat: 35.64475709000047 },
-          { number: "4", cx: 914.0364165657177, cy: -923.7394793228292, lng: 139.92493139999664, lat: 35.64718065000021 },
-          { number: "12", cx: 376.07646002507755, cy: 128.8570591902318, lng: 139.91921335999677, lat: 35.64212729000049 },
+          { number: "2", cx: 422.1843674952087, cy: -782.8800173507956, lng: 139.91965439999575, lat: 35.64589153000031 },
+          { number: "3", cx: 827.9059178864302, cy: -652.7640126827092, lng: 139.92400731999675, lat: 35.64475709000047 },
+          { number: "4", cx: 914.0364165657177, cy: -930.7394793228292, lng: 139.92493139999664, lat: 35.64718065000021 },
+          { number: "12", cx: 376.07646002507755, cy: 123.8570591902318, lng: 139.91921335999677, lat: 35.64212729000049 },
           { number: "13", name: "Rosenfeld Tool & Supply Branch", cx: 508.75, cy: -63, lng: 139.92063679265618, lat: 35.64366929718584 },
           { number: "14", name: "Assia Asset Workshop Branch", cx: 526.75, cy: -64.5, lng: 139.92082991170554, lat: 35.64368237547819 },
           { number: "15", name: "Charlon Woodcraft Branch", cx: 545.75, cy: -64.5, lng: 139.92103375958993, lat: 35.64368237547819 },
-          { number: "16", name: "Friedrich Fields", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 311.25, cy: -305.8999938964844, lng: 139.9184534745179, lat: 35.64535114792652 },
-          { number: "17", name: "Stirner Grove", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 548.25, cy: -363.8999938964844, lng: 139.92098547982755, lat: 35.64556911459343 },
-          { number: "18", name: "Nishida Garden", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 140, height: 75, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 511.75, cy: -555.3999938964844, lng: 139.92086209821434, lat: 35.64674176505325 },
+          { number: "16", name: "Friedrich Fields", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 311.25, cy: -310.8999938964844, lng: 139.9184534745179, lat: 35.64535114792652 },
+          { number: "17", name: "Stirner Grove", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 45, height: 35, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 548.25, cy: -368.8999938964844, lng: 139.92098547982755, lat: 35.64556911459343 },
+          { number: "18", name: "Nishida Garden", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 140, height: 75, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 511.75, cy: -558.3999938964844, lng: 139.92086209821434, lat: 35.64674176505325 },
           { number: "19", name: "Giardino Emo", wallet: "0x4f2a...9c1b", royalty: "-", status: "Reserved land (cannot be bought or sold)", statusIcon: "nature", width: 240, height: 260, ySaveOffsetApplied: true, reserved: true, noIdleFloat: true, cx: 952.25, cy: -119.39999389648438, lng: 139.9252877430883, lat: 35.64282705061693 }
         ]
       };
@@ -4546,6 +4586,39 @@
         if (coordPanel) coordPanel.style.display = MAP_DEVELOPER_MODE ? "block" : "none";
       }
 
+      function setTopMapMode(mode){
+        activeTopMapMode = mode === "contract" ? "contract" : "district";
+        const isContract = activeTopMapMode === "contract";
+
+        const districtMapEl = document.getElementById("map");
+        const contractMapEl = document.getElementById("contractMap");
+        const districtBtn = document.getElementById("districtMapBtn");
+        const contractBtn = document.getElementById("contractMapBtn");
+        const mapHeaderTools = document.getElementById("mapHeaderTools");
+        const mapDataNotice = document.getElementById("mapDataNotice");
+        const guideOverlay = document.getElementById("parcelGuideOverlay");
+        const editOverlay = document.getElementById("parcelEditOverlay");
+        const coordPanel = document.getElementById("parcelCoordPanel");
+
+        if (districtMapEl) districtMapEl.style.display = isContract ? "none" : "block";
+        if (contractMapEl) contractMapEl.style.display = isContract ? "block" : "none";
+        if (districtBtn) districtBtn.classList.toggle("active", !isContract);
+        if (contractBtn) contractBtn.classList.toggle("active", isContract);
+
+        if (mapHeaderTools) mapHeaderTools.style.display = isContract ? "none" : (MAP_DEVELOPER_MODE ? "" : "none");
+        if (mapDataNotice) mapDataNotice.style.display = isContract ? "none" : "";
+
+        if (guideOverlay) guideOverlay.style.display = (!isContract && MAP_DEVELOPER_MODE) ? "block" : "none";
+        if (editOverlay) editOverlay.style.display = (!isContract && MAP_DEVELOPER_MODE) ? "" : "none";
+        if (coordPanel) coordPanel.style.display = (!isContract && MAP_DEVELOPER_MODE) ? "block" : "none";
+
+        if (isContract && contractMapInstance) {
+          window.setTimeout(() => {
+            contractMapInstance.invalidateSize();
+          }, 0);
+        }
+      }
+
       function initParcelEditorUI(map, engine){
         const guideOverlay = document.getElementById("parcelGuideOverlay");
         const overlay = document.getElementById("parcelEditOverlay");
@@ -5031,6 +5104,63 @@
         if (MAP_DEVELOPER_MODE) initParcelEditorUI(map, "leaflet");
       }
 
+      function initContractMap(){
+        const el = document.getElementById("contractMap");
+        if (!el || !window.L) return;
+        const mississaugaCenter = [43.5890, -79.6441];
+        const mississaugaBounds = L.latLngBounds(
+          L.latLng(43.49, -79.86),
+          L.latLng(43.69, -79.48)
+        );
+        const map = L.map("contractMap", {
+          zoomControl: false,
+          attributionControl: true,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          touchZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          dragging: false,
+          maxBounds: mississaugaBounds,
+          maxBoundsViscosity: 1.0
+        }).setView(mississaugaCenter, 13);
+
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
+          maxZoom: 20,
+          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+        }).addTo(map);
+        map.setMaxBounds(mississaugaBounds);
+
+        const contractNodes = [
+          { label: "Courts", icon: "⚖", lat: 43.5938, lng: -79.6442 },
+          { label: "Policing", icon: "🛡", lat: 43.5826, lng: -79.6504 },
+          { label: "Prison", icon: "⛓", lat: 43.5752, lng: -79.6328 },
+          { label: "Medical", icon: "✚", lat: 43.5962, lng: -79.6287 },
+          { label: "Grid Workers", icon: "⚡", lat: 43.6021, lng: -79.6611 },
+          { label: "Firefighters", icon: "🚒", lat: 43.5877, lng: -79.6669 },
+          { label: "Communication", icon: "📡", lat: 43.5718, lng: -79.6476 }
+        ];
+        contractNodes.forEach((node) => {
+          const icon = L.divIcon({
+            className: "",
+            html: '<div class="contractNode" aria-hidden="true">' + node.icon + "</div>",
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+          });
+          const marker = L.marker([node.lat, node.lng], { icon: icon, interactive: true }).addTo(map);
+          marker.bindTooltip(node.label, {
+            permanent: false,
+            direction: "top",
+            offset: [0, -14],
+            opacity: 0.96,
+            sticky: true,
+            className: "contractNodeLabel"
+          });
+        });
+
+        contractMapInstance = map;
+      }
+
       async function initVectorMap(){
         if (!window.maplibregl) return false;
 
@@ -5173,6 +5303,12 @@
       }
 
       applyMapModeUI();
+      initContractMap();
+      const districtMapBtn = document.getElementById("districtMapBtn");
+      const contractMapBtn = document.getElementById("contractMapBtn");
+      if (districtMapBtn) districtMapBtn.addEventListener("click", () => setTopMapMode("district"));
+      if (contractMapBtn) contractMapBtn.addEventListener("click", () => setTopMapMode("contract"));
+      setTopMapMode("district");
       initVectorMap().then((ok) => {
         if (!ok) initLeafletFallback();
       });
