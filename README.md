@@ -32,7 +32,7 @@ For a general and changing understanding please see [this article](https://open.
 
 If you would like to support continued independent theoretical research, you may do so here:
 
-0x5811aa50e366D7040805CFfdA6880E11363fD961
+Ethereum Donation Address: 0x5811aa50e366D7040805CFfdA6880E11363fD961
 
 or
 
